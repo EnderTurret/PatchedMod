@@ -3,7 +3,6 @@ package net.enderturret.patchedmod.mixin;
 import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.server.packs.AbstractPackResources;
-import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 
