@@ -20,6 +20,7 @@ public class PatchedCommand {
 
 	public static LiteralArgumentBuilder<CommandSourceStack> create(boolean client, Function<CommandSourceStack,ResourceManager> managerGetter) {
 		return literal("patched" + (client ? "c" : ""))
+				.requires(src -> src.hasPermission(2))
 				.then(DumpCommand.create(client, managerGetter))
 				.then(ListCommand.create(managerGetter));
 	}
