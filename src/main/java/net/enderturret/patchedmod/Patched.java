@@ -5,7 +5,14 @@ import org.slf4j.LoggerFactory;
 
 import net.minecraft.resources.ResourceLocation;
 
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.fml.IExtensionPoint.DisplayTest;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.NetworkConstants;
+
+import net.enderturret.patchedmod.command.PatchedCommand;
 
 @Mod(Patched.MOD_ID)
 public class Patched {
@@ -14,7 +21,14 @@ public class Patched {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("Patched");
 
-	public Patched() {}
+	public Patched() {
+		ModLoadingContext.get().registerExtensionPoint(DisplayTest.class, () -> new DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (version, network) -> true));
+		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
+	}
+
+	private void registerCommands(RegisterCommandsEvent e) {
+		e.getDispatcher().register(PatchedCommand.create(false, src -> src.getServer().getResourceManager()));
+	}
 
 	public static boolean canBePatched(ResourceLocation location) {
 		final String path = location.getPath();
