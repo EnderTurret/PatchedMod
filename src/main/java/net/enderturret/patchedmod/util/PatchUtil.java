@@ -25,7 +25,7 @@ public class PatchUtil {
 	/**
 	 * The context used for patching Json. This context has all extensions enabled by default.
 	 */
-	public static final PatchContext CONTEXT = new PatchContext(true, true);
+	public static final PatchContext CONTEXT = PatchContext.newContext().sbExtensions(true).patchedExtensions(true);
 
 	/**
 	 * The {@link Gson} instance used for reading patches and {@linkplain #readPrettyJson(InputStream, String, boolean, boolean) prettying Json data}.
