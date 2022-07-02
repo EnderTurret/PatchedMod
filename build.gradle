@@ -1,26 +1,20 @@
 buildscript {
     repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://maven.parchmentmc.org' }
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
         maven { url = 'https://plugins.gradle.org/m2/' }
         mavenCentral()
 		mavenLocal()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.+', changing: true
-        classpath group: 'org.parchmentmc', name: 'librarian', version: '1.+'
         classpath group: 'com.diffplug.gradle', name: 'goomph', version: '3.35.0'
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT-fix'
     }
 }
 
 plugins {
+    id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'com.github.johnrengelman.shadow' version '7.1.0'
 }
-
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 apply plugin: 'eclipse'
 apply plugin: 'com.diffplug.eclipse.apt'
@@ -43,76 +37,30 @@ mixin {
 }*/
 
 repositories {
+    maven { url = 'https://maven.parchmentmc.org' }
 	mavenLocal()
 }
 
-configurations {
-	// Create the library configuration, where our non-mod libraries will be added to
-	library
-	// Any dependency in the library configuration will also be added to the implementation configuration
-	implementation.extendsFrom library
-}
-
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.2-40.1.20'
+    minecraft 'com.mojang:minecraft:1.18.2'
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment('org.parchmentmc.data:parchment-1.18.2:2022.05.02@zip')
+    }
+    modImplementation 'net.fabricmc:fabric-loader:0.14.8'
 
-	library ('net.enderturret:Patched:1.0.2') {
+	modImplementation ('net.enderturret:Patched:1.0.2') {
 		exclude group: 'com.google.code.gson', module: 'gson'
 	}
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
-minecraft {
-    mappings channel: 'parchment', version: '2022.05.02-1.18.2'
-
-    runs {
-        client {
-            workingDirectory project.file('run')
-
-            arg '-mixin.config=mixins.patched.json'
-
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            mods {
-                patched {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-
-            arg '-mixin.config=mixins.patched.json'
-
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            mods {
-                patched {
-                    source sourceSets.main
-                }
-            }
-        }
-    }
-}
-
-// Configure all runs with the following
-minecraft.runs.all {
-	// Set the minecraft_classpath token to the paths of all jars in the library configuration
-	// This is added with the actual Minecraft classpath to get the real classpath information later on
-	lazyToken('minecraft_classpath') {
-		configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
-	}
-}
-
 shadowJar {
     classifier 'all'
 
     dependencies {
-        include(dependency('net.enderturret:Patched:1.0.0'))
+        include(dependency('net.enderturret:Patched:1.0.2'))
     }
 }
 
@@ -125,6 +73,14 @@ afterEvaluate {
         shadowJar {
             mappings = createMcpToSrg.output
         }
+    }
+}
+
+processResources {
+    inputs.property 'version', project.version
+
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
     }
 }
 
