@@ -1,5 +1,9 @@
 package net.enderturret.patchedmod.util;
 
+/**
+ * Represents Patched-specific metadata in resource/data packs.
+ * @author EnderTurret
+ */
 public interface IPatchingPackResources {
 
 	/**
@@ -19,7 +23,8 @@ public interface IPatchingPackResources {
 	}
 
 	/**
-	 * Sets the value of {@code hasPatches}. The implementor may do nothing, or reject the change if it has already been set.
+	 * Sets the value of {@code hasPatches}.
+	 * @implSpec Calls to this method may be ignored if the value has already been set or if the value is hard-coded.
 	 * @param value The new value.
 	 */
 	public default void setHasPatches(boolean value) {}

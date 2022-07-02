@@ -13,6 +13,12 @@ import net.minecraft.server.packs.resources.SimpleResource;
 
 import net.enderturret.patchedmod.util.MixinCallbacks;
 
+/**
+ * <p>This mixin implements the functionality for actually patching resources.</p>
+ * <p>This is done by redirecting the {@code new SimpleResource(...)} invocations to
+ * {@link MixinCallbacks#loadResource(FallbackResourceManager, String, ResourceLocation, InputStream, InputStream)}.</p>
+ * @author EnderTurret
+ */
 @Mixin(FallbackResourceManager.class)
 public abstract class MixinFallbackResourceManager {
 

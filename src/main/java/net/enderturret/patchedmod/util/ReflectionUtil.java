@@ -9,6 +9,12 @@ import net.minecraft.server.packs.resources.FallbackResourceManager;
 
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
+/**
+ * <p>Cursed reflection to access {@code FallbackResourceManager.type} ({@code f_10601_}).</p>
+ * <p>This is necessary because the field is private, the mixin refmap fails to work,
+ * and I don't want to spend 10 hours waiting for Gradle because of ATs.</p>
+ * @author EnderTurret
+ */
 public class ReflectionUtil {
 
 	private static final MethodHandle FALLBACKRESOURCEMANAGER_TYPE;
@@ -22,6 +28,11 @@ public class ReflectionUtil {
 		}
 	}
 
+	/**
+	 * @param frm The {@link FallbackResourceManager} to query the type of.
+	 * @return The value of the {@code type} field.
+	 * @throws IllegalStateException In the unlikely event that something goes horribly wrong and accessing the field throws an exception.
+	 */
 	public static PackType getType(FallbackResourceManager frm) {
 		try {
 			return (PackType) FALLBACKRESOURCEMANAGER_TYPE.invoke(frm);

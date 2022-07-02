@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -14,12 +16,33 @@ import net.enderturret.patched.Patches;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 
+/**
+ * An assortment of utilities related to patching Json data.
+ * @author EnderTurret
+ */
 public class PatchUtil {
 
+	/**
+	 * The context used for patching Json. This context has all extensions enabled by default.
+	 */
 	public static final PatchContext CONTEXT = new PatchContext(true, true);
+
+	/**
+	 * The {@link Gson} instance used for reading patches and {@linkplain #readPrettyJson(InputStream, String, boolean, boolean) prettying Json data}.
+	 */
 	public static final Gson GSON = Patches.patchGson(CONTEXT.sbExtensions(), CONTEXT.patchedExtensions())
 			.setPrettyPrinting().create();
 
+	/**
+	 * Attempts to read a string from the given stream as Json, converted to a "pretty" form.
+	 * @param is The stream to read from.
+	 * @param location The location of the file the stream is from. Used for error handling.
+	 * @param requireJson Whether to require the data to be valid Json. {@code false} allows this method to fallback to the original string if an error occurs.
+	 * @param logError Whether to log a warning if the data is not valid Json.
+	 * @return The "pretty-printed" form of the Json in the given stream.
+	 * @throws IOException If an I/O-related error occurs when reading the string from the stream.
+	 */
+	@Nullable
 	public static String readPrettyJson(InputStream is, String location, boolean requireJson, boolean logError) throws IOException {
 		String ret = readString(is);
 
@@ -39,6 +62,12 @@ public class PatchUtil {
 		return ret;
 	}
 
+	/**
+	 * Reads the data in the given stream as a single string and returns it.
+	 * @param is The stream to read from.
+	 * @return The string.
+	 * @throws IOException If an I/O-related error occurs.
+	 */
 	public static String readString(InputStream is) throws IOException {
 		try (InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8); BufferedReader br = new BufferedReader(isr)) {
 			final StringBuilder sb = new StringBuilder();

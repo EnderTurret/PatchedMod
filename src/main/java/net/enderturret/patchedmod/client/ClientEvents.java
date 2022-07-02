@@ -10,6 +10,10 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.command.PatchedCommand;
 
+/**
+ * Various client-side event handlers.
+ * @author EnderTurret
+ */
 @EventBusSubscriber(modid = Patched.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.FORGE)
 public final class ClientEvents {
 

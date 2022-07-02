@@ -16,6 +16,10 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 
+/**
+ * Defines the root '/patched' command and provides a few utility methods for the subcommands to use.
+ * @author EnderTurret
+ */
 public class PatchedCommand {
 
 	public static LiteralArgumentBuilder<CommandSourceStack> create(boolean client, Function<CommandSourceStack,ResourceManager> managerGetter) {

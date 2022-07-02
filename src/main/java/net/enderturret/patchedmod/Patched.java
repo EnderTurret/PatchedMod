@@ -13,7 +13,14 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.NetworkConstants;
 
 import net.enderturret.patchedmod.command.PatchedCommand;
+import net.enderturret.patchedmod.util.MixinCallbacks;
+import net.enderturret.patchedmod.util.PatchUtil;
 
+/**
+ * <p>The main mod class.</p>
+ * <p>All the exciting content is in {@link MixinCallbacks} and {@link PatchUtil}.</p>
+ * @author EnderTurret
+ */
 @Mod(Patched.MOD_ID)
 public class Patched {
 
@@ -30,6 +37,10 @@ public class Patched {
 		e.getDispatcher().register(PatchedCommand.create(false, src -> src.getServer().getResourceManager()));
 	}
 
+	/**
+	 * @param location The location of the file to test.
+	 * @return {@code true} if the file at the given location supports being patched, based on the name.
+	 */
 	public static boolean canBePatched(ResourceLocation location) {
 		final String path = location.getPath();
 		return path.endsWith(".json") || (path.endsWith(".mcmeta") && !path.equals("pack.mcmeta"));

@@ -27,8 +27,23 @@ import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patchedmod.Patched;
 
+/**
+ * <p>Handles callbacks from mixins -- what you would expect given the name.</p>
+ * <p>Specifically, this handles actually patching things.</p>
+ * @see #loadResource(FallbackResourceManager, String, ResourceLocation, InputStream, InputStream)
+ * @author EnderTurret
+ */
 public class MixinCallbacks {
 
+	/**
+	 * Handles patching a resource, if possible.
+	 * @param manager The resource manager that this resource is from.
+	 * @param sourceName The resource/data pack that the resource is from.
+	 * @param name The location of the resource.
+	 * @param resource The contents of the resource itself.
+	 * @param metadata The contents of the resource's .mcmeta file, if present. {@code null} means that no such .mcmeta file exists.
+	 * @return The patched resource.
+	 */
 	@SuppressWarnings("resource")
 	public static SimpleResource loadResource(FallbackResourceManager manager, String sourceName, ResourceLocation name, InputStream resource, @Nullable InputStream metadata) {
 		if (Patched.canBePatched(name)) {
@@ -45,6 +60,14 @@ public class MixinCallbacks {
 		return new SimpleResource(sourceName, name, resource, metadata);
 	}
 
+	/**
+	 * Patches the data from the given stream, returning the patched data as a stream.
+	 * @param manager The resource manager that the data is from.
+	 * @param type The type of pack this data is from.
+	 * @param name The location of the data.
+	 * @param stream The data stream.
+	 * @return A new stream containing the patched data.
+	 */
 	private static InputStream patch(FallbackResourceManager manager, PackType type, ResourceLocation name, InputStream stream) {
 		if (stream == null) return stream;
 
@@ -75,6 +98,14 @@ public class MixinCallbacks {
 		return new ByteArrayInputStream(bytes);
 	}
 
+	/**
+	 * <p>Patches the given Json data using patches from all of the packs with the given pack type.</p>
+	 * <p>The Json data is manipulated directly, so don't pass in anything you don't want modified.</p>
+	 * @param manager The resource manager that the Json data is from.
+	 * @param type The type of pack this Json data is from.
+	 * @param name The location of the Json data.
+	 * @param elem The Json data to patch.
+	 */
 	@SuppressWarnings("resource")
 	private static void patch(FallbackResourceManager manager, PackType type, ResourceLocation name, JsonElement elem) {
 		final ResourceLocation patchName = new ResourceLocation(name.getNamespace(), name.getPath() + ".patch");
@@ -113,6 +144,12 @@ public class MixinCallbacks {
 		}
 	}
 
+	/**
+	 * Determines whether the given pack has patches.
+	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
+	 * @param resources
+	 * @return
+	 */
 	private static boolean hasPatches(PackResources resources) {
 		if (!(resources instanceof IPatchingPackResources patching))
 			return false;
