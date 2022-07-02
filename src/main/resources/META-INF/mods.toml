@@ -1,6 +1,7 @@
 modLoader="javafml"
 loaderVersion="[40,)"
 license="LGPL v2.1"
+issueTrackerURL="https://github.com/EnderTurret/PatchedMod/issues"
 
 [[mods]]
     modId="patched"
@@ -10,15 +11,16 @@ license="LGPL v2.1"
     '''
     version="${file.jarVersion}"
     authors="EnderTurret"
+    displayURL="https://github.com/EnderTurret/PatchedMod"
 
-[[dependencies.foxxeworigins]]
+[[dependencies.patched]]
     modId="forge"
     mandatory=true
     versionRange="[40,)"
     ordering="NONE"
     side="BOTH"
 
-[[dependencies.foxxeworigins]]
+[[dependencies.patched]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.18.2,1.19)"

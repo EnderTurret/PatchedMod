@@ -112,7 +112,7 @@ shadowJar {
     classifier 'all'
 
     dependencies {
-        include(dependency('net.enderturret:Patched:1.0.0'))
+        include(dependency('net.enderturret:Patched:1.0.2'))
     }
 }
 
