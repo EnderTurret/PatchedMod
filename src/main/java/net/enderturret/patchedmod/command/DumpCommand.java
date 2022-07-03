@@ -1,8 +1,5 @@
 package net.enderturret.patchedmod.command;
 
-import static net.minecraft.commands.Commands.argument;
-import static net.minecraft.commands.Commands.literal;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.NoSuchFileException;
@@ -27,6 +24,7 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.util.ICommandSource;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.PatchUtil;
 
@@ -36,23 +34,23 @@ import net.enderturret.patchedmod.util.PatchUtil;
  */
 public class DumpCommand {
 
-	public static LiteralArgumentBuilder<CommandSourceStack> create(boolean client, Function<CommandSourceStack,ResourceManager> managerGetter) {
+	public static <T> LiteralArgumentBuilder<T> create(boolean client, Function<T,ResourceManager> managerGetter, ICommandSource<T> source) {
 		final PackType type = client ? PackType.CLIENT_RESOURCES : PackType.SERVER_DATA;
-		return literal("dump")
-				.then(literal("patch")
-						.then(argument("pack", StringArgumentType.string())
+		return Patched.<T>literal("dump")
+				.then(Patched.<T>literal("patch")
+						.then(Patched.<T, String>argument("pack", StringArgumentType.string())
 								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, managerGetter))
-								.then(argument("location", ResourceLocationArgument.id())
+								.then(Patched.<T, ResourceLocation>argument("location", ResourceLocationArgument.id())
 										.suggests((ctx, builder) -> suggestPatch(ctx, "pack", builder, managerGetter))
-										.executes(ctx -> dumpPatch(ctx, type, managerGetter)))))
-				.then(literal("file")
-						.then(argument("location", ResourceLocationArgument.id())
+										.executes(ctx -> dumpPatch(ctx, type, managerGetter, source)))))
+				.then(Patched.<T>literal("file")
+						.then(Patched.<T, ResourceLocation>argument("location", ResourceLocationArgument.id())
 								.suggests((ctx, builder) -> suggestResource(ctx, type, builder, managerGetter))
-								.executes(ctx -> dumpFile(ctx, managerGetter))));
+								.executes(ctx -> dumpFile(ctx, managerGetter, source))));
 	}
 
 	@SuppressWarnings("resource")
-	private static CompletableFuture<Suggestions> suggestPatch(CommandContext<CommandSourceStack> ctx, String packArg, SuggestionsBuilder builder, Function<CommandSourceStack,ResourceManager> managerGetter) {
+	private static <T> CompletableFuture<Suggestions> suggestPatch(CommandContext<T> ctx, String packArg, SuggestionsBuilder builder, Function<T,ResourceManager> managerGetter) {
 		final String packName = StringArgumentType.getString(ctx, packArg);
 		final String input = builder.getRemaining();
 		final ResourceManager man = managerGetter.apply(ctx.getSource());
@@ -83,7 +81,7 @@ public class DumpCommand {
 		return builder.buildFuture();
 	}
 
-	private static CompletableFuture<Suggestions> suggestResource(CommandContext<CommandSourceStack> ctx, PackType type, SuggestionsBuilder builder, Function<CommandSourceStack,ResourceManager> managerGetter) {
+	private static <T> CompletableFuture<Suggestions> suggestResource(CommandContext<T> ctx, PackType type, SuggestionsBuilder builder, Function<T,ResourceManager> managerGetter) {
 		final String input = builder.getRemaining();
 		final ResourceManager man = managerGetter.apply(ctx.getSource());
 
@@ -132,9 +130,9 @@ public class DumpCommand {
 	}
 
 	@SuppressWarnings("resource")
-	private static int dumpPatch(CommandContext<CommandSourceStack> ctx, PackType type, Function<CommandSourceStack,ResourceManager> managerGetter) {
+	private static <T> int dumpPatch(CommandContext<T> ctx, PackType type, Function<T,ResourceManager> managerGetter, ICommandSource<T> source) {
 		final String packName = StringArgumentType.getString(ctx, "pack");
-		final ResourceLocation location = ResourceLocationArgument.getId(ctx, "location");
+		final ResourceLocation location = ctx.getArgument("location", ResourceLocation.class);
 		final ResourceManager man = managerGetter.apply(ctx.getSource());
 
 		final PackResources pack = man.listPacks()
@@ -143,22 +141,22 @@ public class DumpCommand {
 				.orElse(null);
 
 		if (pack == null) {
-			ctx.getSource().sendFailure(new TextComponent("That pack doesn't exist."));
+			source.sendFailure(ctx.getSource(), new TextComponent("That pack doesn't exist."));
 			return 0;
 		}
 
 		if (!pack.hasResource(type, location)) {
-			ctx.getSource().sendFailure(new TextComponent("That patch could not be found."));
+			source.sendFailure(ctx.getSource(), new TextComponent("That patch could not be found."));
 			return 0;
 		}
 
 		try (InputStream is = pack.getResource(type, location)) {
 			final String src = PatchUtil.readPrettyJson(is, location.toString() + "(in " + packName + ")", true, true);
 			if (src == null) {
-				ctx.getSource().sendFailure(new TextComponent("That patch is not a json file. (See console for details.)"));
+				source.sendFailure(ctx.getSource(), new TextComponent("That patch is not a json file. (See console for details.)"));
 				return 0;
 			}
-			ctx.getSource().sendSuccess(new TextComponent(src), false);
+			source.sendSuccess(ctx.getSource(), new TextComponent(src), false);
 		} catch (IOException e) {
 			Patched.LOGGER.warn("Failed to read resource '{}' from {}:", location, packName, e);
 			return 0;
@@ -167,24 +165,24 @@ public class DumpCommand {
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static int dumpFile(CommandContext<CommandSourceStack> ctx, Function<CommandSourceStack,ResourceManager> managerGetter) {
-		final ResourceLocation location = ResourceLocationArgument.getId(ctx, "location");
+	private static <T> int dumpFile(CommandContext<T> ctx, Function<T,ResourceManager> managerGetter, ICommandSource<T> source) {
+		final ResourceLocation location = ctx.getArgument("location", ResourceLocation.class);
 		final ResourceManager man = managerGetter.apply(ctx.getSource());
 
 		if (!man.hasResource(location)) {
-			ctx.getSource().sendFailure(new TextComponent("That file could not be found."));
+			source.sendFailure(ctx.getSource(), new TextComponent("That file could not be found."));
 			return 0;
 		}
 
 		try (Resource res = man.getResource(location); InputStream is = res.getInputStream()) {
 			final String src = PatchUtil.readPrettyJson(is, location.toString(), true, false);
 			if (src == null) {
-				ctx.getSource().sendFailure(new TextComponent("That file is not a json file."));
+				source.sendFailure(ctx.getSource(), new TextComponent("That file is not a json file."));
 				return 0;
 			}
-			ctx.getSource().sendSuccess(new TextComponent(src), false);
+			source.sendSuccess(ctx.getSource(), new TextComponent(src), false);
 		} catch (NoSuchFileException e) {
-			ctx.getSource().sendFailure(new TextComponent("That file could not be found."));
+			source.sendFailure(ctx.getSource(), new TextComponent("That file could not be found."));
 			return 0;
 		} catch (IOException e) {
 			Patched.LOGGER.warn("Failed to read resource '{}':", location, e);

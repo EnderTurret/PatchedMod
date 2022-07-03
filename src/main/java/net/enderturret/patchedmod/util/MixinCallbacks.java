@@ -47,9 +47,7 @@ public class MixinCallbacks {
 	@SuppressWarnings("resource")
 	public static SimpleResource loadResource(FallbackResourceManager manager, String sourceName, ResourceLocation name, InputStream resource, @Nullable InputStream metadata) {
 		if (Patched.canBePatched(name)) {
-			// You might be wondering: why can't this just go in the mixin using @Shadow?
-			// And the answer is: because refmaps refuse to work for a variety of reasons.
-			final PackType type = ReflectionUtil.getType(manager);
+			final PackType type = manager.type;
 
 			resource = patch(manager, type, name, resource);
 

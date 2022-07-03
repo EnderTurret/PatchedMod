@@ -14,6 +14,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
+import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.util.ICommandSource;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 
 /**
@@ -22,14 +24,14 @@ import net.enderturret.patchedmod.util.IPatchingPackResources;
  */
 public class PatchedCommand {
 
-	public static LiteralArgumentBuilder<CommandSourceStack> create(boolean client, Function<CommandSourceStack,ResourceManager> managerGetter) {
-		return literal("patched" + (client ? "c" : ""))
-				.requires(src -> src.hasPermission(2))
-				.then(DumpCommand.create(client, managerGetter))
-				.then(ListCommand.create(managerGetter));
+	public static <T> LiteralArgumentBuilder<T> create(boolean client, Function<T,ResourceManager> managerGetter, ICommandSource<T> source) {
+		return Patched.<T>literal("patched" + (client ? "c" : ""))
+				.requires(src -> source.hasPermission(src, 2))
+				.then(DumpCommand.create(client, managerGetter, source))
+				.then(ListCommand.create(managerGetter, source));
 	}
 
-	static CompletableFuture<Suggestions> suggestPack(CommandContext<CommandSourceStack> ctx, SuggestionsBuilder builder, Function<CommandSourceStack,ResourceManager> managerGetter) {
+	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, Function<T,ResourceManager> managerGetter) {
 		final String input = builder.getRemaining();
 		final ResourceManager man = managerGetter.apply(ctx.getSource());
 

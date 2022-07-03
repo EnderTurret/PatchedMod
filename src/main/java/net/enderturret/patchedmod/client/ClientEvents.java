@@ -1,24 +1,38 @@
 package net.enderturret.patchedmod.client;
 
-import net.minecraft.client.Minecraft;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterClientCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.command.PatchedCommand;
+import net.enderturret.patchedmod.util.ICommandSource;
 
 /**
  * Various client-side event handlers.
  * @author EnderTurret
  */
-@EventBusSubscriber(modid = Patched.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.FORGE)
-public final class ClientEvents {
+public final class ClientEvents implements ClientModInitializer {
 
-	@SubscribeEvent
-	static void registerClientCommands(RegisterClientCommandsEvent e) {
-		e.getDispatcher().register(PatchedCommand.create(true, ctx -> Minecraft.getInstance().getResourceManager()));
+	@Override
+	public void onInitializeClient() {
+		ClientCommandManager.DISPATCHER.register(PatchedCommand.create(true, ctx -> Minecraft.getInstance().getResourceManager(),
+				new ICommandSource<FabricClientCommandSource>() {
+			@Override
+			public void sendSuccess(FabricClientCommandSource source, Component text, boolean allowLogging) {
+				source.sendFeedback(text);
+			}
+			@Override
+			public void sendFailure(FabricClientCommandSource source, Component text) {
+				source.sendError(text);
+			}
+			@Override
+			public boolean hasPermission(FabricClientCommandSource source, int level) {
+				return true;
+			}
+		}));
 	}
 }
