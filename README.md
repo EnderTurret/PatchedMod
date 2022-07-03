@@ -2,8 +2,7 @@
 
 A Minecraft mod that adds a Json patching framework for use via resource/data packs.
 
-This mod currently only supports Forge.
-I may consider creating a Fabric port eventually.
+This mod currently supports both Forge and Fabric.
 
 ## Usage
 
@@ -80,14 +79,16 @@ maven {
 }
 ```
 
-and then add this to your dependencies:
+and then add one of these to your dependencies:
+
+For Forge:
 
 ```gradle
-implementation 'maven.modrinth:patched:1.18.2-1.0.2' // or whatever the latest version is.
+implementation fg.deobf('maven.modrinth:patched:forge-1.18.2-1.0.0')
 ```
 
-Forge will require you to surround this in `fg.deobf()`, like so:
+For Fabric:
 
 ```gradle
-implementation fg.deobf('maven.modrinth:patched:1.18.2-1.0.2')
+modImplementation 'maven.modrinth:patched:fabric-1.18.2-1.0.0'
 ```
