@@ -63,7 +63,7 @@ pack that has that amethyst model patch.
 
 ### For users
 
-Simply grab a copy of the mod from Modrinth or CurseForge and drop it in your mods folder.
+Simply grab a copy of the mod from Modrinth and drop it in your mods folder.
 
 ### For modders
 
