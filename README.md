@@ -92,3 +92,28 @@ For Fabric:
 ```gradle
 modImplementation 'maven.modrinth:patched:fabric-1.18.2-1.0.0'
 ```
+
+## Building the mod
+
+### Forge
+
+Build the mod normally:
+
+Linux: `./gradlew build`<br>
+Windows: `gradlew.bat build`
+
+Because shadow and mixin are incredible, you will also need to do these steps:
+1. Copy the refmap from the normal jar (the one without `-all` in it).
+2. Paste the refmap into the shaded jar (the one with `-all` in it).
+3. Delete the normal jar.
+4. Rename the shaded jar to remove the `-all` classifier.
+
+### Fabric
+
+Build the mod normally:
+
+Linux: `./gradlew build`<br>
+Windows: `gradlew.bat build`
+
+Then delete the shaded jar (the one with `-all` in it).
+This jar is the unremapped shadow jar, so it's safe to remove.
