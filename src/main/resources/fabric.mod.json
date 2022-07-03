@@ -16,7 +16,8 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": ["net.enderturret.patchedmod.Patched"]
+    "main": ["net.enderturret.patchedmod.Patched"],
+    "client": ["net.enderturret.patchedmod.client.ClientEvents"]
   },
   "mixins": ["mixins.patched.json"],
 
