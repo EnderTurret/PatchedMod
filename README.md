@@ -44,10 +44,10 @@ Just remember that `/patched` is for data packs and `/patchedc` is for resource 
 
 This subcommand is used to view patched files and patches themselves.
 
-For example, `/patchedc dump patch <amethyst pack> /assets/minecraft/models/block/amethyst_block.json.patch`
+For example, `/patchedc dump patch <amethyst pack> minecraft:models/block/amethyst_block.json.patch`
 dumps the amethyst block model patch from earlier.
 
-Additionally, `/patchedc dump file /assets/minecraft/models/block/amethyst_block.json`
+Additionally, `/patchedc dump file minecraft:models/block/amethyst_block.json`
 dumps the patched amethyst block model. This is the file as the game sees it.
 
 ### /patched list
