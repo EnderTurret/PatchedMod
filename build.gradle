@@ -4,9 +4,9 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.0'
 }
 
-version = 'fabric-1.18.2-1.0.0'
+version = '1.18.2-1.0.0'
 group = 'net.enderturret'
-archivesBaseName = 'Patched'
+archivesBaseName = 'Patched-fabric'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -24,25 +24,36 @@ dependencies {
     modImplementation 'net.fabricmc:fabric-loader:0.14.8'
     modImplementation 'net.fabricmc.fabric-api:fabric-api:0.57.0+1.18.2'
 
-	implementation ('net.enderturret:Patched:1.0.2') {
-		exclude group: 'com.google.code.gson', module: 'gson'
-	}
+    implementation ('net.enderturret:Patched:1.0.2') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+    shadow ('net.enderturret:Patched:1.0.2') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
 }
 
 loom {
     accessWidenerPath = file('src/main/resources/patched.accesswidener')
-}
 
-shadowJar {
-    classifier 'all'
-
-    dependencies {
-        include(dependency('net.enderturret:Patched:1.0.2'))
+    mixin {
+        defaultRefmapName = 'patched.refmap.json'
     }
 }
 
+shadowJar {
+    configurations = [project.configurations.shadow]
+}
+
+import net.fabricmc.loom.task.RemapJarTask
+
+task remappedShadowJar(type: RemapJarTask, dependsOn: shadowJar) {
+    input = tasks.shadowJar.archiveFile
+    classifier = ''
+}
+
 artifacts {
-    archives shadowJar
+    archives remappedShadowJar
+    shadow shadowJar
 }
 
 processResources {
@@ -67,11 +78,6 @@ jar {
         ])
     }
 }
-
-//jar.finalizedBy('reobfJar')
-//jar.finalizedBy('reobfShadowJar')
-//shadowJar.finalizedBy('reobfShadowJar')
-//shadowJar.finalizedBy('reobfJar')
 
 // Compact JSON files for smol jars.
 

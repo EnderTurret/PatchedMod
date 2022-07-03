@@ -14,6 +14,8 @@
   "license": "LGPL v2.1",
   "icon": "assets/patched/icon.png",
 
+  "accessWidener": "patched.accesswidener",
+
   "environment": "*",
   "entrypoints": {
     "main": ["net.enderturret.patchedmod.Patched"],
