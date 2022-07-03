@@ -4,15 +4,13 @@ build/
 run/
 
 # Eclipse
+*.launch
+.settings/
 .classpath
 .project
-.settings/
-*.launch
 bin/
 
 libs/
-
-update.sh
 
 .apt_generated_tests/
 .apt_generated/
