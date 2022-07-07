@@ -8,7 +8,8 @@
   "authors": ["EnderTurret"],
   "contact": {
     "homepage": "https://github.com/EnderTurret/PatchedMod",
-    "sources": "https://github.com/EnderTurret/PatchedMod"
+    "sources": "https://github.com/EnderTurret/PatchedMod",
+    "issues": "https://github.com/EnderTurret/PatchedMod/issues"
   },
 
   "license": "LGPL v2.1",
