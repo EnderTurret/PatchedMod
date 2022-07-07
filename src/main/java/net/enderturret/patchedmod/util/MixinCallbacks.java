@@ -49,10 +49,10 @@ public class MixinCallbacks {
 		if (Patched.canBePatched(name)) {
 			final PackType type = manager.type;
 
-			resource = patch(manager, type, name, resource);
+			resource = patch(manager, sourceName, type, name, resource);
 
 			if (metadata != null)
-				metadata = patch(manager, type, new ResourceLocation(name.getNamespace(), name.getPath() + ".mcmeta"), metadata);
+				metadata = patch(manager, sourceName, type, new ResourceLocation(name.getNamespace(), name.getPath() + ".mcmeta"), metadata);
 		}
 
 		return new SimpleResource(sourceName, name, resource, metadata);
@@ -66,7 +66,7 @@ public class MixinCallbacks {
 	 * @param stream The data stream.
 	 * @return A new stream containing the patched data.
 	 */
-	private static InputStream patch(FallbackResourceManager manager, PackType type, ResourceLocation name, InputStream stream) {
+	private static InputStream patch(FallbackResourceManager manager, String sourceName, PackType type, ResourceLocation name, InputStream stream) {
 		if (stream == null) return stream;
 
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -85,7 +85,7 @@ public class MixinCallbacks {
 		try {
 			final JsonElement elem = JsonParser.parseString(json);
 
-			patch(manager, type, name, elem);
+			patch(manager, sourceName, type, name, elem);
 
 			json = PatchUtil.GSON.toJson(elem);
 			bytes = json.getBytes(StandardCharsets.UTF_8);
@@ -105,7 +105,7 @@ public class MixinCallbacks {
 	 * @param elem The Json data to patch.
 	 */
 	@SuppressWarnings("resource")
-	private static void patch(FallbackResourceManager manager, PackType type, ResourceLocation name, JsonElement elem) {
+	private static void patch(FallbackResourceManager manager, String sourceName, PackType type, ResourceLocation name, JsonElement elem) {
 		final ResourceLocation patchName = new ResourceLocation(name.getNamespace(), name.getPath() + ".patch");
 
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
@@ -139,6 +139,9 @@ public class MixinCallbacks {
 					Patched.LOGGER.warn("Failed to apply patch {} from {}:", patchName, pack.getName(), e);
 				}
 			}
+
+			if (pack.getName().equals(sourceName))
+				break;
 		}
 	}
 
