@@ -1,5 +1,7 @@
 package net.enderturret.patchedmod.command;
 
+import static net.enderturret.patchedmod.command.PatchedCommand.translate;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.NoSuchFileException;
@@ -141,19 +143,19 @@ public class DumpCommand {
 				.orElse(null);
 
 		if (pack == null) {
-			source.sendFailure(ctx.getSource(), new TextComponent("That pack doesn't exist."));
+			source.sendFailure(ctx.getSource(), translate("command.patched.dump.pack_not_found", "That pack doesn't exist."));
 			return 0;
 		}
 
 		if (!pack.hasResource(type, location)) {
-			source.sendFailure(ctx.getSource(), new TextComponent("That patch could not be found."));
+			source.sendFailure(ctx.getSource(), translate("command.patched.dump.patch_not_found", "That patch could not be found."));
 			return 0;
 		}
 
 		try (InputStream is = pack.getResource(type, location)) {
 			final String src = PatchUtil.readPrettyJson(is, location.toString() + "(in " + packName + ")", true, true);
 			if (src == null) {
-				source.sendFailure(ctx.getSource(), new TextComponent("That patch is not a json file. (See console for details.)"));
+				source.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));
 				return 0;
 			}
 			source.sendSuccess(ctx.getSource(), new TextComponent(src), false);
@@ -170,19 +172,19 @@ public class DumpCommand {
 		final ResourceManager man = managerGetter.apply(ctx.getSource());
 
 		if (!man.hasResource(location)) {
-			source.sendFailure(ctx.getSource(), new TextComponent("That file could not be found."));
+			source.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
 			return 0;
 		}
 
 		try (Resource res = man.getResource(location); InputStream is = res.getInputStream()) {
 			final String src = PatchUtil.readPrettyJson(is, location.toString(), true, false);
 			if (src == null) {
-				source.sendFailure(ctx.getSource(), new TextComponent("That file is not a json file."));
+				source.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That file is not a json file."));
 				return 0;
 			}
 			source.sendSuccess(ctx.getSource(), new TextComponent(src), false);
 		} catch (NoSuchFileException e) {
-			source.sendFailure(ctx.getSource(), new TextComponent("That file could not be found."));
+			source.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
 			return 0;
 		} catch (IOException e) {
 			Patched.LOGGER.warn("Failed to read resource '{}':", location, e);

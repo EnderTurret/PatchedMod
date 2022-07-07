@@ -11,6 +11,9 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -44,5 +47,10 @@ public class PatchedCommand {
 			.forEach(builder::suggest);
 
 		return builder.buildFuture();
+	}
+
+	static MutableComponent translate(String key, String text, Object... args) {
+		// Prefer the translation when running commands on the client.
+		return Patched.physicalClient ? new TranslatableComponent(key, args) : new TextComponent(text);
 	}
 }

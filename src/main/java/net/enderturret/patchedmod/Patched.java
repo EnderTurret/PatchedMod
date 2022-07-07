@@ -30,6 +30,9 @@ public class Patched implements ModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("Patched");
 
+	// I'm not sure if Fabric provides a less inconvenient way to get the physical side, so here's this.
+	public static boolean physicalClient = false;
+
 	@Override
 	public void onInitialize() {
 		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {

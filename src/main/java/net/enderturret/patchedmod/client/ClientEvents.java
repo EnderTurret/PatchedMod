@@ -19,6 +19,7 @@ public final class ClientEvents implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		Patched.physicalClient = true;
 		ClientCommandManager.DISPATCHER.register(PatchedCommand.create(true, ctx -> Minecraft.getInstance().getResourceManager(),
 				new ICommandSource<FabricClientCommandSource>() {
 			@Override
