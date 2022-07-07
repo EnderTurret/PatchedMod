@@ -32,7 +32,12 @@ mixin {
 }
 
 repositories {
-    mavenLocal()
+    maven {
+        url = 'https://jitpack.io'
+        content {
+            includeGroup 'com.github.EnderTurret'
+        }
+    }
 }
 
 configurations {
@@ -45,7 +50,7 @@ configurations {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.18.2-40.1.54'
 
-    library ('net.enderturret:Patched:1.0.3') {
+    library ('com.github.EnderTurret:Patched:1.0.3') {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
@@ -110,7 +115,7 @@ shadowJar {
     classifier ''
 
     dependencies {
-        include(dependency('net.enderturret:Patched:1.0.3'))
+        include(dependency('com.github.EnderTurret:Patched:1.0.3'))
     }
 }
 
