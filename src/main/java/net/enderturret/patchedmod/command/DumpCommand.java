@@ -107,6 +107,9 @@ public class DumpCommand {
 				.filter(p -> p.getNamespaces(type).contains(reqNamespace))
 				.toList();
 
+		// TODO: There is a very weird issue where all of the resources under the minecraft namespace are just gone.
+		// This does not affect getResource(); only getResources() is affected by this.
+		// I wonder why this happens?
 		for (PackResources pack : packs)
 			pack.getResources(type, reqNamespace, "", Integer.MAX_VALUE, s -> s.endsWith(".json"))
 				.stream()
