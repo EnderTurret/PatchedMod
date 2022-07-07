@@ -3,6 +3,8 @@ package net.enderturret.patchedmod.command;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
+import static net.enderturret.patchedmod.command.PatchedCommand.translate;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -13,6 +15,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
@@ -47,12 +50,12 @@ public class ListCommand {
 				.orElse(null);
 
 		if (pack == null) {
-			ctx.getSource().sendFailure(new TextComponent("That pack doesn't exist."));
+			ctx.getSource().sendFailure(translate("command.patched.list.pack_not_found", "That pack doesn't exist."));
 			return 0;
 		}
 
 		if (!(pack instanceof IPatchingPackResources patching) || !patching.hasPatches()) {
-			ctx.getSource().sendFailure(new TextComponent("That pack doesn't have patches enabled."));
+			ctx.getSource().sendFailure(translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
 
@@ -62,9 +65,12 @@ public class ListCommand {
 			for (String namespace : pack.getNamespaces(type))
 				patches.addAll(pack.getResources(type, namespace, "", Integer.MAX_VALUE, s -> s.endsWith(".patch")));
 
-		final TextComponent c = new TextComponent("There " + (patches.size() != 1 ? "are" : "is")
-				+ " " + patches.size() + " patch" + (patches.size() != 1 ? "es" : "")
-				+ " in " + pack.getName() + ":");
+		final boolean single = patches.size() == 1;
+
+		final MutableComponent c = translate("command.patched.list.patches." + (single ? "single" : "multi"),
+				"There " + (!single ? "are" : "is")
+				+ " " + patches.size() + " patch" + (!single ? "es" : "")
+				+ " in " + pack.getName() + ":", patches.size(), pack.getName());
 
 		for (ResourceLocation loc : patches)
 			c.append("\n  " + loc.getNamespace() + ":" + loc.getPath().substring(1));
@@ -84,9 +90,12 @@ public class ListCommand {
 				.sorted()
 				.toList();
 
-		final TextComponent c = new TextComponent("There " + (packs.size() != 1 ? "are" : "is")
-				+ " " + packs.size() + " pack" + (packs.size() != 1 ? "s" : "")
-				+ " with patching enabled:");
+		final boolean single = packs.size() == 1;
+
+		final MutableComponent c = translate("command.patched.list.packs." + (single ? "single" : "multi"),
+				"There " + (!single ? "are" : "is")
+				+ " " + packs.size() + " pack" + (!single ? "s" : "")
+				+ " with patching enabled:", packs.size());
 
 		for (String pack : packs)
 			c.append("\n  " + pack);
