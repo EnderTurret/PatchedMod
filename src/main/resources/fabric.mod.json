@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Patched",
-  "description": "Adds the ability to patch json files.",
+  "description": "Patched features a powerful patching system based mostly on RFC 6902, with extensions added to make it more useful for modding.\nThis allows resource/data packs to patch arbitrary json files that would otherwise need to be completely replaced.\nIt also comes with several commands to aid in patch debugging or compatibility.",
   "authors": ["EnderTurret"],
   "contact": {
     "homepage": "https://github.com/EnderTurret/PatchedMod",
