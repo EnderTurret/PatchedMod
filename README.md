@@ -31,6 +31,8 @@ For example, this patch (`amethyst_block.json.patch` in `assets/minecraft/models
 ]
 ```
 
+There is [a guide](#creating-patches-a-guide) on creating patches later in this document.
+
 ## Commands
 
 This mod comes with a bunch of informational commands that can be used to debug patches or see what all is going on.
@@ -111,3 +113,123 @@ Windows: `gradlew.bat build`
 
 Then delete the shaded jar (the one with `-all` in it).
 This jar is the unremapped shadow jar, so it's safe to remove.
+
+## Creating Patches: a Guide
+
+Patches are named after the file they modify and are located in the same directory.
+All patches also end with the extension `.patch`.
+For example, `assets/minecraft/models/block/amethyst_block.json.patch` modifies the file `amethyst_block.json` at the location `assets/minecraft/models/block`.
+This translates to the file `minecraft:models/block/amethyst_block.json`.
+
+Before creating a patch, you first need to know what changes you're trying to make.
+This could be *adding* a structure, *replacing* a texture, *removing* an item from a tag, etc.
+Notice these actions here, as these are what your patches will need to perform.
+
+### A simple patch
+
+Let's say you want to achieve the third example listed earlier: removing an item from a tag.
+
+Maybe you have the tag `mytag:cool_items` that looks like this:
+
+```json
+{
+  "replace": false,
+  "values": [
+    "minecraft:diamond",
+    "minecraft:netherite_scrap",
+    "minecraft:sea_pickle"
+  ]
+}
+```
+
+And maybe you're not a huge fan of pickles, and want to remove it.
+This could be achieved like so:
+
+```json
+[ // A list of patches to apply
+  { // A single patch
+    "op": "remove", // The operation, in this case "remove"
+    "path": "/values/2" // The path to the value to remove
+  }
+]
+```
+
+In this patch, we're *removing* the element at index 2 in `values`.
+This might seem like we'd be removing `minecraft:netherite_scrap`, but array indices start at 0.
+This would place `minecraft:netherite_scrap` at index 1 and `minecraft:sea_pickle` at index 2.
+
+### Json paths
+
+The most important part of a patch is the `path` element,
+as it identifies what element is being modified by the patch.
+
+Fortunately, they're not particularly complicated.
+
+Each path begins with a slash (`/`) and is made up of zero or more sub-paths.
+Each sub-path has a slash between them.
+For example, `/values/2` has two sub-paths, and there is a slash between `values` and `2`.
+
+A sub-path can be either the name of an element, or an index in an array (remember that indices start at 0).
+
+For example, `/value` points to the `value` element in this Json document:
+
+```json
+{
+  "value": 1
+}
+```
+
+For another example, `/1` points to the second element in this Json document:
+
+```json
+[
+  "a string",
+  3
+]
+```
+
+What happens if you have an element with no name, or an element with a slash as a name?
+Such as in this document:
+
+```json
+{
+  "": [1, 2, 3],
+  "/": true
+}
+```
+
+First off, you can use `//` to path into the first element.
+(I'm pretty sure that targeting that element is not currently possible because of ambiguity with the root document.)
+
+Next, there is a way to escape a slash so that it isn't interpreted as part of the path.
+The string `~1` is interpreted as a `/`, and since tildes are now special, `~0` is interpreted as a `~`.
+This allows for the path `/~1` to point to the second element in that document.
+
+Lastly, `-` points to the end of an array, or an element named `-`.
+For example, in this document:
+
+```json
+{
+  "-": 1,
+  "array": [3, 2, 1]
+}
+```
+
+The path `/-` refers to the first element (1), and the path `/array/-` refers to index 3,
+or in other words, the fourth element in the array (which doesn't exist).
+
+This can be used to add elements to the end of arrays.
+
+### Operations
+
+There are currently 7 operations:
+* `add`
+* `copy`
+* `find`
+* `move`
+* `remove`
+* `replace`
+* `test`
+
+For most of them, I would refer to [this site](https://jsonpatch.com#operations) for an explanation on how they work.
+Additionally, see [this repository](https://github.com/EnderTurret/Patched) on the `find` operation and extensions to the `test` operation.
