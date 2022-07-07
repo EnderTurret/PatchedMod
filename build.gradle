@@ -12,7 +12,12 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 repositories {
     maven { url = 'https://maven.parchmentmc.org' }
-	mavenLocal()
+	maven {
+        url = 'https://jitpack.io'
+        content {
+            includeGroup 'com.github.EnderTurret'
+        }
+    }
 }
 
 dependencies {
@@ -24,10 +29,10 @@ dependencies {
     modImplementation 'net.fabricmc:fabric-loader:0.14.8'
     modImplementation 'net.fabricmc.fabric-api:fabric-api:0.57.0+1.18.2'
 
-    implementation ('net.enderturret:Patched:1.0.3') {
+    implementation ('com.github.EnderTurret:Patched:1.0.3') {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
-    shadow ('net.enderturret:Patched:1.0.3') {
+    shadow ('com.github.EnderTurret:Patched:1.0.3') {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 }
