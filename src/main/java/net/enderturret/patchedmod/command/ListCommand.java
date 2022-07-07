@@ -15,7 +15,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
@@ -74,8 +76,15 @@ public class ListCommand {
 				+ " " + patches.size() + " patch" + (!single ? "es" : "")
 				+ " in " + pack.getName() + ":", patches.size(), pack.getName());
 
-		for (ResourceLocation loc : patches)
-			c.append("\n  " + loc.getNamespace() + ":" + loc.getPath().substring(1));
+		final String command = ctx.getNodes().get(0).getNode().getName();
+
+		for (ResourceLocation loc : patches) {
+			final String patch = loc.getNamespace() + ":" + loc.getPath().substring(1);
+			c.append("\n  ").append(new TextComponent(patch)
+					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+							"/" + command + " dump patch " + pack.getName() + " " + patch))
+							.withUnderlined(true)));
+		}
 
 		source.sendSuccess(ctx.getSource(), c, false);
 
@@ -99,8 +108,13 @@ public class ListCommand {
 				+ " " + packs.size() + " pack" + (!single ? "s" : "")
 				+ " with patching enabled:", packs.size());
 
+		final String command = ctx.getNodes().get(0).getNode().getName();
+
 		for (String pack : packs)
-			c.append("\n  " + pack);
+			c.append("\n  ").append(new TextComponent(pack)
+					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+							"/" + command + " list patches " + pack))
+							.withUnderlined(true)));
 
 		source.sendSuccess(ctx.getSource(), c, false);
 
