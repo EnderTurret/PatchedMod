@@ -6,7 +6,7 @@ This mod currently supports both Forge and Fabric.
 
 ## Usage
 
-First, you'll need the mod installed. See the [next section](#installation) for details.
+First, you'll need the mod installed. See [this section](#installation) for details.
 
 In order to add patches to a resource or data pack, you will need to start by
 inserting this into your `pack.mcmeta` file somewhere in the `pack` block:
