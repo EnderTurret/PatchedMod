@@ -1,9 +1,8 @@
 package net.enderturret.patchedmod.command;
 
+import static net.enderturret.patchedmod.command.PatchedCommand.translate;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
-
-import static net.enderturret.patchedmod.command.PatchedCommand.translate;
 
 import java.util.ArrayList;
 import java.util.List;
