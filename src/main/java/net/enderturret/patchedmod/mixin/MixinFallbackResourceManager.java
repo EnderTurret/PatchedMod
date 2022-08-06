@@ -23,7 +23,7 @@ import net.enderturret.patchedmod.util.MixinCallbacks;
 @Mixin(FallbackResourceManager.class)
 public abstract class MixinFallbackResourceManager {
 
-	@Inject(at = @At(value = "RETURN"), method = "createResourceGetter")
+	@Inject(at = @At(value = "RETURN"), method = "createResourceGetter", cancellable = true)
 	private void replaceResource(ResourceLocation location, PackResources pack, CallbackInfoReturnable<Resource.IoSupplier<InputStream>> cir) {
 		final var sup = cir.getReturnValue();
 		cir.setReturnValue(MixinCallbacks.chain(sup, (FallbackResourceManager) (Object) this, location, pack));
