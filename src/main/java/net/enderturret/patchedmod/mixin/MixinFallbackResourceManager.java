@@ -16,8 +16,9 @@ import net.enderturret.patchedmod.util.MixinCallbacks;
 
 /**
  * <p>This mixin implements the functionality for actually patching resources.</p>
- * <p>This is done by redirecting the {@code new SimpleResource(...)} invocations to
- * {@link MixinCallbacks#chain(Resource.IoSupplier, FallbackResourceManager, ResourceLocation, PackResources)}.</p>
+ * <p>This is done by wrapping the {@link net.minecraft.server.packs.resources.Resource.IoSupplier IoSupplier}
+ * returned by {@link FallbackResourceManager#createResourceGetter(ResourceLocation, PackResources)} with
+ * {@link MixinCallbacks#chain(net.minecraft.server.packs.resources.Resource.IoSupplier, FallbackResourceManager, ResourceLocation, PackResources) MixinCallbacks.chain(IoSupplier, FallbackResourceManager, ResourceLocation, PackResources)}.</p>
  * @author EnderTurret
  */
 @Mixin(FallbackResourceManager.class)

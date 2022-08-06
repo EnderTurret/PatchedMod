@@ -33,31 +33,14 @@ import net.enderturret.patchedmod.Patched;
  */
 public class MixinCallbacks {
 
-	/*
-	 * Handles patching a resource, if possible.
-	 * @param manager The resource manager that this resource is from.
-	 * @param sourceName The resource/data pack that the resource is from.
-	 * @param name The location of the resource.
-	 * @param resource The contents of the resource itself.
-	 * @param metadata The contents of the resource's .mcmeta file, if present. {@code null} means that no such .mcmeta file exists.
-	 * @return The patched resource.
-	 *
-	@SuppressWarnings("resource")
-	public static SimpleResource loadResource(FallbackResourceManager manager, String sourceName, ResourceLocation name, InputStream resource, @Nullable InputStream metadata) {
-		if (Patched.canBePatched(name)) {
-			// You might be wondering: why can't this just go in the mixin using @Shadow?
-			// And the answer is: because refmaps refuse to work for a variety of reasons.
-			final PackType type = ReflectionUtil.getType(manager);
-
-			resource = patch(manager, sourceName, type, name, resource);
-
-			if (metadata != null)
-				metadata = patch(manager, sourceName, type, new ResourceLocation(name.getNamespace(), name.getPath() + ".mcmeta"), metadata);
-		}
-
-		return new SimpleResource(sourceName, name, resource, metadata);
-	}*/
-
+	/**
+	 * "Chains" the given {@code IoSupplier}, returning an {@code IoSupplier} that patches the data returned by it.
+	 * @param delegate The delegate {@code IoSupplier}.
+	 * @param manager The resource manager that the data is from.
+	 * @param name The location of the data.
+	 * @param origin The resource or data pack that the data originated from.
+	 * @return The new {@code IoSupplier}.
+	 */
 	public static Resource.IoSupplier<InputStream> chain(Resource.IoSupplier<InputStream> delegate, FallbackResourceManager manager, ResourceLocation name, PackResources origin) {
 		return () -> {
 			try (InputStream ret = delegate.get()) {
@@ -69,6 +52,7 @@ public class MixinCallbacks {
 	/**
 	 * Patches the data from the given stream, returning the patched data as a stream.
 	 * @param manager The resource manager that the data is from.
+	 * @param from The resource or data pack that the data originated from.
 	 * @param type The type of pack this data is from.
 	 * @param name The location of the data.
 	 * @param stream The data stream.
@@ -108,6 +92,7 @@ public class MixinCallbacks {
 	 * <p>Patches the given Json data using patches from all of the packs with the given pack type.</p>
 	 * <p>The Json data is manipulated directly, so don't pass in anything you don't want modified.</p>
 	 * @param manager The resource manager that the Json data is from.
+	 * @param from The resource or data pack that the data originated from.
 	 * @param type The type of pack this Json data is from.
 	 * @param name The location of the Json data.
 	 * @param elem The Json data to patch.
@@ -154,10 +139,10 @@ public class MixinCallbacks {
 	}
 
 	/**
-	 * Determines whether the given pack has patches.
+	 * Determines whether the given pack has patches enabled.
 	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
-	 * @param pack2
-	 * @return
+	 * @param pack The pack to check.
+	 * @return {@code true} if the pack has patches enabled.
 	 */
 	@SuppressWarnings("resource")
 	private static boolean hasPatches(PackEntry pack) {
