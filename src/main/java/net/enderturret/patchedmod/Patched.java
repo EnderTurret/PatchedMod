@@ -8,7 +8,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -35,22 +35,8 @@ public class Patched implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-			dispatcher.register(PatchedCommand.create(false, src -> src.getServer().getResourceManager(),
-					new ICommandSource<CommandSourceStack>() {
-				@Override
-				public void sendSuccess(CommandSourceStack source, Component text, boolean allowLogging) {
-					source.sendSuccess(text, allowLogging);
-				}
-				@Override
-				public void sendFailure(CommandSourceStack source, Component text) {
-					source.sendFailure(text);
-				}
-				@Override
-				public boolean hasPermission(CommandSourceStack source, int level) {
-					return source.hasPermission(level);
-				}
-			}));
+		CommandRegistrationCallback.EVENT.register((dispatcher, context, dedicated) -> {
+			dispatcher.register(PatchedCommand.create(false, src -> src.getServer().getResourceManager(), new ServerCommandSource()));
 		});
 	}
 
@@ -69,5 +55,20 @@ public class Patched implements ModInitializer {
 
 	public static <S,T> RequiredArgumentBuilder<S,T> argument(String name, ArgumentType<T> type) {
 		return RequiredArgumentBuilder.argument(name, type);
+	}
+
+	private static record ServerCommandSource() implements ICommandSource<CommandSourceStack> {
+		@Override
+		public void sendSuccess(CommandSourceStack source, Component text, boolean allowLogging) {
+			source.sendSuccess(text, allowLogging);
+		}
+		@Override
+		public void sendFailure(CommandSourceStack source, Component text) {
+			source.sendFailure(text);
+		}
+		@Override
+		public boolean hasPermission(CommandSourceStack source, int level) {
+			return source.hasPermission(level);
+		}
 	}
 }
