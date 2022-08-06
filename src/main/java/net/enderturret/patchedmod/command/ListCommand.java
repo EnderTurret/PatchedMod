@@ -82,7 +82,7 @@ public class ListCommand {
 			final String patch = loc.getNamespace() + ":" + loc.getPath().substring(1);
 			c.append("\n  ").append(Component.literal(patch)
 					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-							"/" + command + " dump patch " + pack.getName() + " " + patch))
+							"/" + command + " dump patch " + StringArgumentType.escapeIfRequired(pack.getName()) + " " + patch))
 							.withUnderlined(true)));
 		}
 
