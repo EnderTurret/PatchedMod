@@ -186,7 +186,7 @@ public class MixinCallbacks {
 					}
 
 					if (patching.hasPatches())
-						Patched.LOGGER.info("Enabled patching for {} ({}).", pack.name(), pack);
+						Patched.LOGGER.info("Enabled patching for {} ({}).", pack.name(), pack.resources());
 				}
 			}
 
