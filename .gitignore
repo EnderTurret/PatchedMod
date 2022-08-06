@@ -16,3 +16,5 @@ libs/
 .apt_generated/
 home/
 .factorypath
+
+/assets/
