@@ -65,7 +65,7 @@ public class ListCommand {
 
 		for (PackType type : PackType.values())
 			for (String namespace : pack.getNamespaces(type))
-				patches.addAll(pack.getResources(type, namespace, "", Integer.MAX_VALUE, s -> s.endsWith(".patch")));
+				patches.addAll(pack.getResources(type, namespace, "", s -> s.getPath().endsWith(".patch")));
 
 		final boolean single = patches.size() == 1;
 
