@@ -18,7 +18,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -161,7 +161,7 @@ public class DumpCommand {
 				source.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));
 				return 0;
 			}
-			source.sendSuccess(ctx.getSource(), new TextComponent(src), false);
+			source.sendSuccess(ctx.getSource(), Component.literal(src), false);
 		} catch (IOException e) {
 			Patched.LOGGER.warn("Failed to read resource '{}' from {}:", location, packName, e);
 			return 0;
@@ -185,7 +185,7 @@ public class DumpCommand {
 				source.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That file is not a json file."));
 				return 0;
 			}
-			source.sendSuccess(ctx.getSource(), new TextComponent(src), false);
+			source.sendSuccess(ctx.getSource(), Component.literal(src), false);
 		} catch (NoSuchFileException e) {
 			source.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
 			return 0;
