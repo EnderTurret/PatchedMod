@@ -35,6 +35,14 @@ import net.enderturret.patchedmod.Patched;
  */
 public class MixinCallbacks {
 
+	/**
+	 * "Chains" the given {@code IoSupplier}, returning an {@code IoSupplier} that patches the data returned by it.
+	 * @param delegate The delegate {@code IoSupplier}.
+	 * @param manager The resource manager that the data is from.
+	 * @param name The location of the data.
+	 * @param origin The resource or data pack that the data originated from.
+	 * @return The new {@code IoSupplier}.
+	 */
 	public static Resource.IoSupplier<InputStream> chain(Resource.IoSupplier<InputStream> delegate, FallbackResourceManager manager, ResourceLocation name, PackResources origin) {
 		return () -> {
 			try (InputStream ret = delegate.get()) {
@@ -46,6 +54,7 @@ public class MixinCallbacks {
 	/**
 	 * Patches the data from the given stream, returning the patched data as a stream.
 	 * @param manager The resource manager that the data is from.
+	 * @param from The resource or data pack that the data originated from.
 	 * @param type The type of pack this data is from.
 	 * @param name The location of the data.
 	 * @param stream The data stream.
@@ -85,6 +94,7 @@ public class MixinCallbacks {
 	 * <p>Patches the given Json data using patches from all of the packs with the given pack type.</p>
 	 * <p>The Json data is manipulated directly, so don't pass in anything you don't want modified.</p>
 	 * @param manager The resource manager that the Json data is from.
+	 * @param from The resource or data pack that the data originated from.
 	 * @param type The type of pack this Json data is from.
 	 * @param name The location of the Json data.
 	 * @param elem The Json data to patch.
