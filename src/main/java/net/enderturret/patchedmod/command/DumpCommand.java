@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.NoSuchFileException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -174,12 +175,16 @@ public class DumpCommand {
 		final ResourceLocation location = ctx.getArgument("location", ResourceLocation.class);
 		final ResourceManager man = managerGetter.apply(ctx.getSource());
 
-		if (!man.hasResource(location)) {
+		final Optional<Resource> op = man.getResource(location);
+
+		if (op.isEmpty()) {
 			source.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
 			return 0;
 		}
 
-		try (Resource res = man.getResource(location); InputStream is = res.getInputStream()) {
+		final Resource res = op.get();
+
+		try (InputStream is = res.open()) {
 			final String src = PatchUtil.readPrettyJson(is, location.toString(), true, false);
 			if (src == null) {
 				source.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That file is not a json file."));
