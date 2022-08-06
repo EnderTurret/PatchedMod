@@ -1,3 +1,4 @@
 accessWidener	v1	named
 accessible	field	net/minecraft/server/packs/resources/FallbackResourceManager	fallbacks	Ljava/util/List;
+accessible	class	net/minecraft/server/packs/resources/FallbackResourceManager$PackEntry
 accessible	field	net/minecraft/server/packs/resources/FallbackResourceManager	type	Lnet/minecraft/server/packs/PackType;
