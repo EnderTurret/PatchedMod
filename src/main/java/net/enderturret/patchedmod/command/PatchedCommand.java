@@ -11,9 +11,8 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -52,6 +51,6 @@ public class PatchedCommand {
 
 	static MutableComponent translate(String key, String text, Object... args) {
 		// Prefer the translation when running commands on the client.
-		return FMLEnvironment.dist == Dist.CLIENT ? new TranslatableComponent(key, args) : new TextComponent(text);
+		return FMLEnvironment.dist == Dist.CLIENT ? Component.translatable(key, args) : Component.literal(text);
 	}
 }
