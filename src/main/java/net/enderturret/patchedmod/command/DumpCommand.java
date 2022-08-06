@@ -72,7 +72,7 @@ public class DumpCommand {
 					if (reqNamespace != null && !reqNamespace.equals(namespace))
 						continue;
 
-					pack.getResources(type, namespace, "", Integer.MAX_VALUE, s -> s.endsWith(".patch"))
+					pack.getResources(type, namespace, "", s -> s.getPath().endsWith(".patch"))
 						.stream()
 						.filter(loc -> loc.toString().startsWith(input))
 						.sorted()
@@ -111,7 +111,7 @@ public class DumpCommand {
 		// This does not affect getResource(); only getResources() is affected by this.
 		// I wonder why this happens?
 		for (PackResources pack : packs)
-			pack.getResources(type, reqNamespace, "", Integer.MAX_VALUE, s -> s.endsWith(".json"))
+			pack.getResources(type, reqNamespace, "", s -> s.getPath().endsWith(".json"))
 				.stream()
 				.filter(loc -> {
 					final String l = loc.getNamespace() + ":" + (loc.getPath().startsWith("/") ? loc.getPath().substring(1) : loc.getPath());
