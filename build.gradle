@@ -50,7 +50,7 @@ configurations {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.2-43.0.0'
 
-    library ('com.github.EnderTurret:Patched:1.1.0') {
+    library ('com.github.EnderTurret:Patched:1.1.1') {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
