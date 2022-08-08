@@ -50,7 +50,7 @@ configurations {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.2-43.0.0'
 
-    library ('com.github.EnderTurret:Patched:1.0.3') {
+    library ('com.github.EnderTurret:Patched:1.1.0') {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
@@ -84,6 +84,21 @@ minecraft {
 
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            mods {
+                patched {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            args '--mod', 'patched', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
                 patched {
