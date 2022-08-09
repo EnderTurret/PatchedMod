@@ -26,10 +26,10 @@ dependencies {
     modImplementation 'net.fabricmc:fabric-loader:0.14.9'
     modImplementation 'net.fabricmc.fabric-api:fabric-api:0.58.6+1.19.2'
 
-    implementation ('com.github.EnderTurret:Patched:1.0.3') {
+    implementation ('com.github.EnderTurret:Patched:1.1.1') {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
-    shadow ('com.github.EnderTurret:Patched:1.0.3') {
+    shadow ('com.github.EnderTurret:Patched:1.1.1') {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 }
