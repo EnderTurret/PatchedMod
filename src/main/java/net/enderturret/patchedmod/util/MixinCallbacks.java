@@ -141,10 +141,10 @@ public class MixinCallbacks {
 	}
 
 	/**
-	 * Determines whether the given pack has patches.
+	 * Determines whether the given pack has patches enabled.
 	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
-	 * @param pack
-	 * @return
+	 * @param pack The pack to check.
+	 * @return {@code true} if the pack has patches enabled.
 	 */
 	@SuppressWarnings("resource")
 	private static boolean hasPatches(PackEntry pack) {
