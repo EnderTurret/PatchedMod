@@ -15,6 +15,7 @@ import com.google.gson.JsonParser;
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.PatchedTestConditions;
 
 /**
  * An assortment of utilities related to patching Json data.
@@ -25,7 +26,7 @@ public class PatchUtil {
 	/**
 	 * The context used for patching Json. This context has all extensions enabled by default.
 	 */
-	public static final PatchContext CONTEXT = PatchContext.newContext().sbExtensions(true).patchedExtensions(true);
+	public static final PatchContext CONTEXT = PatchContext.newContext().sbExtensions(true).patchedExtensions(true).testEvaluator(PatchedTestConditions.INSTANCE);
 
 	/**
 	 * The {@link Gson} instance used for reading patches and {@linkplain #readPrettyJson(InputStream, String, boolean, boolean) prettying Json data}.

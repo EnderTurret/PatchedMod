@@ -3,17 +3,20 @@ package net.enderturret.patchedmod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.loader.api.FabricLoader;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
+import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patchedmod.command.PatchedCommand;
 import net.enderturret.patchedmod.util.ICommandSource;
 import net.enderturret.patchedmod.util.MixinCallbacks;
@@ -38,6 +41,15 @@ public class Patched implements ModInitializer {
 		CommandRegistrationCallback.EVENT.register((dispatcher, context, dedicated) -> {
 			dispatcher.register(PatchedCommand.create(false, src -> src.getServer().getResourceManager(), new ServerCommandSource()));
 		});
+
+		PatchedTestConditions.registerSimple(new ResourceLocation(MOD_ID, "mod_loaded"), value -> FabricLoader.getInstance().isModLoaded(assertIsString("mod_loaded", value)));
+	}
+
+	private static String assertIsString(String id, JsonElement value) {
+		if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString())
+			throw new PatchingException(id + ": value must be a string");
+
+		return value.getAsString();
 	}
 
 	/**
