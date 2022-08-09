@@ -14,7 +14,7 @@ buildscript {
 
 plugins {
     id 'eclipse'
-    id 'com.github.johnrengelman.shadow' version '7.1.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'net.minecraftforge.gradle' version '5.+'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
@@ -131,7 +131,7 @@ shadowJar {
     classifier ''
 
     dependencies {
-        include(dependency('com.github.EnderTurret:Patched:1.0.3'))
+        include(dependency('com.github.EnderTurret:Patched:1.1.1'))
     }
 }
 
