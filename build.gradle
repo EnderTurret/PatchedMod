@@ -50,7 +50,7 @@ configurations {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.2-43.1.25'
 
-    library ('com.github.EnderTurret:Patched:1.1.1') {
+    library ('com.github.EnderTurret:Patched:1.2.0') {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
@@ -131,7 +131,7 @@ shadowJar {
     classifier ''
 
     dependencies {
-        include(dependency('com.github.EnderTurret:Patched:1.1.1'))
+        include(dependency('com.github.EnderTurret:Patched:1.2.0'))
     }
 }
 
