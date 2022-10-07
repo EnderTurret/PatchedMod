@@ -64,6 +64,28 @@ public final class PatchUtil {
 	}
 
 	/**
+	 * Attempts to read a string from the given stream as Json.
+	 * @param is The stream to read from.
+	 * @param location The location of the file the stream is from. Used for error handling.
+	 * @param logError Whether to log a warning if the data is not valid Json.
+	 * @return The Json in the given stream.
+	 * @throws IOException If an I/O-related error occurs when reading the string from the stream.
+	 */
+	@Nullable
+	public static JsonElement readJson(InputStream is, String location, boolean logError) throws IOException {
+		String ret = readString(is);
+
+		try {
+			return JsonParser.parseString(ret);
+		} catch (Exception e) {
+			if (logError)
+				Patched.LOGGER.warn("Failed to parse {} as json:", location, e);
+		}
+
+		return null;
+	}
+
+	/**
 	 * Reads the data in the given stream as a single string and returns it.
 	 * @param is The stream to read from.
 	 * @return The string.

@@ -25,8 +25,10 @@ import net.minecraft.server.packs.resources.FallbackResourceManager.PackEntry;
 import net.minecraft.server.packs.resources.Resource;
 
 import net.enderturret.patched.Patches;
+import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
+import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 
 /**
@@ -47,11 +49,7 @@ public class MixinCallbacks {
 	 */
 	@ApiStatus.Internal
 	public static Resource.IoSupplier<InputStream> chain(Resource.IoSupplier<InputStream> delegate, FallbackResourceManager manager, ResourceLocation name, PackResources origin) {
-		return () -> {
-			try (InputStream ret = delegate.get()) {
-				return patch(manager, origin, manager.type, name, ret);
-			}
-		};
+		return () -> new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, manager.type, name, stream, audit));
 	}
 
 	/**
@@ -61,9 +59,10 @@ public class MixinCallbacks {
 	 * @param type The type of pack this data is from.
 	 * @param name The location of the data.
 	 * @param stream The data stream.
+	 * @param audit The audit to record changes made by the patches.
 	 * @return A new stream containing the patched data.
 	 */
-	private static InputStream patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, InputStream stream) {
+	private static InputStream patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, InputStream stream, @Nullable PatchAudit audit) {
 		if (stream == null) return stream;
 
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -82,7 +81,7 @@ public class MixinCallbacks {
 		try {
 			final JsonElement elem = JsonParser.parseString(json);
 
-			patch(manager, from, type, name, elem);
+			patch(manager, from, type, name, elem, audit);
 
 			json = PatchUtil.GSON.toJson(elem);
 			bytes = json.getBytes(StandardCharsets.UTF_8);
@@ -101,10 +100,13 @@ public class MixinCallbacks {
 	 * @param type The type of pack this Json data is from.
 	 * @param name The location of the Json data.
 	 * @param elem The Json data to patch.
+	 * @param audit The audit to record changes made by the patches.
 	 */
 	@SuppressWarnings("resource")
-	private static void patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, JsonElement elem) {
+	private static void patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, JsonElement elem, @Nullable PatchAudit audit) {
 		final ResourceLocation patchName = new ResourceLocation(name.getNamespace(), name.getPath() + ".patch");
+
+		PatchContext context = null;
 
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
 			final PackEntry pack = manager.fallbacks.get(i);
@@ -129,8 +131,11 @@ public class MixinCallbacks {
 				}
 
 				try {
+					if (audit != null)
+						audit.setPatchPath(pack.name());
+
 					Patched.LOGGER.debug("Applying patch {} from {}.", patchName, pack.name());
-					patch.patch(elem, PatchUtil.CONTEXT);
+					patch.patch(elem, context == null ? context = PatchUtil.CONTEXT.audit(audit) : context);
 				} catch (PatchingException e) {
 					Patched.LOGGER.warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
 				} catch (Exception e) {
