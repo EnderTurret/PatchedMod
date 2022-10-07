@@ -134,7 +134,7 @@ public class MixinCallbacks {
 					if (audit != null)
 						audit.setPatchPath(pack.name());
 
-					Patched.LOGGER.info("Applying patch {} from {}.", patchName, pack.name());
+					Patched.LOGGER.debug("Applying patch {} from {}.", patchName, pack.name());
 					patch.patch(elem, context == null ? context = PatchUtil.CONTEXT.audit(audit) : context);
 				} catch (PatchingException e) {
 					Patched.LOGGER.warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
@@ -181,7 +181,7 @@ public class MixinCallbacks {
 					}
 
 					if (patching.hasPatches())
-						Patched.LOGGER.info("Enabled patching for {} ({}).", pack.name(), pack.resources());
+						Patched.LOGGER.debug("Enabled patching for {} ({}).", pack.name(), pack.resources());
 				}
 			}
 
