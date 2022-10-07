@@ -2,6 +2,8 @@ package net.enderturret.patchedmod.data;
 
 import java.util.Map;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.data.DataGenerator;
 
 import net.minecraftforge.data.event.GatherDataEvent;
@@ -14,8 +16,9 @@ import net.enderturret.patchedmod.Patched;
  * Tests the datagen utilities to verify they actually work.
  * @author EnderTurret
  */
+@ApiStatus.Internal
 //@EventBusSubscriber(modid = Patched.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
-public class TestDataProvider {
+public final class TestDataProvider {
 
 	@SubscribeEvent
 	static void gatherData(GatherDataEvent e) {

@@ -29,9 +29,9 @@ import net.enderturret.patchedmod.util.IPatchingPackResources;
  * Defines the '/patched list' subcommand, which handles providing lists of the packs with patches and the patches in those packs.
  * @author EnderTurret
  */
-public class ListCommand {
+final class ListCommand {
 
-	public static LiteralArgumentBuilder<CommandSourceStack> create(Function<CommandSourceStack,ResourceManager> managerGetter) {
+	static LiteralArgumentBuilder<CommandSourceStack> create(Function<CommandSourceStack,ResourceManager> managerGetter) {
 		return literal("list")
 				.then(literal("patches")
 						.then(argument("pack", StringArgumentType.greedyString())
