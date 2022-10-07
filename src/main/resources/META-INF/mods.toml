@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[43,)"
+loaderVersion="[40,)"
 license="LGPL v2.1"
 issueTrackerURL="https://github.com/EnderTurret/PatchedMod/issues"
 
@@ -7,6 +7,8 @@ issueTrackerURL="https://github.com/EnderTurret/PatchedMod/issues"
     modId="patched"
     displayName="Patched"
     description='''
+    "Mixin for json files."
+
     Patched features a powerful patching system based mostly on RFC 6902, with extensions added to make it more useful for modding.
     This allows resource/data packs to patch arbitrary json files that would otherwise need to be completely replaced.
     It also comes with several commands to aid in patch debugging or compatibility.
@@ -19,7 +21,7 @@ issueTrackerURL="https://github.com/EnderTurret/PatchedMod/issues"
 [[dependencies.patched]]
     modId="forge"
     mandatory=true
-    versionRange="[43,)"
+    versionRange="[41,)"
     ordering="NONE"
     side="BOTH"
 
