@@ -66,7 +66,7 @@ public class Patched {
 		return path.endsWith(".json") || (path.endsWith(".mcmeta") && !path.equals("pack.mcmeta"));
 	}
 
-	private static class ServerEnvironment implements IEnvironment<CommandSourceStack> {
+	private static final class ServerEnvironment implements IEnvironment<CommandSourceStack> {
 
 		@Override
 		public boolean client() {

@@ -8,9 +8,6 @@ import net.minecraft.data.DataGenerator;
 
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-
-import net.enderturret.patchedmod.Patched;
 
 /**
  * Tests the datagen utilities to verify they actually work.
