@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import com.google.gson.JsonElement;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -28,9 +29,11 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 
+import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.PatchUtil;
+import net.enderturret.patchedmod.util.PatchingInputStream;
 
 /**
  * Defines the '/patched dump' subcommand, which handles viewing patches and patched files.
@@ -169,7 +172,7 @@ public class DumpCommand {
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static int dumpFile(CommandContext<CommandSourceStack> ctx, Function<CommandSourceStack,ResourceManager> managerGetter) {
+	private static int dumpFile(CommandContext<CommandSourceStack> ctx, Function<CommandSourceStack, ResourceManager> managerGetter) {
 		final ResourceLocation location = ResourceLocationArgument.getId(ctx, "location");
 		final ResourceManager man = managerGetter.apply(ctx.getSource());
 
@@ -183,12 +186,19 @@ public class DumpCommand {
 		final Resource res = op.get();
 
 		try (InputStream is = res.open()) {
-			final String src = PatchUtil.readPrettyJson(is, location.toString(), true, false);
+			final PatchAudit audit = new PatchAudit("null");
+
+			if (is instanceof PatchingInputStream pis)
+				pis.withAudit(audit);
+
+			final JsonElement src = PatchUtil.readJson(is, location.toString(), false);
+
 			if (src == null) {
 				ctx.getSource().sendFailure(translate("command.patched.dump.not_json", "That file is not a json file."));
 				return 0;
 			}
-			ctx.getSource().sendSuccess(Component.literal(src), false);
+
+			ctx.getSource().sendSuccess(Component.literal(audit.toString(src)), false);
 		} catch (NoSuchFileException e) {
 			ctx.getSource().sendFailure(translate("command.patched.dump.file_not_found", "That file could not be found."));
 			return 0;
