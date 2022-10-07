@@ -1,11 +1,15 @@
 package net.enderturret.patchedmod;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -17,6 +21,7 @@ import net.minecraftforge.network.NetworkConstants;
 
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patchedmod.command.PatchedCommand;
+import net.enderturret.patchedmod.util.IEnvironment;
 import net.enderturret.patchedmod.util.MixinCallbacks;
 import net.enderturret.patchedmod.util.PatchUtil;
 
@@ -30,8 +35,10 @@ public class Patched {
 
 	public static final String MOD_ID = "patched";
 
+	@ApiStatus.Internal
 	public static final Logger LOGGER = LoggerFactory.getLogger("Patched");
 
+	@ApiStatus.Internal
 	public Patched() {
 		ModLoadingContext.get().registerExtensionPoint(DisplayTest.class, () -> new DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (version, network) -> true));
 		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
@@ -40,7 +47,7 @@ public class Patched {
 	}
 
 	private void registerCommands(RegisterCommandsEvent e) {
-		e.getDispatcher().register(PatchedCommand.create(false, src -> src.getServer().getResourceManager()));
+		e.getDispatcher().register(PatchedCommand.create(new ServerEnvironment()));
 	}
 
 	private static String assertIsString(String id, JsonElement value) {
@@ -57,5 +64,33 @@ public class Patched {
 	public static boolean canBePatched(ResourceLocation location) {
 		final String path = location.getPath();
 		return path.endsWith(".json") || (path.endsWith(".mcmeta") && !path.equals("pack.mcmeta"));
+	}
+
+	private static class ServerEnvironment implements IEnvironment<CommandSourceStack> {
+
+		@Override
+		public boolean client() {
+			return false;
+		}
+
+		@Override
+		public ResourceManager getResourceManager(CommandSourceStack source) {
+			return source.getServer().getResourceManager();
+		}
+
+		@Override
+		public void sendSuccess(CommandSourceStack source, Component message, boolean allowLogging) {
+			source.sendSuccess(message, allowLogging);
+		}
+
+		@Override
+		public void sendFailure(CommandSourceStack source, Component message) {
+			source.sendFailure(message);
+		}
+
+		@Override
+		public boolean hasPermission(CommandSourceStack source, int level) {
+			return source.hasPermission(level);
+		}
 	}
 }

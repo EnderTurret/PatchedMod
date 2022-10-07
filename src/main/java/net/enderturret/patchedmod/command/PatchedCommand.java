@@ -21,6 +21,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
+import net.enderturret.patchedmod.util.IEnvironment;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 
 /**
@@ -31,16 +32,16 @@ import net.enderturret.patchedmod.util.IPatchingPackResources;
 public final class PatchedCommand {
 
 	@ApiStatus.Internal
-	public static LiteralArgumentBuilder<CommandSourceStack> create(boolean client, Function<CommandSourceStack, ResourceManager> managerGetter) {
-		return literal("patched" + (client ? "c" : ""))
-				.requires(src -> src.hasPermission(2))
-				.then(DumpCommand.create(client, managerGetter))
-				.then(ListCommand.create(managerGetter));
+	public static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
+		return env.literal("patched" + (env.client() ? "c" : ""))
+				.requires(src -> env.hasPermission(src, 2))
+				.then(DumpCommand.create(env))
+				.then(ListCommand.create(env));
 	}
 
-	static CompletableFuture<Suggestions> suggestPack(CommandContext<CommandSourceStack> ctx, SuggestionsBuilder builder, Function<CommandSourceStack,ResourceManager> managerGetter) {
+	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, IEnvironment<T> env) {
 		final String input = builder.getRemaining();
-		final ResourceManager man = managerGetter.apply(ctx.getSource());
+		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		man.listPacks()
 			.filter(pack -> pack instanceof IPatchingPackResources patching
