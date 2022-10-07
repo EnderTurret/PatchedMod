@@ -27,7 +27,7 @@ import net.enderturret.patchedmod.util.IPatchingPackResources;
  * @author EnderTurret
  */
 @ApiStatus.Internal
-public class PatchedCommand {
+public final class PatchedCommand {
 
 	@ApiStatus.Internal
 	public static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {

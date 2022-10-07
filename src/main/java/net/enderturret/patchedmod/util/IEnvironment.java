@@ -16,9 +16,9 @@ public interface IEnvironment<T> {
 
 	public ResourceManager getResourceManager(T source);
 
-	public void sendSuccess(T source, Component text, boolean allowLogging);
+	public void sendSuccess(T source, Component message, boolean allowLogging);
 
-	public void sendFailure(T source, Component text);
+	public void sendFailure(T source, Component message);
 
 	public boolean hasPermission(T source, int level);
 

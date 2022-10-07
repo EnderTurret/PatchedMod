@@ -43,13 +43,13 @@ public final class ClientEvents implements ClientModInitializer {
 		}
 
 		@Override
-		public void sendSuccess(FabricClientCommandSource source, Component text, boolean allowLogging) {
-			source.sendFeedback(text);
+		public void sendSuccess(FabricClientCommandSource source, Component message, boolean allowLogging) {
+			source.sendFeedback(message);
 		}
 
 		@Override
-		public void sendFailure(FabricClientCommandSource source, Component text) {
-			source.sendError(text);
+		public void sendFailure(FabricClientCommandSource source, Component message) {
+			source.sendError(message);
 		}
 
 		@Override

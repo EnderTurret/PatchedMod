@@ -1,8 +1,5 @@
 package net.enderturret.patchedmod.command;
 
-import static net.minecraft.commands.Commands.argument;
-import static net.minecraft.commands.Commands.literal;
-
 import static net.enderturret.patchedmod.command.PatchedCommand.translate;
 
 import java.util.ArrayList;
@@ -24,7 +21,6 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.util.IEnvironment;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 
@@ -34,7 +30,7 @@ import net.enderturret.patchedmod.util.IPatchingPackResources;
  */
 final class ListCommand {
 
-	public static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
+	static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
 		return env.literal("list")
 				.then(env.literal("patches")
 						.then(env.argument("pack", StringArgumentType.greedyString())

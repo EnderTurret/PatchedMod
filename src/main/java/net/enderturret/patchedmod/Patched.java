@@ -74,13 +74,13 @@ public class Patched implements ModInitializer {
 		}
 
 		@Override
-		public void sendSuccess(CommandSourceStack source, Component text, boolean allowLogging) {
-			source.sendSuccess(text, allowLogging);
+		public void sendSuccess(CommandSourceStack source, Component message, boolean allowLogging) {
+			source.sendSuccess(message, allowLogging);
 		}
 
 		@Override
-		public void sendFailure(CommandSourceStack source, Component text) {
-			source.sendFailure(text);
+		public void sendFailure(CommandSourceStack source, Component message) {
+			source.sendFailure(message);
 		}
 
 		@Override

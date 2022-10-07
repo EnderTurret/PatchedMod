@@ -40,7 +40,7 @@ import net.enderturret.patchedmod.util.PatchingInputStream;
  */
 final class DumpCommand {
 
-	public static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
+	static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
 		final PackType type = env.client() ? PackType.CLIENT_RESOURCES : PackType.SERVER_DATA;
 		return env.literal("dump")
 				.then(env.literal("patch")
