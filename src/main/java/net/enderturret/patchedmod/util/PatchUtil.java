@@ -21,7 +21,7 @@ import net.enderturret.patchedmod.PatchedTestConditions;
  * An assortment of utilities related to patching Json data.
  * @author EnderTurret
  */
-public class PatchUtil {
+public final class PatchUtil {
 
 	/**
 	 * The context used for patching Json. This context has all extensions enabled by default.

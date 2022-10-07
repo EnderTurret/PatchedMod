@@ -35,7 +35,7 @@ import net.enderturret.patchedmod.util.PatchUtil;
  * Defines the '/patched dump' subcommand, which handles viewing patches and patched files.
  * @author EnderTurret
  */
-public class DumpCommand {
+final class DumpCommand {
 
 	public static <T> LiteralArgumentBuilder<T> create(boolean client, Function<T,ResourceManager> managerGetter, ICommandSource<T> source) {
 		final PackType type = client ? PackType.CLIENT_RESOURCES : PackType.SERVER_DATA;

@@ -5,6 +5,8 @@ import static net.minecraft.commands.Commands.literal;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -24,8 +26,10 @@ import net.enderturret.patchedmod.util.IPatchingPackResources;
  * Defines the root '/patched' command and provides a few utility methods for the subcommands to use.
  * @author EnderTurret
  */
+@ApiStatus.Internal
 public class PatchedCommand {
 
+	@ApiStatus.Internal
 	public static <T> LiteralArgumentBuilder<T> create(boolean client, Function<T,ResourceManager> managerGetter, ICommandSource<T> source) {
 		return Patched.<T>literal("patched" + (client ? "c" : ""))
 				.requires(src -> source.hasPermission(src, 2))
