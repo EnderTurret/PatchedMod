@@ -19,7 +19,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.util.ICommandSource;
+import net.enderturret.patchedmod.util.IEnvironment;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 
 /**
@@ -30,16 +30,16 @@ import net.enderturret.patchedmod.util.IPatchingPackResources;
 public class PatchedCommand {
 
 	@ApiStatus.Internal
-	public static <T> LiteralArgumentBuilder<T> create(boolean client, Function<T,ResourceManager> managerGetter, ICommandSource<T> source) {
-		return Patched.<T>literal("patched" + (client ? "c" : ""))
-				.requires(src -> source.hasPermission(src, 2))
-				.then(DumpCommand.create(client, managerGetter, source))
-				.then(ListCommand.create(managerGetter, source));
+	public static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
+		return env.literal("patched" + (env.client() ? "c" : ""))
+				.requires(src -> env.hasPermission(src, 2))
+				.then(DumpCommand.create(env))
+				.then(ListCommand.create(env));
 	}
 
-	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, Function<T,ResourceManager> managerGetter) {
+	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, IEnvironment<T> env) {
 		final String input = builder.getRemaining();
-		final ResourceManager man = managerGetter.apply(ctx.getSource());
+		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		man.listPacks()
 			.filter(pack -> pack instanceof IPatchingPackResources patching

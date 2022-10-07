@@ -25,7 +25,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.util.ICommandSource;
+import net.enderturret.patchedmod.util.IEnvironment;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 
 /**
@@ -34,19 +34,19 @@ import net.enderturret.patchedmod.util.IPatchingPackResources;
  */
 final class ListCommand {
 
-	public static <T> LiteralArgumentBuilder<T> create(Function<T,ResourceManager> managerGetter, ICommandSource<T> source) {
-		return Patched.<T>literal("list")
-				.then(Patched.<T>literal("patches")
-						.then(Patched.<T, String>argument("pack", StringArgumentType.greedyString())
-								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, managerGetter))
-								.executes(ctx -> listPatches(ctx, managerGetter, source))))
-				.then(Patched.<T>literal("packs").executes(ctx -> listPacks(ctx, managerGetter, source)));
+	public static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
+		return env.literal("list")
+				.then(env.literal("patches")
+						.then(env.argument("pack", StringArgumentType.greedyString())
+								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env))
+								.executes(ctx -> listPatches(ctx, env))))
+				.then(env.literal("packs").executes(ctx -> listPacks(ctx, env)));
 	}
 
 	@SuppressWarnings("resource")
-	private static <T> int listPatches(CommandContext<T> ctx, Function<T,ResourceManager> managerGetter, ICommandSource<T> source) {
+	private static <T> int listPatches(CommandContext<T> ctx, IEnvironment<T> env) {
 		final String packName = StringArgumentType.getString(ctx, "pack");
-		final ResourceManager man = managerGetter.apply(ctx.getSource());
+		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final PackResources pack = man.listPacks()
 				.filter(p -> packName.equals(p.getName()))
@@ -54,12 +54,12 @@ final class ListCommand {
 				.orElse(null);
 
 		if (pack == null) {
-			source.sendFailure(ctx.getSource(), translate("command.patched.list.pack_not_found", "That pack doesn't exist."));
+			env.sendFailure(ctx.getSource(), translate("command.patched.list.pack_not_found", "That pack doesn't exist."));
 			return 0;
 		}
 
 		if (!(pack instanceof IPatchingPackResources patching) || !patching.hasPatches()) {
-			source.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
+			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
 
@@ -86,13 +86,13 @@ final class ListCommand {
 							.withUnderlined(true)));
 		}
 
-		source.sendSuccess(ctx.getSource(), c, false);
+		env.sendSuccess(ctx.getSource(), c, false);
 
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static <T> int listPacks(CommandContext<T> ctx, Function<T,ResourceManager> managerGetter, ICommandSource<T> source) {
-		final ResourceManager man = managerGetter.apply(ctx.getSource());
+	private static <T> int listPacks(CommandContext<T> ctx, IEnvironment<T> env) {
+		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final List<String> packs = man.listPacks()
 				.filter(p -> p instanceof IPatchingPackResources patching
@@ -116,7 +116,7 @@ final class ListCommand {
 							"/" + command + " list patches " + pack))
 							.withUnderlined(true)));
 
-		source.sendSuccess(ctx.getSource(), c, false);
+		env.sendSuccess(ctx.getSource(), c, false);
 
 		return Command.SINGLE_SUCCESS;
 	}

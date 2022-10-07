@@ -9,10 +9,11 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.command.PatchedCommand;
-import net.enderturret.patchedmod.util.ICommandSource;
+import net.enderturret.patchedmod.util.IEnvironment;
 
 /**
  * Various client-side event handlers.
@@ -25,19 +26,32 @@ public final class ClientEvents implements ClientModInitializer {
 	public void onInitializeClient() {
 		Patched.physicalClient = true;
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> {
-			dispatcher.register(PatchedCommand.create(true, ctx -> Minecraft.getInstance().getResourceManager(), new ClientCommandSource()));
+			dispatcher.register(PatchedCommand.create(new ClientEnvironment()));
 		});
 	}
 
-	private static record ClientCommandSource() implements ICommandSource<FabricClientCommandSource> {
+	private static final class ClientEnvironment implements IEnvironment<FabricClientCommandSource> {
+
+		@Override
+		public boolean client() {
+			return true;
+		}
+
+		@Override
+		public ResourceManager getResourceManager(FabricClientCommandSource source) {
+			return Minecraft.getInstance().getResourceManager();
+		}
+
 		@Override
 		public void sendSuccess(FabricClientCommandSource source, Component text, boolean allowLogging) {
 			source.sendFeedback(text);
 		}
+
 		@Override
 		public void sendFailure(FabricClientCommandSource source, Component text) {
 			source.sendError(text);
 		}
+
 		@Override
 		public boolean hasPermission(FabricClientCommandSource source, int level) {
 			return true;
