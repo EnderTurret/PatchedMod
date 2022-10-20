@@ -86,13 +86,13 @@ and then add one of these to your dependencies:
 For Forge:
 
 ```gradle
-implementation fg.deobf('maven.modrinth:patched:forge-1.19.2-1.0.0')
+implementation fg.deobf('maven.modrinth:patched:forge-1.19.2-<latest version here>')
 ```
 
 For Fabric:
 
 ```gradle
-modImplementation 'maven.modrinth:patched:fabric-1.19.2-1.0.0'
+modImplementation 'maven.modrinth:patched:fabric-1.19.2-<latest version here>'
 ```
 
 ## Building the mod
