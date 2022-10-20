@@ -39,6 +39,9 @@ public class Patched {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Patched");
 
 	@ApiStatus.Internal
+	public static final boolean DEBUG = Boolean.getBoolean("patched.debug");
+
+	@ApiStatus.Internal
 	public Patched() {
 		ModLoadingContext.get().registerExtensionPoint(DisplayTest.class, () -> new DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (version, network) -> true));
 		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);

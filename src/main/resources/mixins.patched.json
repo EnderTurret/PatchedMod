@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "MixinAbstractPackResources",
-    "MixinFallbackResourceManager"
+    "MixinFallbackResourceManager",
+    "forge.DelegatingPackResourcesAccess"
   ],
   "client": []
 }
