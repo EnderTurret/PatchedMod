@@ -33,6 +33,9 @@ public class Patched implements ModInitializer {
 	@ApiStatus.Internal
 	public static final Logger LOGGER = LoggerFactory.getLogger("Patched");
 
+	@ApiStatus.Internal
+	public static final boolean DEBUG = Boolean.getBoolean("patched.debug");
+
 	// I'm not sure if Fabric provides a less inconvenient way to get the physical side, so here's this.
 	public static boolean physicalClient = false;
 

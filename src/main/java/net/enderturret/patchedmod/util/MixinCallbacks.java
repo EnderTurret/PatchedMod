@@ -19,10 +19,9 @@ import com.google.gson.JsonPrimitive;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.ResourcePackFileNotFoundException;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
 import net.minecraft.server.packs.resources.FallbackResourceManager.PackEntry;
-import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.IoSupplier;
 
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.audit.PatchAudit;
@@ -32,7 +31,7 @@ import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 
 /**
- * <p>Handles callbacks from mixins -- what you would expect given the name.</p>
+ * <p>Handles callbacks from mixins -- what you would expect from the name.</p>
  * <p>Specifically, this handles actually patching things.</p>
  * @author EnderTurret
  */
@@ -48,7 +47,7 @@ public class MixinCallbacks {
 	 * @return The new {@code IoSupplier}.
 	 */
 	@ApiStatus.Internal
-	public static Resource.IoSupplier<InputStream> chain(Resource.IoSupplier<InputStream> delegate, FallbackResourceManager manager, ResourceLocation name, PackResources origin) {
+	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, ResourceLocation name, PackResources origin) {
 		return () -> new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, manager.type, name, stream, audit));
 	}
 
@@ -109,79 +108,89 @@ public class MixinCallbacks {
 		PatchContext context = null;
 
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
-			final PackEntry pack = manager.fallbacks.get(i);
+			final PackEntry packEntry = manager.fallbacks.get(i);
 
-			if (hasPatches(pack) && pack.resources().hasResource(type, patchName)) {
-				final String patchJson;
+			if (hasPatches(packEntry.name(), packEntry.resources())) {
+				final PackEntry pack = packEntry;
+				final IoSupplier<InputStream> patchIo = packEntry.resources().getResource(type, patchName);
+				if (patchIo != null) {
+					final String patchJson;
 
-				try (InputStream patchStream = pack.resources().getResource(type, patchName)) {
-					patchJson = PatchUtil.readString(patchStream);
-				} catch (IOException e) {
-					Patched.LOGGER.warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
-					continue;
+					try (InputStream patchStream = patchIo.get()) {
+						patchJson = PatchUtil.readString(patchStream);
+					} catch (IOException e) {
+						Patched.LOGGER.warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
+						continue;
+					}
+
+					final JsonPatch patch;
+
+					try {
+						patch = Patches.readPatch(PatchUtil.GSON, patchJson);
+					} catch (JsonParseException e) {
+						Patched.LOGGER.warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
+						continue;
+					}
+
+					try {
+						if (audit != null)
+							audit.setPatchPath(pack.name());
+
+						Patched.LOGGER.debug("Applying patch {} from {}.", patchName, pack.name());
+						patch.patch(elem, context == null ? context = PatchUtil.CONTEXT.audit(audit) : context);
+					} catch (PatchingException e) {
+						Patched.LOGGER.warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
+					} catch (Exception e) {
+						Patched.LOGGER.warn("Failed to apply patch {} from {}:", patchName, pack.name(), e);
+					}
 				}
 
-				final JsonPatch patch;
-
-				try {
-					patch = Patches.readPatch(PatchUtil.GSON, patchJson);
-				} catch (JsonParseException e) {
-					Patched.LOGGER.warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
-					continue;
-				}
-
-				try {
-					if (audit != null)
-						audit.setPatchPath(pack.name());
-
-					Patched.LOGGER.debug("Applying patch {} from {}.", patchName, pack.name());
-					patch.patch(elem, context == null ? context = PatchUtil.CONTEXT.audit(audit) : context);
-				} catch (PatchingException e) {
-					Patched.LOGGER.warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
-				} catch (Exception e) {
-					Patched.LOGGER.warn("Failed to apply patch {} from {}:", patchName, pack.name(), e);
-				}
+				if (pack.resources() == from)
+					break;
 			}
-
-			if (pack.resources() == from)
-				break;
 		}
 	}
 
 	/**
 	 * Determines whether the given pack has patches enabled.
 	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
-	 * @param pack The pack to check.
+	 * @param packName The name of the pack.
+	 * @param packResources The pack to check.
 	 * @return {@code true} if the pack has patches enabled.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean hasPatches(PackEntry pack) {
-		if (!(pack.resources() instanceof IPatchingPackResources patching))
+	private static boolean hasPatches(String packName, PackResources packResources) {
+		if (!(packResources instanceof IPatchingPackResources patching))
 			return false;
 
 		if (!patching.initialized())
 			synchronized (patching) {
 				if (!patching.initialized()) {
-					try (InputStream is = pack.resources().getRootResource("pack.mcmeta")) {
-						final String json = PatchUtil.readString(is);
-						final JsonElement elem = JsonParser.parseString(json);
+					final IoSupplier<InputStream> io = packResources.getRootResource("pack.mcmeta");
+					if (io != null)
+						try (InputStream is = io.get()) {
+							final String json = PatchUtil.readString(is);
+							final JsonElement elem = JsonParser.parseString(json);
 
-						if (elem instanceof JsonObject o
-								&& o.get("pack") instanceof JsonObject packObj
-								&& packObj.get("patched:has_patches") instanceof JsonPrimitive prim
-								&& prim.isBoolean())
-							patching.setHasPatches(prim.getAsBoolean());
+							if (elem instanceof JsonObject o
+									&& o.get("pack") instanceof JsonObject packObj
+									&& packObj.get("patched:has_patches") instanceof JsonPrimitive prim
+									&& prim.isBoolean())
+								patching.setHasPatches(prim.getAsBoolean());
 
-						else patching.setHasPatches(false);
-					} catch (ResourcePackFileNotFoundException e) {
+							else patching.setHasPatches(false);
+						} catch (Exception e) {
+							Patched.LOGGER.error("Failed to read pack.mcmeta in {}:", packName, e);
+							patching.setHasPatches(false);
+						}
+					else
 						patching.setHasPatches(false);
-					} catch (Exception e) {
-						Patched.LOGGER.error("Failed to read pack.mcmeta in {}:", pack.name(), e);
-						patching.setHasPatches(false);
-					}
 
 					if (patching.hasPatches())
-						Patched.LOGGER.debug("Enabled patching for {} ({}).", pack.name(), pack.resources());
+						Patched.LOGGER.debug("Enabled patching for {}.", packName);
+
+					if (Patched.DEBUG)
+						Patched.LOGGER.debug("{} patches state: {}", packName, patching.hasPatches());
 				}
 			}
 

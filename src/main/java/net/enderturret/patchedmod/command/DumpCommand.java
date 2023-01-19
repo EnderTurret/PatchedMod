@@ -8,7 +8,6 @@ import java.nio.file.NoSuchFileException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 import com.google.gson.JsonElement;
 import com.mojang.brigadier.Command;
@@ -18,12 +17,12 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -45,7 +44,7 @@ final class DumpCommand {
 		return env.literal("dump")
 				.then(env.literal("patch")
 						.then(env.argument("pack", StringArgumentType.string())
-								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env))
+								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env, true))
 								.then(env.argument("location", ResourceLocationArgument.id())
 										.suggests((ctx, builder) -> suggestPatch(ctx, "pack", builder, env))
 										.executes(ctx -> dumpPatch(ctx, type, env)))))
@@ -67,7 +66,7 @@ final class DumpCommand {
 		final PackResources pack = man.listPacks()
 				.filter(p -> p instanceof IPatchingPackResources patching
 						&& patching.hasPatches()
-						&& packName.equals(p.getName()))
+						&& packName.equals(p.packId()))
 				.findFirst().orElse(null);
 
 		if (pack != null)
@@ -76,11 +75,11 @@ final class DumpCommand {
 					if (reqNamespace != null && !reqNamespace.equals(namespace))
 						continue;
 
-					pack.getResources(type, namespace, "", s -> s.getPath().endsWith(".patch"))
+					PatchUtil.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch"))
 						.stream()
 						.filter(loc -> loc.toString().startsWith(input))
 						.sorted()
-						.map(loc -> loc.getNamespace() + ":" + loc.getPath().substring(1))
+						.map(loc -> loc.toString())
 						.forEach(builder::suggest);
 				}
 
@@ -111,21 +110,12 @@ final class DumpCommand {
 				.filter(p -> p.getNamespaces(type).contains(reqNamespace))
 				.toList();
 
-		// TODO: There is a very weird issue where all of the resources under the minecraft namespace are just gone.
-		// This does not affect getResource(); only getResources() is affected by this.
-		// I wonder why this happens?
 		for (PackResources pack : packs)
-			pack.getResources(type, reqNamespace, "", s -> s.getPath().endsWith(".json"))
+			PatchUtil.getResources(pack, type, reqNamespace, s -> s.getPath().endsWith(".json"))
 				.stream()
-				.filter(loc -> {
-					final String l = loc.getNamespace() + ":" + (loc.getPath().startsWith("/") ? loc.getPath().substring(1) : loc.getPath());
-					return l.startsWith(input);
-				})
+				.filter(loc -> loc.toString().startsWith(input))
 				.map(loc -> {
-					String fullPath = loc.toString();
-					final int weirdSlashIndex = fullPath.indexOf(":/");
-					if (weirdSlashIndex != -1)
-						fullPath = fullPath.substring(0, weirdSlashIndex + 1) + fullPath.substring(weirdSlashIndex + 2, fullPath.length());
+					final String fullPath = loc.toString();
 
 					final int slashIdx = fullPath.indexOf('/', input.length() + 1);
 
@@ -145,7 +135,7 @@ final class DumpCommand {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final PackResources pack = man.listPacks()
-				.filter(p -> packName.equals(p.getName()))
+				.filter(p -> packName.equals(p.packId()))
 				.findFirst()
 				.orElse(null);
 
@@ -154,12 +144,14 @@ final class DumpCommand {
 			return 0;
 		}
 
-		if (!pack.hasResource(type, location)) {
+		final IoSupplier<InputStream> io = pack.getResource(type, location);
+
+		if (io == null) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.dump.patch_not_found", "That patch could not be found."));
 			return 0;
 		}
 
-		try (InputStream is = pack.getResource(type, location)) {
+		try (InputStream is = io.get()) {
 			final String src = PatchUtil.readPrettyJson(is, location.toString() + "(in " + packName + ")", true, true);
 			if (src == null) {
 				env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));

@@ -1,18 +1,15 @@
 package net.enderturret.patchedmod.command;
 
-import static net.minecraft.commands.Commands.literal;
-
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 import org.jetbrains.annotations.ApiStatus;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.packs.PackResources;
@@ -37,16 +34,17 @@ public final class PatchedCommand {
 				.then(ListCommand.create(env));
 	}
 
-	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, IEnvironment<T> env) {
+	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, IEnvironment<T> env, boolean quoted) {
 		final String input = builder.getRemaining();
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		man.listPacks()
 			.filter(pack -> pack instanceof IPatchingPackResources patching
 					&& patching.hasPatches())
-			.map(PackResources::getName)
+			.map(PackResources::packId)
 			.filter(s -> s.startsWith(input))
 			.sorted()
+			.map(s -> quoted ? StringArgumentType.escapeIfRequired(s) : s)
 			.forEach(builder::suggest);
 
 		return builder.buildFuture();

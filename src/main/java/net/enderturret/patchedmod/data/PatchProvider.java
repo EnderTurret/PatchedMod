@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -18,9 +19,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.stream.JsonWriter;
 
+import net.minecraft.Util;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
@@ -28,6 +31,7 @@ import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchUtil;
 import net.enderturret.patched.patch.TestPatch;
+import net.enderturret.patchedmod.Patched;
 
 /**
  * A data provider for patches.
@@ -40,13 +44,13 @@ public abstract class PatchProvider implements DataProvider {
 
 	private final DataGenerator generator;
 
-	private final DataGenerator.Target target;
+	private final PackOutput.Target target;
 	private final String modId;
 
 	private final Map<ResourceLocation, JsonPatch> patches = new HashMap<>();
 
-	protected PatchProvider(DataGenerator generator, DataGenerator.Target target, @Nullable String modId) {
-		if (target == null || target == DataGenerator.Target.REPORTS) throw new IllegalArgumentException("Bad type");
+	protected PatchProvider(DataGenerator generator, PackOutput.Target target, @Nullable String modId) {
+		if (target == null || target == PackOutput.Target.REPORTS) throw new IllegalArgumentException("Bad type");
 		this.generator = generator;
 		this.target = target;
 		this.modId = modId;
@@ -78,30 +82,36 @@ public abstract class PatchProvider implements DataProvider {
 
 	@Override
 	public String getName() {
-		return "Json Patches";
+		return target + " Json Patches: " + modId;
 	}
 
 	@Override
-	public void run(CachedOutput cache) throws IOException {
+	public CompletableFuture<?> run(CachedOutput cache) {
 		patches.clear();
 		registerPatches();
 
 		if (!patches.isEmpty()) {
-			final Path root = generator.getOutputFolder(target);
+			final Path root = generator.vanillaPackOutput.getOutputFolder(target);
+			final List<CompletableFuture<?>> futures = new ArrayList<>();
+
 			for (Map.Entry<ResourceLocation, JsonPatch> entry : patches.entrySet())
-				writePatch(cache, root, entry.getKey(), entry.getValue());
+				futures.add(writePatch(cache, root, entry.getKey(), entry.getValue()));
+
+			return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
 		}
+
+		return CompletableFuture.allOf();
 	}
 
-	private void writePatch(CachedOutput cache, Path root, ResourceLocation path, JsonPatch patch) throws IOException {
+	private CompletableFuture<?> writePatch(CachedOutput cache, Path root, ResourceLocation path, JsonPatch patch) {
 		final Path to = root.resolve(path.getNamespace()).resolve(path.getPath() + ".json.patch");
 		// The ordering is guaranteed to be stable, as patches are serialized manually.
 		// Using this method prevents the "type" field of test patches from jumping to the top of the json object.
-		write(cache, GSON.toJsonTree(patch), to);
+		return CompletableFuture.runAsync(() -> write(cache, GSON.toJsonTree(patch), to), Util.backgroundExecutor());
 	}
 
 	@SuppressWarnings("deprecation")
-	private static void write(CachedOutput cache, JsonElement elem, Path to) throws IOException {
+	private static void write(CachedOutput cache, JsonElement elem, Path to) {
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				HashingOutputStream hos = new HashingOutputStream(Hashing.sha1(), baos);
 				OutputStreamWriter osw = new OutputStreamWriter(hos, StandardCharsets.UTF_8);
@@ -111,6 +121,8 @@ public abstract class PatchProvider implements DataProvider {
 			GsonHelper.writeValue(jw, elem, null);
 			jw.close();
 			cache.writeIfNeeded(to, baos.toByteArray(), hos.hash());
+		} catch (IOException e) {
+			Patched.LOGGER.error("Exception saving file to {}:", to, e);
 		}
 	}
 
