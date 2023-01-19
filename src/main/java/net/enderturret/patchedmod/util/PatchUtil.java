@@ -5,12 +5,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.patch.PatchContext;
@@ -33,6 +40,17 @@ public final class PatchUtil {
 	 */
 	public static final Gson GSON = Patches.patchGson(CONTEXT.sbExtensions(), CONTEXT.patchedExtensions())
 			.setPrettyPrinting().create();
+
+	public static List<ResourceLocation> getResources(PackResources pack, PackType type, String namespace, String path, Predicate<ResourceLocation> filter) {
+		final List<ResourceLocation> ret = new ArrayList<>();
+
+		pack.listResources(type, namespace, path, (loc, io) -> {
+			if (filter.test(loc))
+				ret.add(loc);
+		});
+
+		return ret;
+	}
 
 	/**
 	 * Attempts to read a string from the given stream as Json, converted to a "pretty" form.

@@ -42,7 +42,7 @@ public final class PatchedCommand {
 		man.listPacks()
 			.filter(pack -> pack instanceof IPatchingPackResources patching
 					&& patching.hasPatches())
-			.map(PackResources::getName)
+			.map(PackResources::packId)
 			.filter(s -> s.startsWith(input))
 			.sorted()
 			.forEach(builder::suggest);

@@ -21,6 +21,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.util.IEnvironment;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
+import net.enderturret.patchedmod.util.PatchUtil;
 
 /**
  * Defines the '/patched list' subcommand, which handles providing lists of the packs with patches and the patches in those packs.
@@ -43,7 +44,7 @@ final class ListCommand {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final PackResources pack = man.listPacks()
-				.filter(p -> packName.equals(p.getName()))
+				.filter(p -> packName.equals(p.packId()))
 				.findFirst()
 				.orElse(null);
 
@@ -61,14 +62,14 @@ final class ListCommand {
 
 		for (PackType type : PackType.values())
 			for (String namespace : pack.getNamespaces(type))
-				patches.addAll(pack.getResources(type, namespace, "", s -> s.getPath().endsWith(".patch")));
+				patches.addAll(PatchUtil.getResources(pack, type, namespace, "", s -> s.getPath().endsWith(".patch")));
 
 		final boolean single = patches.size() == 1;
 
 		final MutableComponent c = translate("command.patched.list.patches." + (single ? "single" : "multi"),
 				"There " + (!single ? "are" : "is")
 				+ " " + patches.size() + " patch" + (!single ? "es" : "")
-				+ " in " + pack.getName() + ":", patches.size(), pack.getName());
+				+ " in " + pack.packId() + ":", patches.size(), pack.packId());
 
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
@@ -76,7 +77,7 @@ final class ListCommand {
 			final String patch = loc.getNamespace() + ":" + loc.getPath().substring(1);
 			c.append("\n  ").append(Component.literal(patch)
 					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-							"/" + command + " dump patch " + StringArgumentType.escapeIfRequired(pack.getName()) + " " + patch))
+							"/" + command + " dump patch " + StringArgumentType.escapeIfRequired(pack.packId()) + " " + patch))
 							.withUnderlined(true)));
 		}
 
@@ -91,7 +92,7 @@ final class ListCommand {
 		final List<String> packs = man.listPacks()
 				.filter(p -> p instanceof IPatchingPackResources patching
 						&& patching.hasPatches())
-				.map(p -> p.getName())
+				.map(p -> p.packId())
 				.sorted()
 				.toList();
 

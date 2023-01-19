@@ -6,7 +6,7 @@ import java.io.InputStream;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.IoSupplier;
 
 import net.enderturret.patched.audit.PatchAudit;
 
@@ -18,7 +18,7 @@ public class PatchingInputStream extends FilterInputStream {
 	@Nullable
 	private PatchAudit audit = null;
 
-	public PatchingInputStream(Resource.IoSupplier<InputStream> delegate, PatchFunction patcher) throws IOException {
+	public PatchingInputStream(IoSupplier<InputStream> delegate, PatchFunction patcher) throws IOException {
 		super(delegate.get());
 		if (patcher == null) throw new NullPointerException();
 		this.patcher = patcher;
