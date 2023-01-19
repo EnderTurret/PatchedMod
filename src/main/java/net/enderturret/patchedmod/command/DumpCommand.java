@@ -44,7 +44,7 @@ final class DumpCommand {
 		return env.literal("dump")
 				.then(env.literal("patch")
 						.then(env.argument("pack", StringArgumentType.string())
-								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env))
+								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env, true))
 								.then(env.argument("location", ResourceLocationArgument.id())
 										.suggests((ctx, builder) -> suggestPatch(ctx, "pack", builder, env))
 										.executes(ctx -> dumpPatch(ctx, type, env)))))
@@ -75,11 +75,11 @@ final class DumpCommand {
 					if (reqNamespace != null && !reqNamespace.equals(namespace))
 						continue;
 
-					PatchUtil.getResources(pack, type, namespace, "", s -> s.getPath().endsWith(".patch"))
+					PatchUtil.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch"))
 						.stream()
 						.filter(loc -> loc.toString().startsWith(input))
 						.sorted()
-						.map(loc -> loc.getNamespace() + ":" + loc.getPath().substring(1))
+						.map(loc -> loc.toString())
 						.forEach(builder::suggest);
 				}
 
@@ -111,17 +111,11 @@ final class DumpCommand {
 				.toList();
 
 		for (PackResources pack : packs)
-			PatchUtil.getResources(pack, type, reqNamespace, "", s -> s.getPath().endsWith(".json"))
+			PatchUtil.getResources(pack, type, reqNamespace, s -> s.getPath().endsWith(".json"))
 				.stream()
-				.filter(loc -> {
-					final String l = loc.getNamespace() + ":" + (loc.getPath().startsWith("/") ? loc.getPath().substring(1) : loc.getPath());
-					return l.startsWith(input);
-				})
+				.filter(loc -> loc.toString().startsWith(input))
 				.map(loc -> {
-					String fullPath = loc.toString();
-					final int weirdSlashIndex = fullPath.indexOf(":/");
-					if (weirdSlashIndex != -1)
-						fullPath = fullPath.substring(0, weirdSlashIndex + 1) + fullPath.substring(weirdSlashIndex + 2, fullPath.length());
+					final String fullPath = loc.toString();
 
 					final int slashIdx = fullPath.indexOf('/', input.length() + 1);
 

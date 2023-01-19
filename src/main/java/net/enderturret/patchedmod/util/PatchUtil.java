@@ -18,6 +18,7 @@ import com.google.gson.JsonParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.VanillaPackResources;
 
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.patch.PatchContext;
@@ -41,13 +42,28 @@ public final class PatchUtil {
 	public static final Gson GSON = Patches.patchGson(CONTEXT.sbExtensions(), CONTEXT.patchedExtensions())
 			.setPrettyPrinting().create();
 
-	public static List<ResourceLocation> getResources(PackResources pack, PackType type, String namespace, String path, Predicate<ResourceLocation> filter) {
+	public static List<ResourceLocation> getResources(PackResources pack, PackType type, String namespace, Predicate<ResourceLocation> filter) {
 		final List<ResourceLocation> ret = new ArrayList<>();
 
-		pack.listResources(type, namespace, path, (loc, io) -> {
-			if (filter.test(loc))
-				ret.add(loc);
-		});
+		// This one's gonna require some explaining:
+		// Basically, we want to look at all resources in the pack.
+		// The problem is that Minecraft prevents this by bailing for paths "", ".", etc.
+		//
+		// So what we do here is swap the namespace and path so that it initially
+		// resolves the same directory and then resolves the namespace directory.
+		// We have to use a dot for the VanillaPackResources because otherwise LinkFileSystem's path handling gets a little concerned.
+		try {
+			final boolean vanilla = pack instanceof VanillaPackResources;
+			pack.listResources(type, vanilla ? "." : "", namespace, (loc, io) -> {
+				if (filter.test(loc))
+					// We do have to fix the resource location though.
+					// :minecraft/something → minecraft:something
+					// :../minecraft/something → minecraft:something
+					ret.add(new ResourceLocation(namespace, loc.getPath().substring((vanilla ? "../".length() : 0) + namespace.length() + 1)));
+			});
+		} catch (Exception e) {
+			Patched.LOGGER.error("Exception listing resources:", e);
+		}
 
 		return ret;
 	}

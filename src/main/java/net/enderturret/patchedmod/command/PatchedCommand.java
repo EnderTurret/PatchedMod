@@ -4,6 +4,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.jetbrains.annotations.ApiStatus;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -35,7 +36,7 @@ public final class PatchedCommand {
 				.then(ListCommand.create(env));
 	}
 
-	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, IEnvironment<T> env) {
+	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, IEnvironment<T> env, boolean quoted) {
 		final String input = builder.getRemaining();
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
@@ -45,6 +46,7 @@ public final class PatchedCommand {
 			.map(PackResources::packId)
 			.filter(s -> s.startsWith(input))
 			.sorted()
+			.map(s -> quoted ? StringArgumentType.escapeIfRequired(s) : s)
 			.forEach(builder::suggest);
 
 		return builder.buildFuture();

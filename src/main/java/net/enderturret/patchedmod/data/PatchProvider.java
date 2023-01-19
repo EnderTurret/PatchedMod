@@ -82,7 +82,7 @@ public abstract class PatchProvider implements DataProvider {
 
 	@Override
 	public String getName() {
-		return "Json Patches";
+		return target + " Json Patches: " + modId;
 	}
 
 	@Override

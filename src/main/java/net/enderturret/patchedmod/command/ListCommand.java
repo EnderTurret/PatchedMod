@@ -33,7 +33,7 @@ final class ListCommand {
 		return env.literal("list")
 				.then(env.literal("patches")
 						.then(env.argument("pack", StringArgumentType.greedyString())
-								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env))
+								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env, false))
 								.executes(ctx -> listPatches(ctx, env))))
 				.then(env.literal("packs").executes(ctx -> listPacks(ctx, env)));
 	}
@@ -62,7 +62,7 @@ final class ListCommand {
 
 		for (PackType type : PackType.values())
 			for (String namespace : pack.getNamespaces(type))
-				patches.addAll(PatchUtil.getResources(pack, type, namespace, "", s -> s.getPath().endsWith(".patch")));
+				patches.addAll(PatchUtil.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")));
 
 		final boolean single = patches.size() == 1;
 
@@ -74,7 +74,7 @@ final class ListCommand {
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
 		for (ResourceLocation loc : patches) {
-			final String patch = loc.getNamespace() + ":" + loc.getPath().substring(1);
+			final String patch = loc.toString();
 			c.append("\n  ").append(Component.literal(patch)
 					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
 							"/" + command + " dump patch " + StringArgumentType.escapeIfRequired(pack.packId()) + " " + patch))

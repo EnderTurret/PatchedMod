@@ -19,13 +19,13 @@ issueTrackerURL="https://github.com/EnderTurret/PatchedMod/issues"
 [[dependencies.patched]]
     modId="forge"
     mandatory=true
-    versionRange="[41,)"
+    versionRange="[44,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.patched]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.1,1.20)"
+    versionRange="[1.19.3,1.20]"
     ordering="NONE"
     side="BOTH"
