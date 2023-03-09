@@ -23,11 +23,11 @@ Next, you can add Patched as a dependency:
 #### On Forge
 
 ```gradle
-implementation fg.deobf('maven.modrinth:patched:forge-1.19.2-<latest version here>')
+implementation fg.deobf('maven.modrinth:patched:forge-<minecraft version>-<latest version here>')
 ```
 
 #### On Fabric
 
 ```gradle
-modImplementation 'maven.modrinth:patched:fabric-1.19.2-<latest version here>'
+modImplementation 'maven.modrinth:patched:fabric-<minecraft version>-<latest version here>'
 ```
