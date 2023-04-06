@@ -116,9 +116,10 @@ public class MixinCallbacks {
 		from = findTrueSource(from, type, name);
 
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
-			final PackEntry packEntry = manager.fallbacks.get(i);
-			if (hasPatches(packEntry.name(), packEntry.resources()))
-				for (Entry pack : packsIn(new Entry(packEntry), type, patchName)) {
+			final PackEntry _packEntry = manager.fallbacks.get(i);
+			final Entry entry = new Entry(_packEntry);
+			if (hasPatches(entry))
+				for (Entry pack : packsIn(entry, type, patchName)) {
 					final String patchJson;
 
 					try (InputStream patchStream = pack.resources().getResource(type, patchName).get()) {
@@ -158,13 +159,22 @@ public class MixinCallbacks {
 	/**
 	 * Determines whether the given pack has patches enabled.
 	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
-	 * @param packName The name of the pack.
-	 * @param packResources The pack to check.
+	 * @param entry The pack to check.
+	 * @return {@code true} if the pack has patches enabled.
+	 */
+	private static boolean hasPatches(Entry entry) {
+		return entry.resources() instanceof IPatchingPackResources ppp && ppp.hasPatches();
+	}
+
+	/**
+	 * Determines whether the given pack has patches enabled.
+	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
+	 * @param entry The pack to check.
 	 * @return {@code true} if the pack has patches enabled.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean hasPatches(String packName, PackResources packResources) {
-		if (!(packResources instanceof IPatchingPackResources patching))
+	static boolean checkHasPatches(Entry entry) {
+		if (!(entry.resources() instanceof IPatchingPackResources patching))
 			return false;
 
 		if (!patching.initialized())
@@ -173,10 +183,10 @@ public class MixinCallbacks {
 					if (patching instanceof DelegatingPackResourcesAccess dpra) {
 						boolean enabled = false;
 						for (PackResources resources : dpra.getDelegates())
-							enabled |= hasPatches(resources.packId(), resources);
+							enabled |= hasPatches(new Entry(resources));
 						patching.setHasPatches(enabled);
 					} else {
-						final IoSupplier<InputStream> io = packResources.getRootResource("pack.mcmeta");
+						final IoSupplier<InputStream> io = entry.resources().getRootResource("pack.mcmeta");
 						if (io != null)
 							try (InputStream is = io.get()) {
 								final String json = PatchUtil.readString(is);
@@ -190,7 +200,7 @@ public class MixinCallbacks {
 
 								else patching.setHasPatches(false);
 							} catch (Exception e) {
-								Patched.LOGGER.error("Failed to read pack.mcmeta in {}:", packName, e);
+								Patched.LOGGER.error("Failed to read pack.mcmeta in {}:", entry.name(), e);
 								patching.setHasPatches(false);
 							}
 						else
@@ -198,10 +208,10 @@ public class MixinCallbacks {
 					}
 
 					if (patching.hasPatches())
-						Patched.LOGGER.debug("Enabled patching for {}.", packName);
+						Patched.LOGGER.debug("Enabled patching for {}.", entry.name());
 
 					if (Patched.DEBUG)
-						Patched.LOGGER.debug("{} patches state: {}", packName, patching.hasPatches());
+						Patched.LOGGER.debug("{} patches state: {}", entry.name(), patching.hasPatches());
 				}
 			}
 
@@ -220,9 +230,9 @@ public class MixinCallbacks {
 		if (entry.resources() instanceof DelegatingPackResourcesAccess dpra) {
 			return Iterables.transform(
 					Iterables.filter(dpra.callGetCandidatePacks(type, patchName),
-							pack -> hasPatches(pack.packId(), pack) && pack.getResource(type, patchName) != null),
+							pack -> hasPatches(new Entry(pack)) && pack.getResource(type, patchName) != null),
 					pack -> new Entry(pack.packId(), pack));
-		} else if (hasPatches(entry.name(), entry.resources()) && entry.resources().getResource(type, patchName) != null)
+		} else if (hasPatches(entry) && entry.resources().getResource(type, patchName) != null)
 			return List.of(entry);
 
 		return List.of();
@@ -255,10 +265,16 @@ public class MixinCallbacks {
 	 * @param name The name of the pack.
 	 * @param resources The pack itself.
 	 */
-	private static record Entry(String name, PackResources resources) {
-		private Entry {}
-		private Entry(PackEntry packEntry) {
+	static record Entry(String name, PackResources resources) {
+
+		Entry {}
+
+		Entry(PackEntry packEntry) {
 			this(packEntry.name(), packEntry.resources());
+		}
+
+		Entry(PackResources resources) {
+			this(resources.packId(), resources);
 		}
 	}
 }

@@ -17,6 +17,7 @@ public abstract class MixinAbstractPackResources implements IPatchingPackResourc
 
 	@Override
 	public boolean hasPatches() {
+		checkInitialized();
 		return hasPatches != null && hasPatches;
 	}
 
