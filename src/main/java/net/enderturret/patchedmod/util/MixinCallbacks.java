@@ -108,11 +108,12 @@ public class MixinCallbacks {
 		PatchContext context = null;
 
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
-			final PackEntry packEntry = manager.fallbacks.get(i);
+			final PackEntry _packEntry = manager.fallbacks.get(i);
+			final Entry entry = new Entry(_packEntry);
 
-			if (hasPatches(packEntry.name(), packEntry.resources())) {
-				final PackEntry pack = packEntry;
-				final IoSupplier<InputStream> patchIo = packEntry.resources().getResource(type, patchName);
+			if (hasPatches(entry)) {
+				final PackEntry pack = _packEntry;
+				final IoSupplier<InputStream> patchIo = _packEntry.resources().getResource(type, patchName);
 				if (patchIo != null) {
 					final String patchJson;
 
@@ -154,19 +155,28 @@ public class MixinCallbacks {
 	/**
 	 * Determines whether the given pack has patches enabled.
 	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
-	 * @param packName The name of the pack.
-	 * @param packResources The pack to check.
+	 * @param entry The pack to check.
+	 * @return {@code true} if the pack has patches enabled.
+	 */
+	private static boolean hasPatches(Entry entry) {
+		return entry.resources() instanceof IPatchingPackResources ppp && ppp.hasPatches();
+	}
+
+	/**
+	 * Determines whether the given pack has patches enabled.
+	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
+	 * @param entry The pack to check.
 	 * @return {@code true} if the pack has patches enabled.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean hasPatches(String packName, PackResources packResources) {
-		if (!(packResources instanceof IPatchingPackResources patching))
+	static boolean checkHasPatches(Entry entry) {
+		if (!(entry.resources() instanceof IPatchingPackResources patching))
 			return false;
 
 		if (!patching.initialized())
 			synchronized (patching) {
 				if (!patching.initialized()) {
-					final IoSupplier<InputStream> io = packResources.getRootResource("pack.mcmeta");
+					final IoSupplier<InputStream> io = entry.resources().getRootResource("pack.mcmeta");
 					if (io != null)
 						try (InputStream is = io.get()) {
 							final String json = PatchUtil.readString(is);
@@ -180,20 +190,39 @@ public class MixinCallbacks {
 
 							else patching.setHasPatches(false);
 						} catch (Exception e) {
-							Patched.LOGGER.error("Failed to read pack.mcmeta in {}:", packName, e);
+							Patched.LOGGER.error("Failed to read pack.mcmeta in {}:", entry.name(), e);
 							patching.setHasPatches(false);
 						}
 					else
 						patching.setHasPatches(false);
 
 					if (patching.hasPatches())
-						Patched.LOGGER.debug("Enabled patching for {}.", packName);
+						Patched.LOGGER.debug("Enabled patching for {}.", entry.name());
 
 					if (Patched.DEBUG)
-						Patched.LOGGER.debug("{} patches state: {}", packName, patching.hasPatches());
+						Patched.LOGGER.debug("{} patches state: {}", entry.name(), patching.hasPatches());
 				}
 			}
 
 		return patching.hasPatches();
+	}
+
+	/**
+	 * An alternative to ATing {@link PackEntry}'s constructor public.
+	 * @author EnderTurret
+	 * @param name The name of the pack.
+	 * @param resources The pack itself.
+	 */
+	static record Entry(String name, PackResources resources) {
+
+		Entry {}
+
+		Entry(PackEntry packEntry) {
+			this(packEntry.name(), packEntry.resources());
+		}
+
+		Entry(PackResources resources) {
+			this(resources.packId(), resources);
+		}
 	}
 }
