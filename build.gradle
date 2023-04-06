@@ -21,7 +21,7 @@ plugins {
 
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.19.3-1.0.0'
+version = '1.19.3-1.0.1'
 group = 'net.enderturret'
 archivesBaseName = 'Patched-forge'
 
