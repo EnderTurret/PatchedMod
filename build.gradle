@@ -4,7 +4,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
-version = '1.19.3-1.0.2'
+version = '1.20-1.0.0'
 group = 'net.enderturret'
 archivesBaseName = 'Patched-fabric'
 
@@ -20,10 +20,10 @@ repositories {
 }
 
 dependencies {
-    minecraft 'com.mojang:minecraft:1.19.3'
+    minecraft 'com.mojang:minecraft:1.20'
     mappings loom.officialMojangMappings()
-    modImplementation 'net.fabricmc:fabric-loader:0.14.19'
-    modImplementation 'net.fabricmc.fabric-api:fabric-api:0.76.0+1.19.3'
+    modImplementation 'net.fabricmc:fabric-loader:0.14.21'
+    modImplementation 'net.fabricmc.fabric-api:fabric-api:0.83.0+1.20'
 
     implementation ('com.github.EnderTurret:Patched:1.2.1') {
         exclude group: 'com.google.code.gson', module: 'gson'
