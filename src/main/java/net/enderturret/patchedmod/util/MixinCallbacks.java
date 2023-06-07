@@ -6,15 +6,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.collect.Iterables;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+
+import net.fabricmc.fabric.impl.resource.loader.FabricModResourcePack;
+import net.fabricmc.fabric.impl.resource.loader.GroupResourcePack;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
@@ -22,6 +27,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
 import net.minecraft.server.packs.resources.FallbackResourceManager.PackEntry;
 import net.minecraft.server.packs.resources.IoSupplier;
+import net.minecraft.server.packs.resources.MultiPackResourceManager;
 
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.audit.PatchAudit;
@@ -29,6 +35,7 @@ import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.mixin.fabric.GroupResourcePackAccess;
 
 /**
  * <p>Handles callbacks from mixins -- what you would expect from the name.</p>
@@ -107,17 +114,17 @@ public class MixinCallbacks {
 
 		PatchContext context = null;
 
+		from = findTrueSource(from, type, name);
+
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
 			final PackEntry _packEntry = manager.fallbacks.get(i);
 			final Entry entry = new Entry(_packEntry);
 
-			if (hasPatches(entry)) {
-				final PackEntry pack = _packEntry;
-				final IoSupplier<InputStream> patchIo = _packEntry.resources().getResource(type, patchName);
-				if (patchIo != null) {
+			if (hasPatches(entry))
+				for (Entry pack : packsIn(entry, type, patchName)) {
 					final String patchJson;
 
-					try (InputStream patchStream = patchIo.get()) {
+					try (InputStream patchStream = pack.resources().getResource(type, patchName).get()) {
 						patchJson = PatchUtil.readString(patchStream);
 					} catch (IOException e) {
 						Patched.LOGGER.warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
@@ -144,11 +151,10 @@ public class MixinCallbacks {
 					} catch (Exception e) {
 						Patched.LOGGER.warn("Failed to apply patch {} from {}:", patchName, pack.name(), e);
 					}
-				}
 
-				if (pack.resources() == from)
-					break;
-			}
+					if (pack.resources() == from)
+						break;
+				}
 		}
 	}
 
@@ -176,25 +182,32 @@ public class MixinCallbacks {
 		if (!patching.initialized())
 			synchronized (patching) {
 				if (!patching.initialized()) {
-					final IoSupplier<InputStream> io = entry.resources().getRootResource("pack.mcmeta");
-					if (io != null)
-						try (InputStream is = io.get()) {
-							final String json = PatchUtil.readString(is);
-							final JsonElement elem = JsonParser.parseString(json);
+					if (patching instanceof GroupResourcePackAccess grpa) {
+						boolean enabled = false;
+						for (PackResources resources : grpa.getPacks())
+							enabled |= hasPatches(new Entry(resources));
+						patching.setHasPatches(enabled);
+					} else {
+						final IoSupplier<InputStream> io = entry.resources().getRootResource("pack.mcmeta");
+						if (io != null)
+							try (InputStream is = io.get()) {
+								final String json = PatchUtil.readString(is);
+								final JsonElement elem = JsonParser.parseString(json);
 
-							if (elem instanceof JsonObject o
-									&& o.get("pack") instanceof JsonObject packObj
-									&& packObj.get("patched:has_patches") instanceof JsonPrimitive prim
-									&& prim.isBoolean())
-								patching.setHasPatches(prim.getAsBoolean());
+								if (elem instanceof JsonObject o
+										&& o.get("pack") instanceof JsonObject packObj
+										&& packObj.get("patched:has_patches") instanceof JsonPrimitive prim
+										&& prim.isBoolean())
+									patching.setHasPatches(prim.getAsBoolean());
 
-							else patching.setHasPatches(false);
-						} catch (Exception e) {
-							Patched.LOGGER.error("Failed to read pack.mcmeta in {}:", entry.name(), e);
+								else patching.setHasPatches(false);
+							} catch (Exception e) {
+								Patched.LOGGER.error("Failed to read pack.mcmeta in {}:", entry.name(), e);
+								patching.setHasPatches(false);
+							}
+						else
 							patching.setHasPatches(false);
-						}
-					else
-						patching.setHasPatches(false);
+					}
 
 					if (patching.hasPatches())
 						Patched.LOGGER.debug("Enabled patching for {}.", entry.name());
@@ -205,6 +218,47 @@ public class MixinCallbacks {
 			}
 
 		return patching.hasPatches();
+	}
+
+	/**
+	 * Returns an {@link Iterable} of packs containing the specified patch within the given pack.
+	 * In most cases, this will only be the given pack.
+	 * @param entry The pack.
+	 * @param type The pack type.
+	 * @param patchName The patch to look for.
+	 * @return The packs containing the specified patch.
+	 */
+	private static Iterable<Entry> packsIn(Entry entry, PackType type, ResourceLocation patchName) {
+		if (entry.resources() instanceof GroupResourcePackAccess grpa) {
+			return Iterables.transform(
+					Iterables.filter(grpa.getPacks(),
+							pack -> hasPatches(new Entry(pack)) && pack.getResource(type, patchName) != null),
+					pack -> new Entry(pack.packId(), pack));
+		} else if (hasPatches(entry) && entry.resources().getResource(type, patchName) != null)
+			return List.of(entry);
+
+		return List.of();
+	}
+
+	/**
+	 * <p>Given a pack and a file, tries to find the true source of the file.</p>
+	 * <p>
+	 * Sometimes a pack may "provide" a file without actually containing it itself.
+	 * In particular, {@link GroupResourcePack} combines a number of packs together, like {@link MultiPackResourceManager}.
+	 * We need to know which pack the file actually came from in order to figure out which patches to apply, so that is what this method is for.
+	 * </p>
+	 * @param from The pack the file is provided by.
+	 * @param type The pack type.
+	 * @param name The file in question.
+	 * @return The true source of the file.
+	 */
+	private static PackResources findTrueSource(PackResources from, PackType type, ResourceLocation name) {
+		if (from instanceof GroupResourcePackAccess grpa)
+			for (PackResources pack : grpa.getPacks())
+				if (pack.getResource(type, name) != null)
+					return pack;
+
+		return from;
 	}
 
 	/**
