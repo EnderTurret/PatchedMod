@@ -1,25 +1,10 @@
-buildscript {
-    repositories {
-        maven {
-            url = 'https://jitpack.io'
-            content {
-                includeGroup 'com.github.DarkShadow44'
-            }
-        }
-    }
-    dependencies {
-        classpath group: 'com.github.DarkShadow44', name: 'MixinGradle', version: 'task_fix-SNAPSHOT'
-    }
-}
-
 plugins {
     id 'eclipse'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'net.minecraftforge.gradle' version '5.+'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'net.minecraftforge.gradle' version '[6.0, 6.2)'
+    id 'org.spongepowered.mixin' version '0.7.33'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
-
-apply plugin: 'org.spongepowered.mixin'
 
 version = '1.19.3-1.0.1'
 group = 'net.enderturret'
@@ -112,7 +97,7 @@ reobf {
 }
 
 shadowJar {
-    classifier ''
+    archiveClassifier = ''
 
     dependencies {
         include(dependency('com.github.EnderTurret:Patched:1.2.1'))
@@ -130,7 +115,6 @@ jar {
             'Implementation-Title': 'Patched',
             'Implementation-Version': "${version}",
             'Implementation-Vendor' : 'EnderTurret',
-            'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             'MixinConfigs': 'mixins.patched.json'
         ])
     }
@@ -141,6 +125,9 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 shadowJar.finalizedBy('reobfShadowJar')
+
+// Fix mixingradle.
+eclipseJdtApt.dependsOn createMcpToSrg
 
 // Compact JSON files for smol jars.
 
