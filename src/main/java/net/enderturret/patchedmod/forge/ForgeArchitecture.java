@@ -3,6 +3,7 @@ package net.enderturret.patchedmod.forge;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.VanillaPackResources;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.ModList;
@@ -50,5 +52,19 @@ class ForgeArchitecture implements IArchitecture {
 	@Override
 	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) {
 		return pack instanceof DelegatingPackResourcesAccess dpra ? dpra.callGetCandidatePacks(type, file) : List.of();
+	}
+
+	@Override
+	public boolean needsSwapNamespaceAndPath(PackResources pack) {
+		return true;
+	}
+
+	@Override
+	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace) {
+		final boolean vanilla = pack instanceof VanillaPackResources;
+		final int prefixLen = vanilla ? "../".length() : 0;
+		// PathPackResources:     :minecraft/something → minecraft:something
+		// VanillaPackResources:  :../minecraft/something → minecraft:something
+		return rl -> new ResourceLocation(namespace, rl.getPath().substring(prefixLen + namespace.length() + 1));
 	}
 }
