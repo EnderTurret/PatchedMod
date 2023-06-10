@@ -11,6 +11,8 @@ import net.fabricmc.fabric.api.resource.ModResourcePack;
 import net.fabricmc.fabric.impl.resource.loader.ModNioResourcePack;
 import net.fabricmc.loader.api.FabricLoader;
 
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -38,6 +40,11 @@ final class FabricArchitecture implements IArchitecture {
 	}
 
 	@Override
+	public PackOutput getPackOutput(DataGenerator generator) {
+		return generator.vanillaPackOutput;
+	}
+
+	@Override
 	public boolean isGroup(PackResources pack) {
 		return pack instanceof GroupResourcePackAccess;
 	}
@@ -45,6 +52,15 @@ final class FabricArchitecture implements IArchitecture {
 	@Override
 	public Collection<PackResources> getChildren(PackResources pack) {
 		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.getPacks()) : List.of();
+	}
+
+	@Override
+	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) {
+		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.getNamespacedPacks().getOrDefault(file.getNamespace(), List.of())) : List.of();
+	}
+
+	private static Collection<PackResources> transform(List<ModResourcePack> list) {
+		return list.stream().map(mrp -> (PackResources) mrp).toList();
 	}
 
 	@Override
@@ -61,14 +77,5 @@ final class FabricArchitecture implements IArchitecture {
 		// FilePackResources is handled separately.
 		// VanillaPackResources:  .:minecraft/something → minecraft:something
 		return rl -> new ResourceLocation(namespace, rl.getPath().substring(namespace.length() + 1));
-	}
-
-	@Override
-	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) {
-		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.getNamespacedPacks().getOrDefault(file.getNamespace(), List.of())) : List.of();
-	}
-
-	private static Collection<PackResources> transform(List<ModResourcePack> list) {
-		return list.stream().map(mrp -> (PackResources) mrp).toList();
 	}
 }
