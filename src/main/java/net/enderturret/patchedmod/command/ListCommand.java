@@ -19,7 +19,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-import net.enderturret.patchedmod.util.IPatchingPackResources;
+import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.env.IEnvironment;
 
@@ -43,7 +43,7 @@ final class ListCommand {
 		final String packName = StringArgumentType.getString(ctx, "pack");
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final PackResources pack = man.listPacks()
+		final PackResources pack = Patched.arch().getExpandedPacks(man)
 				.filter(p -> packName.equals(p.packId()))
 				.findFirst()
 				.orElse(null);
@@ -53,7 +53,7 @@ final class ListCommand {
 			return 0;
 		}
 
-		if (!(pack instanceof IPatchingPackResources patching) || !patching.hasPatches()) {
+		if (!Patched.arch().hasPatches(pack)) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
@@ -89,9 +89,7 @@ final class ListCommand {
 	private static <T> int listPacks(CommandContext<T> ctx, IEnvironment<T> env) {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final List<String> packs = man.listPacks()
-				.filter(p -> p instanceof IPatchingPackResources patching
-						&& patching.hasPatches())
+		final List<String> packs = Patched.arch().getPatchingPacks(man)
 				.map(p -> p.packId())
 				.sorted()
 				.toList();

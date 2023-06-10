@@ -16,7 +16,6 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.env.IEnvironment;
 
 /**
@@ -38,9 +37,7 @@ public final class PatchedCommand {
 		final String input = builder.getRemaining();
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		man.listPacks()
-			.filter(pack -> pack instanceof IPatchingPackResources patching
-					&& patching.hasPatches())
+		Patched.arch().getPatchingPacks(man)
 			.map(PackResources::packId)
 			.filter(s -> s.startsWith(input))
 			.sorted()
