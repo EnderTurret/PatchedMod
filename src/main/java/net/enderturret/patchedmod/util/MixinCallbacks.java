@@ -118,6 +118,7 @@ public class MixinCallbacks {
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
 			final PackEntry _packEntry = manager.fallbacks.get(i);
 			final Entry entry = new Entry(_packEntry);
+
 			if (hasPatches(entry))
 				for (Entry pack : packsIn(entry, type, patchName)) {
 					final String patchJson;

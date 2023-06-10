@@ -4,9 +4,9 @@
   "refmap": "patched.refmap.json",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "forge.DelegatingPackResourcesAccess",
     "MixinAbstractPackResources",
-    "MixinFallbackResourceManager",
-    "forge.DelegatingPackResourcesAccess"
+    "MixinFallbackResourceManager"
   ],
   "client": []
 }
