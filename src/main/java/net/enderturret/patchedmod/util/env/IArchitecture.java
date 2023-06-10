@@ -7,6 +7,8 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -21,6 +23,8 @@ public interface IArchitecture {
 
 	public boolean isPhysicalClient();
 	public boolean isModLoaded(String modId);
+
+	public PackOutput getPackOutput(DataGenerator generator);
 
 	public boolean isGroup(PackResources pack);
 	public Collection<PackResources> getChildren(PackResources pack);

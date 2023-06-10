@@ -91,7 +91,7 @@ public abstract class PatchProvider implements DataProvider {
 		registerPatches();
 
 		if (!patches.isEmpty()) {
-			final Path root = generator.getPackOutput().getOutputFolder(target);
+			final Path root = Patched.arch().getPackOutput(generator).getOutputFolder(target);
 			final List<CompletableFuture<?>> futures = new ArrayList<>();
 
 			for (Map.Entry<ResourceLocation, JsonPatch> entry : patches.entrySet())
