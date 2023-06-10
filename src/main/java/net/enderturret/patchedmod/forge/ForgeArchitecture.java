@@ -18,6 +18,8 @@ import net.minecraft.server.packs.VanillaPackResources;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.forgespi.language.IModInfo;
+import net.minecraftforge.resource.PathPackResources;
 
 import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
 import net.enderturret.patchedmod.util.env.IArchitecture;
@@ -44,6 +46,20 @@ class ForgeArchitecture implements IArchitecture {
 	@Override
 	public PackOutput getPackOutput(DataGenerator generator) {
 		return generator.getPackOutput();
+	}
+
+	@Override
+	public String getName(PackResources pack) {
+		return pack instanceof PathPackResources ppp ? "mod/" + findModNameFromModFile(pack.packId()) : pack.packId();
+	}
+
+	private static String findModNameFromModFile(String modFile) {
+		return ModList.get().getModFiles()
+				.stream()
+				.filter(mfi -> modFile.equals(mfi.getFile().getFileName()))
+				.flatMap(mfi -> mfi.getMods().stream())
+				.map(IModInfo::getDisplayName)
+				.findFirst().orElse(modFile);
 	}
 
 	@Override

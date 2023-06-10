@@ -232,7 +232,7 @@ public class MixinCallbacks {
 			return Iterables.transform(
 					Iterables.filter(Patched.arch().getFilteredChildren(entry.resources(), type, patchName),
 							pack -> hasPatches(new Entry(pack)) && pack.getResource(type, patchName) != null),
-					pack -> new Entry(pack.packId(), pack));
+					pack -> new Entry(pack));
 		} else if (hasPatches(entry) && entry.resources().getResource(type, patchName) != null)
 			return List.of(entry);
 
@@ -272,11 +272,11 @@ public class MixinCallbacks {
 		Entry {}
 
 		Entry(PackEntry packEntry) {
-			this(packEntry.name(), packEntry.resources());
+			this(packEntry.resources());
 		}
 
 		Entry(PackResources resources) {
-			this(resources.packId(), resources);
+			this(Patched.arch().getName(resources), resources);
 		}
 	}
 }

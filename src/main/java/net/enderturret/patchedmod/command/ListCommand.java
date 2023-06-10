@@ -44,7 +44,7 @@ final class ListCommand {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final PackResources pack = Patched.arch().getExpandedPacks(man)
-				.filter(p -> packName.equals(p.packId()))
+				.filter(p -> packName.equals(Patched.arch().getName(p)))
 				.findFirst()
 				.orElse(null);
 
@@ -69,7 +69,7 @@ final class ListCommand {
 		final MutableComponent c = translate("command.patched.list.patches." + (single ? "single" : "multi"),
 				"There " + (!single ? "are" : "is")
 				+ " " + patches.size() + " patch" + (!single ? "es" : "")
-				+ " in " + pack.packId() + ":", patches.size(), pack.packId());
+				+ " in " + Patched.arch().getName(pack) + ":", patches.size(), Patched.arch().getName(pack));
 
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
@@ -77,7 +77,7 @@ final class ListCommand {
 			final String patch = loc.toString();
 			c.append("\n  ").append(Component.literal(patch)
 					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-							"/" + command + " dump patch " + StringArgumentType.escapeIfRequired(pack.packId()) + " " + patch))
+							"/" + command + " dump patch " + StringArgumentType.escapeIfRequired(Patched.arch().getName(pack)) + " " + patch))
 							.withUnderlined(true)));
 		}
 
@@ -90,7 +90,7 @@ final class ListCommand {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final List<String> packs = Patched.arch().getPatchingPacks(man)
-				.map(p -> p.packId())
+				.map(Patched.arch()::getName)
 				.sorted()
 				.toList();
 
