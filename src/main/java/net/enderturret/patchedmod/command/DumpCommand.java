@@ -63,7 +63,7 @@ final class DumpCommand {
 		final String reqNamespace = index == -1 ? null : input.substring(0, index);
 
 		final PackResources pack = Patched.arch().getPatchingPacks(man)
-				.filter(p -> packName.equals(p.packId()))
+				.filter(p -> packName.equals(Patched.arch().getName(p)))
 				.findFirst().orElse(null);
 
 		if (pack != null)
@@ -132,7 +132,7 @@ final class DumpCommand {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final PackResources pack = Patched.arch().getExpandedPacks(man)
-				.filter(p -> packName.equals(p.packId()))
+				.filter(p -> packName.equals(Patched.arch().getName(p)))
 				.findFirst()
 				.orElse(null);
 

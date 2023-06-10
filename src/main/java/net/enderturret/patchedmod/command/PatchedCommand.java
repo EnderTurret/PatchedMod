@@ -12,7 +12,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
@@ -38,7 +37,7 @@ public final class PatchedCommand {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		Patched.arch().getPatchingPacks(man)
-			.map(PackResources::packId)
+			.map(Patched.arch()::getName)
 			.filter(s -> s.startsWith(input))
 			.sorted()
 			.map(s -> quoted ? StringArgumentType.escapeIfRequired(s) : s)

@@ -45,6 +45,11 @@ final class FabricArchitecture implements IArchitecture {
 	}
 
 	@Override
+	public String getName(PackResources pack) {
+		return pack instanceof ModResourcePack mod ? "mod/" + mod.getFabricModMetadata().getName() : pack.packId();
+	}
+
+	@Override
 	public boolean isGroup(PackResources pack) {
 		return pack instanceof GroupResourcePackAccess;
 	}
