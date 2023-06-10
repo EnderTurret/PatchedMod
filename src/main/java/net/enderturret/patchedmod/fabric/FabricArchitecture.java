@@ -58,6 +58,7 @@ final class FabricArchitecture implements IArchitecture {
 		// GroupResourcePack and ModNioResourcePack
 		if (!needsSwapNamespaceAndPath(pack)) return rl -> rl;
 		// PathPackResources:      :minecraft/something → minecraft:something
+		// FilePackResources is handled separately.
 		// VanillaPackResources:  .:minecraft/something → minecraft:something
 		return rl -> new ResourceLocation(namespace, rl.getPath().substring(namespace.length() + 1));
 	}
