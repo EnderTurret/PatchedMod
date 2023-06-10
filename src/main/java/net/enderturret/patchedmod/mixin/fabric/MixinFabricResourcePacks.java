@@ -5,8 +5,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import net.fabricmc.fabric.impl.resource.loader.GroupResourcePack;
 import net.fabricmc.fabric.impl.resource.loader.ModNioResourcePack;
 
-import net.minecraft.server.packs.AbstractPackResources;
-
 import net.enderturret.patchedmod.mixin.MixinAbstractPackResources;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 

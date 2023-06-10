@@ -11,7 +11,7 @@ import net.enderturret.patchedmod.command.PatchedCommand;
 import net.enderturret.patchedmod.util.env.IEnvironment;
 
 @ApiStatus.Internal
-public class PatchedFabric implements ModInitializer {
+public final class PatchedFabric implements ModInitializer {
 
 	// I'm not sure if Fabric provides a less inconvenient way to get the physical side, so here's this.
 	@ApiStatus.Internal
