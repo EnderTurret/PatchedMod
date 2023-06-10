@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
@@ -14,8 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-
-import net.fabricmc.fabric.impl.resource.loader.GroupResourcePack;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
@@ -56,30 +55,22 @@ public final class PatchUtil {
 		// resolves the same directory and then resolves the namespace directory.
 		// We have to use a dot for the VanillaPackResources because otherwise LinkFileSystem's path handling gets a little concerned.
 		try {
-			final boolean vanilla = pack instanceof VanillaPackResources;
-			final boolean group = Patched.arch().isGroup(pack);
+			final Function<ResourceLocation, ResourceLocation> renamer = Patched.arch().getRenamer(pack, namespace);
 			final String fakeNamespace;
 			final String fakePath;
 
-			if (group) {
+			if (Patched.arch().needsSwapNamespaceAndPath(pack)) {
+				// The vanilla pack throws on empty paths.
+				fakeNamespace = pack instanceof VanillaPackResources ? "." : "";
+				fakePath = namespace;
+			} else {
 				fakeNamespace = namespace;
 				fakePath = "";
-			} else {
-				fakeNamespace = vanilla ? "." : "";
-				fakePath = namespace;
 			}
 
 			pack.listResources(type, fakeNamespace, fakePath, (loc, io) -> {
 				if (filter.test(loc)) {
-					final ResourceLocation renamed;
-
-					if (group)
-						renamed = loc;
-					else
-						// We do have to fix the resource location though.
-						// :minecraft/something → minecraft:something
-						// .:minecraft/something → minecraft:something
-						renamed = new ResourceLocation(namespace, loc.getPath().substring(namespace.length() + 1));
+					final ResourceLocation renamed = renamer.apply(loc);
 
 					ret.add(renamed);
 				}
