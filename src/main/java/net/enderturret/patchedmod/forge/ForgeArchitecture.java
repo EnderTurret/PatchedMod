@@ -64,6 +64,7 @@ class ForgeArchitecture implements IArchitecture {
 		final boolean vanilla = pack instanceof VanillaPackResources;
 		final int prefixLen = vanilla ? "../".length() : 0;
 		// PathPackResources:     :minecraft/something → minecraft:something
+		// FilePackResources is handled separately.
 		// VanillaPackResources:  :../minecraft/something → minecraft:something
 		return rl -> new ResourceLocation(namespace, rl.getPath().substring(prefixLen + namespace.length() + 1));
 	}

@@ -6,9 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.VanillaPackResources;
@@ -26,6 +30,7 @@ import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.PatchedTestConditions;
+import net.enderturret.patchedmod.mixin.FilePackResourcesAccess;
 
 /**
  * An assortment of utilities related to patching Json data.
@@ -45,6 +50,8 @@ public final class PatchUtil {
 			.setPrettyPrinting().create();
 
 	public static List<ResourceLocation> getResources(PackResources pack, PackType type, String namespace, Predicate<ResourceLocation> filter) {
+		if (pack instanceof FilePackResources fpp) return getFileResources(fpp, type, namespace, filter);
+
 		final List<ResourceLocation> ret = new ArrayList<>();
 
 		// This one's gonna require some explaining:
@@ -77,6 +84,38 @@ public final class PatchUtil {
 			});
 		} catch (Exception e) {
 			Patched.arch().logger().error("Exception listing resources:", e);
+		}
+
+		return ret;
+	}
+
+	/**
+	 * This method is a better implementation of
+	 * {@link FilePackResources#listResources(PackType, String, String, net.minecraft.server.packs.PackResources.ResourceOutput)}
+	 * that actually works for what we need -- getting all resources under a particular namespace.
+	 * @param pack The pack in question.
+	 * @param type The pack type.
+	 * @param namespace The namespace.
+	 * @param filter A filter for deciding which resources to include in the returned list.
+	 * @return The list of resources under the given namespace.
+	 */
+	private static List<ResourceLocation> getFileResources(FilePackResources pack, PackType type, String namespace, Predicate<ResourceLocation> filter) {
+		final List<ResourceLocation> ret = new ArrayList<>();
+
+		final ZipFile zip = ((FilePackResourcesAccess) pack).callGetOrCreateZipFile();
+		if (zip == null) return ret;
+
+		final String root = type.getDirectory() + "/" + namespace + "/";
+
+		for (Enumeration<? extends ZipEntry> it = zip.entries(); it.hasMoreElements(); ) {
+			final ZipEntry entry = it.nextElement();
+			if (entry.isDirectory() || !entry.getName().startsWith(root)) continue;
+
+			final String path = entry.getName().substring(root.length());
+			final ResourceLocation loc = ResourceLocation.tryBuild(namespace, path);
+
+			if (filter.test(loc))
+				ret.add(loc);
 		}
 
 		return ret;
