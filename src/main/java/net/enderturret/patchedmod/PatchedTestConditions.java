@@ -3,6 +3,8 @@ package net.enderturret.patchedmod;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import com.google.gson.JsonElement;
 
 import net.minecraft.resources.ResourceLocation;
@@ -10,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
+import net.enderturret.patchedmod.util.PatchUtil;
 
 /**
  * Handles evaluating custom test conditions.
@@ -22,6 +25,12 @@ public final class PatchedTestConditions implements ITestEvaluator {
 	private static Map<String, ITestEvaluator> conditions = new HashMap<>();
 
 	private PatchedTestConditions() {}
+
+	@ApiStatus.Internal
+	public static void registerDefaults() {
+		PatchedTestConditions.registerSimple(new ResourceLocation(Patched.MOD_ID, "mod_loaded"),
+				value -> Patched.arch().isModLoaded(PatchUtil.assertIsString("mod_loaded", value)));
+	}
 
 	/**
 	 * Registers the given condition under the given name.

@@ -122,7 +122,7 @@ public abstract class PatchProvider implements DataProvider {
 			jw.close();
 			cache.writeIfNeeded(to, baos.toByteArray(), hos.hash());
 		} catch (IOException e) {
-			Patched.LOGGER.error("Exception saving file to {}:", to, e);
+			Patched.arch().logger().error("Exception saving file to {}:", to, e);
 		}
 	}
 
