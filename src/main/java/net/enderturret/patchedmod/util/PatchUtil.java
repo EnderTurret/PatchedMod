@@ -56,21 +56,34 @@ public final class PatchUtil {
 		// resolves the same directory and then resolves the namespace directory.
 		// We have to use a dot for the VanillaPackResources because otherwise LinkFileSystem's path handling gets a little concerned.
 		try {
-			if (pack instanceof GroupResourcePack)
-				pack.listResources(type, namespace, "", (loc, io) -> {
-					if (filter.test(loc))
-						ret.add(loc);
-				});
-			else {
-				final boolean vanilla = pack instanceof VanillaPackResources;
-				pack.listResources(type, vanilla ? "." : "", namespace, (loc, io) -> {
-					if (filter.test(loc))
+			final boolean vanilla = pack instanceof VanillaPackResources;
+			final boolean group = Patched.arch().isGroup(pack);
+			final String fakeNamespace;
+			final String fakePath;
+
+			if (group) {
+				fakeNamespace = namespace;
+				fakePath = "";
+			} else {
+				fakeNamespace = vanilla ? "." : "";
+				fakePath = namespace;
+			}
+
+			pack.listResources(type, fakeNamespace, fakePath, (loc, io) -> {
+				if (filter.test(loc)) {
+					final ResourceLocation renamed;
+
+					if (group)
+						renamed = loc;
+					else
 						// We do have to fix the resource location though.
 						// :minecraft/something → minecraft:something
 						// .:minecraft/something → minecraft:something
-						ret.add(new ResourceLocation(namespace, loc.getPath().substring(namespace.length() + 1)));
-				});
-			}
+						renamed = new ResourceLocation(namespace, loc.getPath().substring(namespace.length() + 1));
+
+					ret.add(renamed);
+				}
+			});
 		} catch (Exception e) {
 			Patched.arch().logger().error("Exception listing resources:", e);
 		}
