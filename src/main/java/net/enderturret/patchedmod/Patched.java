@@ -13,11 +13,8 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.fml.IExtensionPoint.DisplayTest;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.NetworkConstants;
 
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patchedmod.command.PatchedCommand;
@@ -43,7 +40,6 @@ public class Patched {
 
 	@ApiStatus.Internal
 	public Patched() {
-		ModLoadingContext.get().registerExtensionPoint(DisplayTest.class, () -> new DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (version, network) -> true));
 		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
 
 		PatchedTestConditions.registerSimple(new ResourceLocation(MOD_ID, "mod_loaded"), value -> ModList.get().isLoaded(assertIsString("mod_loaded", value)));

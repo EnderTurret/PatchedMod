@@ -15,6 +15,7 @@ issueTrackerURL="https://github.com/EnderTurret/PatchedMod/issues"
     authors="EnderTurret"
     displayURL="https://github.com/EnderTurret/PatchedMod"
     logoFile="icon.png"
+    displayTest="IGNORE_ALL_VERSION"
 
 [[dependencies.patched]]
     modId="forge"
