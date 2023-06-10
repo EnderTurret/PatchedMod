@@ -28,7 +28,6 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.PatchingInputStream;
 import net.enderturret.patchedmod.util.env.IEnvironment;
@@ -63,10 +62,8 @@ final class DumpCommand {
 		final int index = input.indexOf(':');
 		final String reqNamespace = index == -1 ? null : input.substring(0, index);
 
-		final PackResources pack = man.listPacks()
-				.filter(p -> p instanceof IPatchingPackResources patching
-						&& patching.hasPatches()
-						&& packName.equals(p.packId()))
+		final PackResources pack = Patched.arch().getPatchingPacks(man)
+				.filter(p -> packName.equals(p.packId()))
 				.findFirst().orElse(null);
 
 		if (pack != null)
@@ -134,13 +131,18 @@ final class DumpCommand {
 		final ResourceLocation location = ctx.getArgument("location", ResourceLocation.class);
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final PackResources pack = man.listPacks()
+		final PackResources pack = Patched.arch().getExpandedPacks(man)
 				.filter(p -> packName.equals(p.packId()))
 				.findFirst()
 				.orElse(null);
 
 		if (pack == null) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.dump.pack_not_found", "That pack doesn't exist."));
+			return 0;
+		}
+
+		if (!Patched.arch().hasPatches(pack)) {
+			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
 

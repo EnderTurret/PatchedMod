@@ -1,6 +1,7 @@
 package net.enderturret.patchedmod.util.env;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
@@ -8,6 +9,9 @@ import org.slf4j.Logger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.ResourceManager;
+
+import net.enderturret.patchedmod.util.IPatchingPackResources;
 
 @ApiStatus.Internal
 public interface IArchitecture {
@@ -29,4 +33,17 @@ public interface IArchitecture {
 	 * @return The list of {@link PackResources} that contain the namespace of the given file.
 	 */
 	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file);
+
+	public default Stream<PackResources> getExpandedPacks(ResourceManager manager) {
+		return manager.listPacks()
+				.flatMap(p -> isGroup(p) ? getChildren(p).stream() : Stream.of(p));
+	}
+
+	public default Stream<PackResources> getPatchingPacks(ResourceManager manager) {
+		return getExpandedPacks(manager).filter(this::hasPatches);
+	}
+
+	public default boolean hasPatches(PackResources pack) {
+		return pack instanceof IPatchingPackResources ppp && ppp.hasPatches();
+	}
 }
