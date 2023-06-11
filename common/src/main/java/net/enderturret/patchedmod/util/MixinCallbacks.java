@@ -67,7 +67,7 @@ public class MixinCallbacks {
 	 * @return A new stream containing the patched data.
 	 */
 	private static InputStream patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, InputStream stream, @Nullable PatchAudit audit) {
-		if (stream == null) return stream;
+		if (stream == null || !PatchUtil.isPatchable(name)) return stream;
 
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
