@@ -4,6 +4,10 @@ pluginManagement {
         maven { url = 'https://maven.minecraftforge.net' }
         maven { url = 'https://maven.parchmentmc.org' }
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
         mavenCentral()
     }
 }
@@ -11,3 +15,10 @@ pluginManagement {
 plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.5.0'
 }
+
+rootProject.name = 'PatchedMod'
+
+include('common', 'forge', 'fabric')
+project(':common').name = 'PatchedModCommon'
+project(':forge').name = 'PatchedModForge'
+project(':fabric').name = 'PatchedModFabric'

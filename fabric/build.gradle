@@ -1,0 +1,110 @@
+plugins {
+    id 'fabric-loom' version '1.2-SNAPSHOT'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+archivesBaseName = 'Patched-fabric'
+
+configurations {
+    implementation.extendsFrom shadow
+}
+
+dependencies {
+    minecraft 'com.mojang:minecraft:1.20'
+    mappings loom.officialMojangMappings()
+    modImplementation 'net.fabricmc:fabric-loader:0.14.21'
+    modImplementation 'net.fabricmc.fabric-api:fabric-api:0.83.0+1.20'
+
+    shadow ('com.github.EnderTurret:Patched:1.2.1') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+
+    compileOnly (project(':PatchedModCommon')) {
+        exclude group: 'org.spongepowered', module: 'mixin'
+        exclude group: 'net.minecraft', module: 'joined_aw'
+    }
+}
+
+loom {
+    accessWidenerPath = file("$rootDir/fabric/src/main/resources/patched.accesswidener")
+
+    mixin {
+        defaultRefmapName = 'patched.refmap.json'
+    }
+
+    // Due to an incredible oversight(?) in Loom, these actually do nothing.
+    // You cannot change the configuration name from the default, which is derived from the project name.
+    runs {
+        client {
+            configName = 'runPatchedClientFabric'
+        }
+
+        server {
+            configName = 'runPatchedServerFabric'
+        }
+    }
+
+    runConfigs.configureEach {
+        ideConfigGenerated = true
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+}
+
+compileJava {
+    source project(':PatchedModCommon').sourceSets.main.allSource
+}
+
+sourcesJar {
+    from project(':PatchedModCommon').sourceSets.main.allJava
+}
+
+processResources {
+    from project(':PatchedModCommon').sourceSets.main.resources
+}
+
+jar {
+    manifest {
+        attributes([
+            'Specification-Title': 'Patched',
+            'Specification-Vendor': 'EnderTurret',
+            'Specification-Version': '1',
+            'Implementation-Title': 'Patched',
+            'Implementation-Version': "${version}",
+            'Implementation-Vendor' : 'EnderTurret',
+            'MixinConfigs': 'mixins.patched.json'
+        ])
+    }
+}
+
+import net.fabricmc.loom.task.RemapJarTask
+
+task remappedShadowJar(type: RemapJarTask, dependsOn: shadowJar) {
+    input = tasks.shadowJar.archiveFile
+    archiveClassifier = ''
+}
+
+artifacts {
+    archives remappedShadowJar
+    shadow shadowJar
+}
+
+processResources {
+    inputs.property 'version', project.version
+
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}
+
+import groovy.json.*
+
+processResources {
+    doLast {
+        fileTree(dir: outputs.files.asPath, include: '**/*.json').each {
+            File file -> file.text = JsonOutput.toJson(new JsonSlurper().parse(file))
+        }
+    }
+}

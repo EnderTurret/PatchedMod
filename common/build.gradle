@@ -1,0 +1,16 @@
+plugins {
+    id 'java'
+    id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT'
+}
+
+minecraft {
+    version '1.20'
+    accessWideners "$rootDir/common/src/main/resources/patched_common.accesswidener"
+}
+
+dependencies {
+    compileOnly 'org.spongepowered:mixin:0.8.5'
+    compileOnly ('com.github.EnderTurret:Patched:1.2.1') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+}
