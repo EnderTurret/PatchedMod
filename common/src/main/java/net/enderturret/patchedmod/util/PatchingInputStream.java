@@ -3,6 +3,7 @@ package net.enderturret.patchedmod.util;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -20,8 +21,7 @@ public class PatchingInputStream extends FilterInputStream {
 
 	public PatchingInputStream(IoSupplier<InputStream> delegate, PatchFunction patcher) throws IOException {
 		super(delegate.get());
-		if (patcher == null) throw new NullPointerException();
-		this.patcher = patcher;
+		this.patcher = Objects.requireNonNull(patcher);
 	}
 
 	private void transform() {

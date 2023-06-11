@@ -24,7 +24,7 @@ import net.minecraftforge.resource.PathPackResources;
 import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
-class ForgePlatform implements IPlatform {
+final class ForgePlatform implements IPlatform {
 
 	private final Logger logger = LoggerFactory.getLogger("Patched");
 

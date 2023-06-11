@@ -2,6 +2,7 @@ package net.enderturret.patchedmod;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
@@ -38,8 +39,7 @@ public final class PatchedTestConditions implements ITestEvaluator {
 	 * @param condition The condition itself.
 	 */
 	public static void register(ResourceLocation name, ITestEvaluator condition) {
-		if (condition == null) throw new NullPointerException();
-		conditions.put(name.toString(), condition);
+		conditions.put(name.toString(), Objects.requireNonNull(condition));
 	}
 
 	/**

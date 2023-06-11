@@ -76,7 +76,7 @@ final class DumpCommand {
 						.stream()
 						.filter(loc -> loc.toString().startsWith(input))
 						.sorted()
-						.map(loc -> loc.toString())
+						.map(ResourceLocation::toString)
 						.forEach(builder::suggest);
 				}
 
@@ -97,7 +97,6 @@ final class DumpCommand {
 
 		final int index = input.indexOf(':');
 		final String reqNamespace = index == -1 ? null : input.substring(0, index);
-		final String path = input.substring(index + 1, input.length());
 
 		// Don't process without a filter.
 		// There's a lot of files here, so narrowing them down is a requirement.
