@@ -17,7 +17,7 @@ public final class PatchedForge {
 
 	public PatchedForge() {
 		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
-		Patched.setArch(new ForgeArchitecture());
+		Patched.setPlatform(new ForgePlatform());
 		PatchedTestConditions.registerDefaults();
 	}
 

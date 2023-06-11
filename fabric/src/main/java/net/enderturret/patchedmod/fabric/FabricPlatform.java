@@ -18,9 +18,9 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patchedmod.mixin.fabric.GroupResourcePackAccess;
-import net.enderturret.patchedmod.util.env.IArchitecture;
+import net.enderturret.patchedmod.util.env.IPlatform;
 
-final class FabricArchitecture implements IArchitecture {
+final class FabricPlatform implements IPlatform {
 
 	private final Logger logger = LoggerFactory.getLogger("Patched");
 

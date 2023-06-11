@@ -22,7 +22,7 @@ public final class PatchedFabric implements ModInitializer {
 		CommandRegistrationCallback.EVENT.register((dispatcher, context, dedicated) -> {
 			dispatcher.register(PatchedCommand.create(new IEnvironment.ServerEnvironment()));
 		});
-		Patched.setArch(new FabricArchitecture());
+		Patched.setPlatform(new FabricPlatform());
 		PatchedTestConditions.registerDefaults();
 	}
 }

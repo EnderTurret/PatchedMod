@@ -36,8 +36,8 @@ public final class PatchedCommand {
 		final String input = builder.getRemaining();
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		Patched.arch().getPatchingPacks(man)
-			.map(Patched.arch()::getName)
+		Patched.platform().getPatchingPacks(man)
+			.map(Patched.platform()::getName)
 			.filter(s -> s.startsWith(input))
 			.sorted()
 			.map(s -> quoted ? StringArgumentType.escapeIfRequired(s) : s)
@@ -48,6 +48,6 @@ public final class PatchedCommand {
 
 	static MutableComponent translate(String key, String text, Object... args) {
 		// Prefer the translation when running commands on the client.
-		return Patched.arch().isPhysicalClient() ? Component.translatable(key, args) : Component.literal(text);
+		return Patched.platform().isPhysicalClient() ? Component.translatable(key, args) : Component.literal(text);
 	}
 }

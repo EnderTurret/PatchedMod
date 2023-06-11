@@ -62,11 +62,11 @@ public final class PatchUtil {
 		// resolves the same directory and then resolves the namespace directory.
 		// We have to use a dot for the VanillaPackResources because otherwise LinkFileSystem's path handling gets a little concerned.
 		try {
-			final Function<ResourceLocation, ResourceLocation> renamer = Patched.arch().getRenamer(pack, namespace);
+			final Function<ResourceLocation, ResourceLocation> renamer = Patched.platform().getRenamer(pack, namespace);
 			final String fakeNamespace;
 			final String fakePath;
 
-			if (Patched.arch().needsSwapNamespaceAndPath(pack)) {
+			if (Patched.platform().needsSwapNamespaceAndPath(pack)) {
 				// The vanilla pack throws on empty paths.
 				fakeNamespace = pack instanceof VanillaPackResources ? "." : "";
 				fakePath = namespace;
@@ -83,7 +83,7 @@ public final class PatchUtil {
 				}
 			});
 		} catch (Exception e) {
-			Patched.arch().logger().error("Exception listing resources:", e);
+			Patched.platform().logger().error("Exception listing resources:", e);
 		}
 
 		return ret;
@@ -139,7 +139,7 @@ public final class PatchUtil {
 			ret = GSON.toJson(elem);
 		} catch (Exception e) {
 			if (logError)
-				Patched.arch().logger().warn("Failed to parse {} as json:", location, e);
+				Patched.platform().logger().warn("Failed to parse {} as json:", location, e);
 
 			if (requireJson)
 				return null;
@@ -166,7 +166,7 @@ public final class PatchUtil {
 			return JsonParser.parseString(ret);
 		} catch (Exception e) {
 			if (logError)
-				Patched.arch().logger().warn("Failed to parse {} as json:", location, e);
+				Patched.platform().logger().warn("Failed to parse {} as json:", location, e);
 		}
 
 		return null;

@@ -17,7 +17,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 
 @ApiStatus.Internal
-public interface IArchitecture {
+public interface IPlatform {
 
 	public Logger logger();
 

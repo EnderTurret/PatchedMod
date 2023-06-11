@@ -126,7 +126,7 @@ public class MixinCallbacks {
 					try (InputStream patchStream = pack.resources().getResource(type, patchName).get()) {
 						patchJson = PatchUtil.readString(patchStream);
 					} catch (IOException e) {
-						Patched.arch().logger().warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
+						Patched.platform().logger().warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
 						continue;
 					}
 
@@ -135,7 +135,7 @@ public class MixinCallbacks {
 					try {
 						patch = Patches.readPatch(PatchUtil.GSON, patchJson);
 					} catch (JsonParseException e) {
-						Patched.arch().logger().warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
+						Patched.platform().logger().warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
 						continue;
 					}
 
@@ -143,12 +143,12 @@ public class MixinCallbacks {
 						if (audit != null)
 							audit.setPatchPath(pack.name());
 
-						Patched.arch().logger().debug("Applying patch {} from {}.", patchName, pack.name());
+						Patched.platform().logger().debug("Applying patch {} from {}.", patchName, pack.name());
 						patch.patch(elem, context == null ? context = PatchUtil.CONTEXT.audit(audit) : context);
 					} catch (PatchingException e) {
-						Patched.arch().logger().warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
+						Patched.platform().logger().warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
 					} catch (Exception e) {
-						Patched.arch().logger().warn("Failed to apply patch {} from {}:", patchName, pack.name(), e);
+						Patched.platform().logger().warn("Failed to apply patch {} from {}:", patchName, pack.name(), e);
 					}
 
 					if (pack.resources() == from)
@@ -181,9 +181,9 @@ public class MixinCallbacks {
 		if (!patching.initialized())
 			synchronized (patching) {
 				if (!patching.initialized()) {
-					if (Patched.arch().isGroup(entry.resources())) {
+					if (Patched.platform().isGroup(entry.resources())) {
 						boolean enabled = false;
-						for (PackResources resources : Patched.arch().getChildren(entry.resources()))
+						for (PackResources resources : Patched.platform().getChildren(entry.resources()))
 							enabled |= hasPatches(new Entry(resources));
 						patching.setHasPatches(enabled);
 					} else {
@@ -201,7 +201,7 @@ public class MixinCallbacks {
 
 								else patching.setHasPatches(false);
 							} catch (Exception e) {
-								Patched.arch().logger().error("Failed to read pack.mcmeta in {}:", entry.name(), e);
+								Patched.platform().logger().error("Failed to read pack.mcmeta in {}:", entry.name(), e);
 								patching.setHasPatches(false);
 							}
 						else
@@ -209,10 +209,10 @@ public class MixinCallbacks {
 					}
 
 					if (patching.hasPatches())
-						Patched.arch().logger().debug("Enabled patching for {}.", entry.name());
+						Patched.platform().logger().debug("Enabled patching for {}.", entry.name());
 
 					if (DEBUG)
-						Patched.arch().logger().debug("{} patches state: {}", entry.name(), patching.hasPatches());
+						Patched.platform().logger().debug("{} patches state: {}", entry.name(), patching.hasPatches());
 				}
 			}
 
@@ -228,9 +228,9 @@ public class MixinCallbacks {
 	 * @return The packs containing the specified patch.
 	 */
 	private static Iterable<Entry> packsIn(Entry entry, PackType type, ResourceLocation patchName) {
-		if (Patched.arch().isGroup(entry.resources())) {
+		if (Patched.platform().isGroup(entry.resources())) {
 			return Iterables.transform(
-					Iterables.filter(Patched.arch().getFilteredChildren(entry.resources(), type, patchName),
+					Iterables.filter(Patched.platform().getFilteredChildren(entry.resources(), type, patchName),
 							pack -> hasPatches(new Entry(pack)) && pack.getResource(type, patchName) != null),
 					pack -> new Entry(pack));
 		} else if (hasPatches(entry) && entry.resources().getResource(type, patchName) != null)
@@ -253,8 +253,8 @@ public class MixinCallbacks {
 	 * @return The true source of the file.
 	 */
 	private static PackResources findTrueSource(PackResources from, PackType type, ResourceLocation name) {
-		if (Patched.arch().isGroup(from))
-			for (PackResources pack : Patched.arch().getFilteredChildren(from, type, name))
+		if (Patched.platform().isGroup(from))
+			for (PackResources pack : Patched.platform().getFilteredChildren(from, type, name))
 				if (pack.getResource(type, name) != null)
 					return pack;
 
@@ -276,7 +276,7 @@ public class MixinCallbacks {
 		}
 
 		Entry(PackResources resources) {
-			this(Patched.arch().getName(resources), resources);
+			this(Patched.platform().getName(resources), resources);
 		}
 	}
 }

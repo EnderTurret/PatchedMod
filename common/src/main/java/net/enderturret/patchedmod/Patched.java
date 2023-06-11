@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import net.enderturret.patchedmod.util.MixinCallbacks;
 import net.enderturret.patchedmod.util.PatchUtil;
-import net.enderturret.patchedmod.util.env.IArchitecture;
+import net.enderturret.patchedmod.util.env.IPlatform;
 
 /**
  * <p>The main mod class.</p>
@@ -19,18 +19,18 @@ public final class Patched {
 
 	public static final String MOD_ID = "patched";
 
-	private static IArchitecture arch;
+	private static IPlatform platform;
 
 	private Patched() {}
 
 	@ApiStatus.Internal
-	public static IArchitecture arch() {
-		return arch;
+	public static IPlatform platform() {
+		return platform;
 	}
 
 	@ApiStatus.Internal
-	public static void setArch(IArchitecture value) {
-		arch = Objects.requireNonNull(value);
+	public static void setPlatform(IPlatform value) {
+		platform = Objects.requireNonNull(value);
 	}
 
 	/**

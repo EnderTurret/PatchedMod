@@ -29,7 +29,7 @@ public final class PatchedTestConditions implements ITestEvaluator {
 	@ApiStatus.Internal
 	public static void registerDefaults() {
 		PatchedTestConditions.registerSimple(new ResourceLocation(Patched.MOD_ID, "mod_loaded"),
-				value -> Patched.arch().isModLoaded(PatchUtil.assertIsString("mod_loaded", value)));
+				value -> Patched.platform().isModLoaded(PatchUtil.assertIsString("mod_loaded", value)));
 	}
 
 	/**

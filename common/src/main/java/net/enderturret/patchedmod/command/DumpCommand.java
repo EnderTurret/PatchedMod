@@ -62,8 +62,8 @@ final class DumpCommand {
 		final int index = input.indexOf(':');
 		final String reqNamespace = index == -1 ? null : input.substring(0, index);
 
-		final PackResources pack = Patched.arch().getPatchingPacks(man)
-				.filter(p -> packName.equals(Patched.arch().getName(p)))
+		final PackResources pack = Patched.platform().getPatchingPacks(man)
+				.filter(p -> packName.equals(Patched.platform().getName(p)))
 				.findFirst().orElse(null);
 
 		if (pack != null)
@@ -131,8 +131,8 @@ final class DumpCommand {
 		final ResourceLocation location = ctx.getArgument("location", ResourceLocation.class);
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final PackResources pack = Patched.arch().getExpandedPacks(man)
-				.filter(p -> packName.equals(Patched.arch().getName(p)))
+		final PackResources pack = Patched.platform().getExpandedPacks(man)
+				.filter(p -> packName.equals(Patched.platform().getName(p)))
 				.findFirst()
 				.orElse(null);
 
@@ -141,7 +141,7 @@ final class DumpCommand {
 			return 0;
 		}
 
-		if (!Patched.arch().hasPatches(pack)) {
+		if (!Patched.platform().hasPatches(pack)) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
@@ -161,7 +161,7 @@ final class DumpCommand {
 			}
 			env.sendSuccess(ctx.getSource(), Component.literal(src), false);
 		} catch (IOException e) {
-			Patched.arch().logger().warn("Failed to read resource '{}' from {}:", location, packName, e);
+			Patched.platform().logger().warn("Failed to read resource '{}' from {}:", location, packName, e);
 			return 0;
 		}
 
@@ -199,7 +199,7 @@ final class DumpCommand {
 			env.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
 			return 0;
 		} catch (IOException e) {
-			Patched.arch().logger().warn("Failed to read resource '{}':", location, e);
+			Patched.platform().logger().warn("Failed to read resource '{}':", location, e);
 			return 0;
 		}
 

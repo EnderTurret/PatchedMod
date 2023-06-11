@@ -22,9 +22,9 @@ import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.resource.PathPackResources;
 
 import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
-import net.enderturret.patchedmod.util.env.IArchitecture;
+import net.enderturret.patchedmod.util.env.IPlatform;
 
-class ForgeArchitecture implements IArchitecture {
+class ForgePlatform implements IPlatform {
 
 	private final Logger logger = LoggerFactory.getLogger("Patched");
 

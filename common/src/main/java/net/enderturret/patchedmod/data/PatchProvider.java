@@ -91,7 +91,7 @@ public abstract class PatchProvider implements DataProvider {
 		registerPatches();
 
 		if (!patches.isEmpty()) {
-			final Path root = Patched.arch().getPackOutput(generator).getOutputFolder(target);
+			final Path root = Patched.platform().getPackOutput(generator).getOutputFolder(target);
 			final List<CompletableFuture<?>> futures = new ArrayList<>();
 
 			for (Map.Entry<ResourceLocation, JsonPatch> entry : patches.entrySet())
@@ -122,7 +122,7 @@ public abstract class PatchProvider implements DataProvider {
 			jw.close();
 			cache.writeIfNeeded(to, baos.toByteArray(), hos.hash());
 		} catch (IOException e) {
-			Patched.arch().logger().error("Exception saving file to {}:", to, e);
+			Patched.platform().logger().error("Exception saving file to {}:", to, e);
 		}
 	}
 
