@@ -2,7 +2,7 @@ package net.enderturret.patchedmod.forge.data;
 
 import java.util.Map;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.data.PackOutput;
 
@@ -15,7 +15,7 @@ import net.enderturret.patchedmod.data.PatchProvider;
  * Tests the datagen utilities to verify they actually work.
  * @author EnderTurret
  */
-@ApiStatus.Internal
+@Internal
 //@EventBusSubscriber(modid = Patched.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public final class TestDataProvider {
 

@@ -1,6 +1,6 @@
 package net.enderturret.patchedmod.forge;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -11,7 +11,7 @@ import net.enderturret.patchedmod.PatchedTestConditions;
 import net.enderturret.patchedmod.command.PatchedCommand;
 import net.enderturret.patchedmod.util.env.IEnvironment;
 
-@ApiStatus.Internal
+@Internal
 @Mod(Patched.MOD_ID)
 public final class PatchedForge {
 

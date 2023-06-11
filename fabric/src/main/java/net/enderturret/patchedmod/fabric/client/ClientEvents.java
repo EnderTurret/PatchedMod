@@ -1,6 +1,6 @@
 package net.enderturret.patchedmod.fabric.client;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -18,7 +18,7 @@ import net.enderturret.patchedmod.util.env.IEnvironment;
  * Various client-side event handlers.
  * @author EnderTurret
  */
-@ApiStatus.Internal
+@Internal
 public final class ClientEvents implements ClientModInitializer {
 
 	@Override

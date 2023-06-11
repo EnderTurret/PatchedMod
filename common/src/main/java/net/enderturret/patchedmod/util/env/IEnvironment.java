@@ -1,6 +1,6 @@
 package net.enderturret.patchedmod.util.env;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -10,7 +10,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-@ApiStatus.Internal
+@Internal
 public interface IEnvironment<T> {
 
 	public boolean client();
@@ -31,7 +31,7 @@ public interface IEnvironment<T> {
 		return RequiredArgumentBuilder.argument(name, type);
 	}
 
-	@ApiStatus.Internal
+	@Internal
 	public static final class ServerEnvironment implements IEnvironment<CommandSourceStack> {
 
 		@Override

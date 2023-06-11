@@ -3,7 +3,7 @@ package net.enderturret.patchedmod;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.google.gson.JsonElement;
 
@@ -26,7 +26,7 @@ public final class PatchedTestConditions implements ITestEvaluator {
 
 	private PatchedTestConditions() {}
 
-	@ApiStatus.Internal
+	@Internal
 	public static void registerDefaults() {
 		PatchedTestConditions.registerSimple(new ResourceLocation(Patched.MOD_ID, "mod_loaded"),
 				value -> Patched.platform().isModLoaded(PatchUtil.assertIsString("mod_loaded", value)));

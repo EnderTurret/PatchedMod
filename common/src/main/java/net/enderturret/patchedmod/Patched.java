@@ -2,7 +2,7 @@ package net.enderturret.patchedmod;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.resources.ResourceLocation;
 
@@ -23,12 +23,12 @@ public final class Patched {
 
 	private Patched() {}
 
-	@ApiStatus.Internal
+	@Internal
 	public static IPlatform platform() {
 		return platform;
 	}
 
-	@ApiStatus.Internal
+	@Internal
 	public static void setPlatform(IPlatform value) {
 		platform = Objects.requireNonNull(value);
 	}

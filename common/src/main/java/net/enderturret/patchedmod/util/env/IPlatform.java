@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.slf4j.Logger;
 
 import net.minecraft.data.DataGenerator;
@@ -16,7 +16,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 
-@ApiStatus.Internal
+@Internal
 public interface IPlatform {
 
 	public Logger logger();
