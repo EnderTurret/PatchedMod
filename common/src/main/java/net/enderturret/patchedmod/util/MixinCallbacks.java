@@ -85,10 +85,10 @@ public class MixinCallbacks {
 		try {
 			final JsonElement elem = JsonParser.parseString(json);
 
-			patch(manager, from, type, name, elem, audit);
-
-			json = PatchUtil.GSON.toJson(elem);
-			bytes = json.getBytes(StandardCharsets.UTF_8);
+			if (patch(manager, from, type, name, elem, audit)) {
+				json = PatchUtil.GSON.toJson(elem);
+				bytes = json.getBytes(StandardCharsets.UTF_8);
+			}
 		} catch (JsonParseException e) {
 			// Let the future data consumer handle this.
 		}
@@ -105,9 +105,10 @@ public class MixinCallbacks {
 	 * @param name The location of the Json data.
 	 * @param elem The Json data to patch.
 	 * @param audit The audit to record changes made by the patches.
+	 * @return Whether any patches were actually applied.
 	 */
 	@SuppressWarnings("resource")
-	private static void patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, JsonElement elem, @Nullable PatchAudit audit) {
+	private static boolean patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, JsonElement elem, @Nullable PatchAudit audit) {
 		final ResourceLocation patchName = new ResourceLocation(name.getNamespace(), name.getPath() + ".patch");
 
 		PatchContext context = null;
@@ -154,6 +155,8 @@ public class MixinCallbacks {
 						break;
 				}
 		}
+
+		return context != null;
 	}
 
 	/**
