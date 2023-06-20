@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "net.enderturret",
+    "id": "patched",
+    "version": "${version}",
+
+    "entrypoints": {
+      "init": ["net.enderturret.patchedmod.quilt.PatchedQuilt"],
+      "client_init": ["net.enderturret.patchedmod.quilt.client.ClientEvents"]
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary",
+
+    "depends": [
+      {
+        "id": "quilt_loader",
+        "versions": ">=0.19.1"
+      },
+      {
+        "id": "quilt_client_command",
+        "versions": ">=6.0.0"
+      },
+      {
+        "id": "minecraft",
+        "versions": "~1.20"
+      },
+      {
+        "id": "java",
+        "versions": ">=17"
+      }
+    ],
+
+    "metadata": {
+      "name": "Patched",
+      "description": "Patched features a powerful patching system based mostly on RFC 6902, with extensions added to make it more useful for modding.\nThis allows resource/data packs to patch arbitrary json files that would otherwise need to be completely replaced.\nIt also comes with several commands to aid in patch debugging or compatibility.",
+      "contributors": {
+        "EnderTurret": "Owner"
+      },
+
+      "contact": {
+        "homepage": "https://github.com/EnderTurret/PatchedMod",
+        "sources": "https://github.com/EnderTurret/PatchedMod",
+        "issues": "https://github.com/EnderTurret/PatchedMod/issues"
+      },
+
+      "license": "LGPL-2.1-only",
+      "icon": {
+        "256": "assets/patched/icon.png"
+      }
+    }
+  },
+
+  "mixin": "mixins.patched.json",
+  "access_widener": "patched.accesswidener",
+  "environment": "*"
+}

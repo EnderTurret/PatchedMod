@@ -1,0 +1,15 @@
+{
+  "minVersion": "0.8",
+  "package": "net.enderturret.patchedmod.mixin",
+  "refmap": "patched.refmap.json",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "quilt.GroupResourcePackAccess",
+    "quilt.MixinQuiltResourcePacks",
+    "quilt.ModNioResourcePackAccess",
+    "FilePackResourcesAccess",
+    "MixinAbstractPackResources",
+    "MixinFallbackResourceManager"
+  ],
+  "client": []
+}

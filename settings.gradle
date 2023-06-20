@@ -8,6 +8,10 @@ pluginManagement {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }
+        maven {
+            name = 'Quilt'
+            url = 'https://maven.quiltmc.org/repository/release'
+        }
         mavenCentral()
     }
 }
@@ -18,7 +22,8 @@ plugins {
 
 rootProject.name = 'PatchedMod'
 
-include('common', 'forge', 'fabric')
+include('common', 'forge', 'fabric', 'quilt')
 project(':common').name = 'PatchedModCommon'
 project(':forge').name = 'PatchedModForge'
 project(':fabric').name = 'PatchedModFabric'
+project(':quilt').name = 'PatchedModQuilt'
