@@ -1,6 +1,6 @@
 package net.enderturret.patchedmod.forge.client;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
@@ -20,7 +20,7 @@ import net.enderturret.patchedmod.util.IEnvironment;
  * Various client-side event handlers.
  * @author EnderTurret
  */
-@ApiStatus.Internal
+@Internal
 @EventBusSubscriber(modid = Patched.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.FORGE)
 public final class ClientEvents {
 

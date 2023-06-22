@@ -1,6 +1,6 @@
 package net.enderturret.patchedmod;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,13 +35,13 @@ public class Patched {
 
 	public static final String MOD_ID = "patched";
 
-	@ApiStatus.Internal
+	@Internal
 	public static final Logger LOGGER = LoggerFactory.getLogger("Patched");
 
-	@ApiStatus.Internal
+	@Internal
 	public static final boolean DEBUG = Boolean.getBoolean("patched.debug");
 
-	@ApiStatus.Internal
+	@Internal
 	public Patched() {
 		ModLoadingContext.get().registerExtensionPoint(DisplayTest.class, () -> new DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (version, network) -> true));
 		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);

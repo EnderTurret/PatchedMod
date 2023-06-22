@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonElement;
@@ -36,7 +36,7 @@ import net.enderturret.patchedmod.Patched;
  * <p>Specifically, this handles actually patching things.</p>
  * @author EnderTurret
  */
-@ApiStatus.Internal
+@Internal
 public class MixinCallbacks {
 
 	/**
@@ -47,7 +47,7 @@ public class MixinCallbacks {
 	 * @param origin The resource or data pack that the data originated from.
 	 * @return The new {@code IoSupplier}.
 	 */
-	@ApiStatus.Internal
+	@Internal
 	public static Resource.IoSupplier<InputStream> chain(Resource.IoSupplier<InputStream> delegate, FallbackResourceManager manager, ResourceLocation name, PackResources origin) {
 		return () -> new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, manager.type, name, stream, audit));
 	}

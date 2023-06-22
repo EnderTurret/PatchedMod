@@ -2,7 +2,7 @@ package net.enderturret.patchedmod.command;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -24,10 +24,10 @@ import net.enderturret.patchedmod.util.IPatchingPackResources;
  * Defines the root '/patched' command and provides a few utility methods for the subcommands to use.
  * @author EnderTurret
  */
-@ApiStatus.Internal
+@Internal
 public final class PatchedCommand {
 
-	@ApiStatus.Internal
+	@Internal
 	public static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
 		return env.literal("patched" + (env.client() ? "c" : ""))
 				.requires(src -> env.hasPermission(src, 2))

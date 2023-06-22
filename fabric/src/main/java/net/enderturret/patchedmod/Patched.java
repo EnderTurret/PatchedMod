@@ -1,6 +1,6 @@
 package net.enderturret.patchedmod;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ public class Patched implements ModInitializer {
 
 	public static final String MOD_ID = "patched";
 
-	@ApiStatus.Internal
+	@Internal
 	public static final Logger LOGGER = LoggerFactory.getLogger("Patched");
 
 	// I'm not sure if Fabric provides a less inconvenient way to get the physical side, so here's this.
