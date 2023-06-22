@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.data;
+package net.enderturret.patchedmod.forge.data;
 
 import java.util.Map;
 
@@ -8,6 +8,8 @@ import net.minecraft.data.DataGenerator;
 
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import net.enderturret.patchedmod.data.PatchProvider;
 
 /**
  * Tests the datagen utilities to verify they actually work.
