@@ -19,7 +19,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-import net.enderturret.patchedmod.util.IPatchingPackResources;
+import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.util.env.IEnvironment;
 
 /**
@@ -42,8 +42,8 @@ final class ListCommand {
 		final String packName = StringArgumentType.getString(ctx, "pack");
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final PackResources pack = man.listPacks()
-				.filter(p -> packName.equals(p.getName()))
+		final PackResources pack = Patched.platform().getExpandedPacks(man)
+				.filter(p -> packName.equals(Patched.platform().getName(p)))
 				.findFirst()
 				.orElse(null);
 
@@ -52,7 +52,7 @@ final class ListCommand {
 			return 0;
 		}
 
-		if (!(pack instanceof IPatchingPackResources patching) || !patching.hasPatches()) {
+		if (!Patched.platform().hasPatches(pack)) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
@@ -68,7 +68,7 @@ final class ListCommand {
 		final MutableComponent c = translate("command.patched.list.patches." + (single ? "single" : "multi"),
 				"There " + (!single ? "are" : "is")
 				+ " " + patches.size() + " patch" + (!single ? "es" : "")
-				+ " in " + pack.getName() + ":", patches.size(), pack.getName());
+				+ " in " + Patched.platform().getName(pack) + ":", patches.size(), Patched.platform().getName(pack));
 
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
@@ -76,7 +76,7 @@ final class ListCommand {
 			final String patch = loc.getNamespace() + ":" + loc.getPath().substring(1);
 			c.append("\n  ").append(Component.literal(patch)
 					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-							"/" + command + " dump patch " + StringArgumentType.escapeIfRequired(pack.getName()) + " " + patch))
+							"/" + command + " dump patch " + StringArgumentType.escapeIfRequired(Patched.platform().getName(pack)) + " " + patch))
 							.withUnderlined(true)));
 		}
 
@@ -88,10 +88,8 @@ final class ListCommand {
 	private static <T> int listPacks(CommandContext<T> ctx, IEnvironment<T> env) {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final List<String> packs = man.listPacks()
-				.filter(p -> p instanceof IPatchingPackResources patching
-						&& patching.hasPatches())
-				.map(p -> p.getName())
+		final List<String> packs = Patched.platform().getPatchingPacks(man)
+				.map(Patched.platform()::getName)
 				.sorted()
 				.toList();
 

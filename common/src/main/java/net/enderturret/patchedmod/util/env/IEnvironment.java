@@ -31,6 +31,7 @@ public interface IEnvironment<T> {
 		return RequiredArgumentBuilder.argument(name, type);
 	}
 
+	@Internal
 	public static final class ServerEnvironment implements IEnvironment<CommandSourceStack> {
 
 		@Override

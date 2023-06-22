@@ -3,10 +3,11 @@ package net.enderturret.patchedmod.util;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.Resource.IoSupplier;
 
 import net.enderturret.patched.audit.PatchAudit;
 
@@ -18,10 +19,9 @@ public class PatchingInputStream extends FilterInputStream {
 	@Nullable
 	private PatchAudit audit = null;
 
-	public PatchingInputStream(Resource.IoSupplier<InputStream> delegate, PatchFunction patcher) throws IOException {
+	public PatchingInputStream(IoSupplier<InputStream> delegate, PatchFunction patcher) throws IOException {
 		super(delegate.get());
-		if (patcher == null) throw new NullPointerException();
-		this.patcher = patcher;
+		this.patcher = Objects.requireNonNull(patcher);
 	}
 
 	private void transform() {

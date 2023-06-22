@@ -109,16 +109,23 @@ public final class PatchUtil {
 		}
 	}
 
-	public static String assertIsString(String id, JsonElement value) {
+	/**
+	 * If the given value is a {@link String}, returns it. Otherwise, throws an exception.
+	 * @param name The name that the given value is associated with.
+	 * @param value The given value.
+	 * @return The given value as a {@link String}.
+	 * @throws PatchingException
+	 */
+	public static String assertIsString(String name, JsonElement value) throws PatchingException {
 		if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString())
-			throw new PatchingException(id + ": value must be a string, was \"" + value + "\"");
+			throw new PatchingException(name + ": value must be a string, was \"" + value + "\"");
 
 		return value.getAsString();
 	}
 
 	/**
 	 * @param location The location of the file to test.
-	 * @return {@code true} if the file at the given location supports being patched, based on the name.
+	 * @return {@code true} if the file at the given location supports being patched, based on its name.
 	 */
 	public static boolean isPatchable(ResourceLocation location) {
 		final String path = location.getPath();

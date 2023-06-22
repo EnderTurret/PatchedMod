@@ -15,11 +15,13 @@ import net.enderturret.patchedmod.util.env.IPlatform;
  * <p>All the exciting content is in {@link MixinCallbacks} and {@link PatchUtil}.</p>
  * @author EnderTurret
  */
-public class Patched {
+public final class Patched {
 
 	public static final String MOD_ID = "patched";
 
 	private static IPlatform platform;
+
+	private Patched() {}
 
 	@Internal
 	public static IPlatform platform() {

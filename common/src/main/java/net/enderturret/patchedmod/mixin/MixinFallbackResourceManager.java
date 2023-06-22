@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.Resource.IoSupplier;
 
 import net.enderturret.patchedmod.util.MixinCallbacks;
 
@@ -25,8 +26,9 @@ import net.enderturret.patchedmod.util.MixinCallbacks;
 public abstract class MixinFallbackResourceManager {
 
 	@Inject(at = @At(value = "RETURN"), method = "createResourceGetter", cancellable = true)
-	private void replaceResource(ResourceLocation location, PackResources pack, CallbackInfoReturnable<Resource.IoSupplier<InputStream>> cir) {
+	private void patched$replaceResource(ResourceLocation location, PackResources pack, CallbackInfoReturnable<IoSupplier<InputStream>> cir) {
 		final var sup = cir.getReturnValue();
-		cir.setReturnValue(MixinCallbacks.chain(sup, (FallbackResourceManager) (Object) this, location, pack));
+		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
+		cir.setReturnValue(MixinCallbacks.chain(sup, self, location, pack));
 	}
 }

@@ -11,11 +11,9 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.env.IEnvironment;
 
 /**
@@ -37,10 +35,8 @@ public final class PatchedCommand {
 		final String input = builder.getRemaining();
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		man.listPacks()
-			.filter(pack -> pack instanceof IPatchingPackResources patching
-					&& patching.hasPatches())
-			.map(PackResources::getName)
+		Patched.platform().getPatchingPacks(man)
+			.map(Patched.platform()::getName)
 			.filter(s -> s.startsWith(input))
 			.sorted()
 			.forEach(builder::suggest);

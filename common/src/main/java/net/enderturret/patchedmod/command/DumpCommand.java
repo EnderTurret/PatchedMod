@@ -62,10 +62,8 @@ final class DumpCommand {
 		final int index = input.indexOf(':');
 		final String reqNamespace = index == -1 ? null : input.substring(0, index);
 
-		final PackResources pack = man.listPacks()
-				.filter(p -> p instanceof IPatchingPackResources patching
-						&& patching.hasPatches()
-						&& packName.equals(p.getName()))
+		final PackResources pack = Patched.platform().getPatchingPacks(man)
+				.filter(p -> packName.equals(Patched.platform().getName(p)))
 				.findFirst().orElse(null);
 
 		if (pack != null)
@@ -99,7 +97,6 @@ final class DumpCommand {
 
 		final int index = input.indexOf(':');
 		final String reqNamespace = index == -1 ? null : input.substring(0, index);
-		final String path = input.substring(index + 1, input.length());
 
 		// Don't process without a filter.
 		// There's a lot of files here, so narrowing them down is a requirement.
@@ -139,13 +136,18 @@ final class DumpCommand {
 		final ResourceLocation location = ctx.getArgument("location", ResourceLocation.class);
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final PackResources pack = man.listPacks()
-				.filter(p -> packName.equals(p.getName()))
+		final PackResources pack = Patched.platform().getExpandedPacks(man)
+				.filter(p -> packName.equals(Patched.platform().getName(p)))
 				.findFirst()
 				.orElse(null);
 
 		if (pack == null) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.dump.pack_not_found", "That pack doesn't exist."));
+			return 0;
+		}
+
+		if (!Patched.platform().hasPatches(pack)) {
+			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
 
