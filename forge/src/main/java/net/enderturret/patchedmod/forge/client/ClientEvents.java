@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.command.PatchedCommand;
-import net.enderturret.patchedmod.util.IEnvironment;
+import net.enderturret.patchedmod.util.env.IEnvironment;
 
 /**
  * Various client-side event handlers.

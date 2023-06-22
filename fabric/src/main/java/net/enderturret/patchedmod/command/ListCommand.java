@@ -19,8 +19,8 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-import net.enderturret.patchedmod.util.IEnvironment;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
+import net.enderturret.patchedmod.util.env.IEnvironment;
 
 /**
  * Defines the '/patched list' subcommand, which handles providing lists of the packs with patches and the patches in those packs.

@@ -15,8 +15,8 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.util.IEnvironment;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
+import net.enderturret.patchedmod.util.env.IEnvironment;
 
 /**
  * Defines the root '/patched' command and provides a few utility methods for the subcommands to use.

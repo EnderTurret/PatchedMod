@@ -12,7 +12,7 @@ import net.minecraftforge.network.NetworkConstants;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.PatchedTestConditions;
 import net.enderturret.patchedmod.command.PatchedCommand;
-import net.enderturret.patchedmod.util.IEnvironment;
+import net.enderturret.patchedmod.util.env.IEnvironment;
 
 @Internal
 @Mod(Patched.MOD_ID)

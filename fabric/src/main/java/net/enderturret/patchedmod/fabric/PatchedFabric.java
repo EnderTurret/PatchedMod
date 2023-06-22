@@ -8,7 +8,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.PatchedTestConditions;
 import net.enderturret.patchedmod.command.PatchedCommand;
-import net.enderturret.patchedmod.util.IEnvironment;
+import net.enderturret.patchedmod.util.env.IEnvironment;
 
 @Internal
 public class PatchedFabric implements ModInitializer {
