@@ -15,7 +15,7 @@ First, you need to add `"patched:has_patches": true` to the `pack.mcmeta` file i
 {
   "pack": {
     // ...
-    "patched_has_patches": true
+    "patched:has_patches": true
   }
 }
 ```
