@@ -16,9 +16,9 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.5.0'
 }
 
-rootProject.name = 'PatchedMod19'
+rootProject.name = 'PatchedMod'
 
 include('common', 'forge', 'fabric')
-project(':common').name = 'PatchedMod19Common'
-project(':forge').name = 'PatchedMod19Forge'
-project(':fabric').name = 'PatchedMod19Fabric'
+project(':common').name = 'PatchedModCommon'
+project(':forge').name = 'PatchedModForge'
+project(':fabric').name = 'PatchedModFabric'

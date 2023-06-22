@@ -19,7 +19,7 @@ dependencies {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
-    compileOnly (project(':PatchedMod19Common')) {
+    compileOnly (project(':PatchedModCommon')) {
         exclude group: 'org.spongepowered', module: 'mixin'
         exclude group: 'net.minecraft', module: 'joined_aw'
     }
@@ -54,15 +54,15 @@ shadowJar {
 }
 
 compileJava {
-    source project(':PatchedMod19Common').sourceSets.main.allSource
+    source project(':PatchedModCommon').sourceSets.main.allSource
 }
 
 sourcesJar {
-    from project(':PatchedMod19Common').sourceSets.main.allJava
+    from project(':PatchedModCommon').sourceSets.main.allJava
 }
 
 processResources {
-    from project(':PatchedMod19Common').sourceSets.main.resources
+    from project(':PatchedModCommon').sourceSets.main.resources
 }
 
 jar {

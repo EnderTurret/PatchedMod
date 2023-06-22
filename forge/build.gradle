@@ -17,7 +17,7 @@ mixin {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.2-43.2.14'
 
-    compileOnly project(':PatchedMod19Common')
+    compileOnly project(':PatchedModCommon')
 
     minecraftLibrary ('com.github.EnderTurret:Patched:1.2.1') {
         exclude group: 'com.google.code.gson', module: 'gson'
@@ -43,7 +43,7 @@ minecraft {
             mods {
                 patched {
                     source sourceSets.main
-                    source project(':PatchedMod19Common').sourceSets.main
+                    source project(':PatchedModCommon').sourceSets.main
                 }
             }
         }
@@ -60,7 +60,7 @@ minecraft {
             mods {
                 patched {
                     source sourceSets.main
-                    source project(':PatchedMod19Common').sourceSets.main
+                    source project(':PatchedModCommon').sourceSets.main
                 }
             }
         }
@@ -79,7 +79,7 @@ minecraft {
             mods {
                 patched {
                     source sourceSets.main
-                    source project(':PatchedMod19Common').sourceSets.main
+                    source project(':PatchedModCommon').sourceSets.main
                 }
             }
         }
@@ -87,15 +87,15 @@ minecraft {
 }
 
 compileJava {
-    source project(':PatchedMod19Common').sourceSets.main.allSource
+    source project(':PatchedModCommon').sourceSets.main.allSource
 }
 
 sourcesJar {
-    from project(':PatchedMod19Common').sourceSets.main.allJava
+    from project(':PatchedModCommon').sourceSets.main.allJava
 }
 
 processResources {
-    from project(':PatchedMod19Common').sourceSets.main.resources
+    from project(':PatchedModCommon').sourceSets.main.resources
 }
 
 reobf {
