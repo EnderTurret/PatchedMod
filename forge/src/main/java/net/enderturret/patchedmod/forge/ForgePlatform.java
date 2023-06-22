@@ -20,13 +20,13 @@ import net.minecraftforge.resource.PathPackResources;
 import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
-public final class ForgePlatform implements IPlatform {
+final class ForgePlatform implements IPlatform {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger("Patched");
+	private final Logger logger = LoggerFactory.getLogger("Patched");
 
 	@Override
 	public Logger logger() {
-		return LOGGER;
+		return logger;
 	}
 
 	@Override

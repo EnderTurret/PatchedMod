@@ -228,12 +228,12 @@ public class MixinCallbacks {
 	 * @return The packs containing the specified patch.
 	 */
 	private static Iterable<Entry> packsIn(Entry entry, PackType type, ResourceLocation patchName) {
-		if (Patched.platform().isGroup(entry.resources())) {
+		if (Patched.platform().isGroup(entry.resources()))
 			return Iterables.transform(
 					Iterables.filter(Patched.platform().getFilteredChildren(entry.resources(), type, patchName),
 							pack -> hasPatches(new Entry(pack)) && pack.hasResource(type, patchName)),
 					Entry::new);
-		} else if (hasPatches(entry) && entry.resources().hasResource(type, patchName))
+		else if (hasPatches(entry) && entry.resources().hasResource(type, patchName))
 			return List.of(entry);
 
 		return List.of();

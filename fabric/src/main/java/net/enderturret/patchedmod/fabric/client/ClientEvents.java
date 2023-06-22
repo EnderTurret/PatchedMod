@@ -3,7 +3,6 @@ package net.enderturret.patchedmod.fabric.client;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
@@ -11,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.command.PatchedCommand;
 import net.enderturret.patchedmod.fabric.PatchedFabric;
 import net.enderturret.patchedmod.util.env.IEnvironment;

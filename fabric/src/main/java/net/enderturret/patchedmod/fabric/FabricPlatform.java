@@ -15,13 +15,13 @@ import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patchedmod.util.env.IPlatform;
 
-public final class FabricPlatform implements IPlatform {
+final class FabricPlatform implements IPlatform {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger("Patched");
+	private final Logger logger = LoggerFactory.getLogger("Patched");
 
 	@Override
 	public Logger logger() {
-		return LOGGER;
+		return logger;
 	}
 
 	@Override

@@ -16,7 +16,7 @@ import net.enderturret.patchedmod.util.env.IEnvironment;
 
 @Internal
 @Mod(Patched.MOD_ID)
-public class PatchedForge {
+public final class PatchedForge {
 
 	@Internal
 	public PatchedForge() {

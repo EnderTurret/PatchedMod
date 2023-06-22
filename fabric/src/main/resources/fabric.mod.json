@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Patched",
-  "description": "\"Mixin for json files.\"\n\nPatched features a powerful patching system based mostly on RFC 6902, with extensions added to make it more useful for modding.\nThis allows resource/data packs to patch arbitrary json files that would otherwise need to be completely replaced.\nIt also comes with several commands to aid in patch debugging or compatibility.",
+  "description": "Patched features a powerful patching system based mostly on RFC 6902, with extensions added to make it more useful for modding.\nThis allows resource/data packs to patch arbitrary json files that would otherwise need to be completely replaced.\nIt also comes with several commands to aid in patch debugging or compatibility.",
   "authors": ["EnderTurret"],
   "contact": {
     "homepage": "https://github.com/EnderTurret/PatchedMod",
@@ -19,8 +19,8 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": ["net.enderturret.patchedmod.Patched"],
-    "client": ["net.enderturret.patchedmod.client.ClientEvents"]
+    "main": ["net.enderturret.patchedmod.fabric.PatchedFabric"],
+    "client": ["net.enderturret.patchedmod.fabric.client.ClientEvents"]
   },
   "mixins": ["mixins.patched.json"],
 
