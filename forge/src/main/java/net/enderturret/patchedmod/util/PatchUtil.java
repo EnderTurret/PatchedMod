@@ -12,6 +12,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import net.minecraft.resources.ResourceLocation;
+
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
@@ -112,5 +114,14 @@ public final class PatchUtil {
 			throw new PatchingException(id + ": value must be a string, was \"" + value + "\"");
 
 		return value.getAsString();
+	}
+
+	/**
+	 * @param location The location of the file to test.
+	 * @return {@code true} if the file at the given location supports being patched, based on the name.
+	 */
+	public static boolean isPatchable(ResourceLocation location) {
+		final String path = location.getPath();
+		return path.endsWith(".json") || (path.endsWith(".mcmeta") && !path.equals("pack.mcmeta"));
 	}
 }

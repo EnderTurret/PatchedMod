@@ -32,11 +32,12 @@ public class Patched {
 	}
 
 	/**
+	 * @deprecated Use {@link PatchUtil#isPatchable(ResourceLocation)} instead.
 	 * @param location The location of the file to test.
-	 * @return {@code true} if the file at the given location supports being patched, based on the name.
+	 * @return {@code true} if the file at the given location supports being patched, based on its name.
 	 */
+	@Deprecated(forRemoval = true)
 	public static boolean canBePatched(ResourceLocation location) {
-		final String path = location.getPath();
-		return path.endsWith(".json") || (path.endsWith(".mcmeta") && !path.equals("pack.mcmeta"));
+		return PatchUtil.isPatchable(location);
 	}
 }
