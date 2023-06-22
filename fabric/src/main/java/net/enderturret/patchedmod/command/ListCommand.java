@@ -4,14 +4,12 @@ import static net.enderturret.patchedmod.command.PatchedCommand.translate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

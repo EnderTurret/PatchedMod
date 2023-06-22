@@ -32,7 +32,7 @@ import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 
 /**
- * <p>Handles callbacks from mixins -- what you would expect given the name.</p>
+ * <p>Handles callbacks from mixins -- what you would expect from the name.</p>
  * <p>Specifically, this handles actually patching things.</p>
  * @author EnderTurret
  */

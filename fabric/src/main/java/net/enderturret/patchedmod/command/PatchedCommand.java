@@ -1,9 +1,6 @@
 package net.enderturret.patchedmod.command;
 
-import static net.minecraft.commands.Commands.literal;
-
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 import org.jetbrains.annotations.ApiStatus;
 
@@ -12,7 +9,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.packs.PackResources;
