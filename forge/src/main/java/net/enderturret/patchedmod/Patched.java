@@ -3,27 +3,9 @@ package net.enderturret.patchedmod;
 import java.util.Objects;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
-
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
 
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.fml.IExtensionPoint.DisplayTest;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.NetworkConstants;
-
-import net.enderturret.patched.exception.PatchingException;
-import net.enderturret.patchedmod.command.PatchedCommand;
-import net.enderturret.patchedmod.util.IEnvironment;
 import net.enderturret.patchedmod.util.MixinCallbacks;
 import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.env.IPlatform;
@@ -33,18 +15,11 @@ import net.enderturret.patchedmod.util.env.IPlatform;
  * <p>All the exciting content is in {@link MixinCallbacks} and {@link PatchUtil}.</p>
  * @author EnderTurret
  */
-@Mod(Patched.MOD_ID)
 public class Patched {
 
 	public static final String MOD_ID = "patched";
 
 	private static IPlatform platform;
-
-	@Internal
-	public Patched() {
-		ModLoadingContext.get().registerExtensionPoint(DisplayTest.class, () -> new DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (version, network) -> true));
-		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
-	}
 
 	@Internal
 	public static IPlatform platform() {
@@ -54,10 +29,6 @@ public class Patched {
 	@Internal
 	public static void setPlatform(IPlatform value) {
 		platform = Objects.requireNonNull(value);
-	}
-
-	private void registerCommands(RegisterCommandsEvent e) {
-		e.getDispatcher().register(PatchedCommand.create(new ServerEnvironment()));
 	}
 
 	/**
