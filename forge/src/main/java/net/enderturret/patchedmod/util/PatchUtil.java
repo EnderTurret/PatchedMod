@@ -13,6 +13,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import net.enderturret.patched.Patches;
+import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.PatchedTestConditions;
@@ -104,5 +105,12 @@ public final class PatchUtil {
 
 			return sb.toString();
 		}
+	}
+
+	public static String assertIsString(String id, JsonElement value) {
+		if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString())
+			throw new PatchingException(id + ": value must be a string, was \"" + value + "\"");
+
+		return value.getAsString();
 	}
 }

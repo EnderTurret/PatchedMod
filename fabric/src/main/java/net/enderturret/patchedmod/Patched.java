@@ -40,8 +40,6 @@ public class Patched implements ModInitializer {
 		CommandRegistrationCallback.EVENT.register((dispatcher, context, dedicated) -> {
 			dispatcher.register(PatchedCommand.create(new ServerEnvironment()));
 		});
-
-		PatchedTestConditions.registerSimple(new ResourceLocation(MOD_ID, "mod_loaded"), value -> platform().isModLoaded(assertIsString("mod_loaded", value)));
 	}
 
 	@Internal
@@ -52,13 +50,6 @@ public class Patched implements ModInitializer {
 	@Internal
 	public static void setPlatform(IPlatform value) {
 		platform = Objects.requireNonNull(value);
-	}
-
-	private static String assertIsString(String id, JsonElement value) {
-		if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString())
-			throw new PatchingException(id + ": value must be a string");
-
-		return value.getAsString();
 	}
 
 	/**

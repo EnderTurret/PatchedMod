@@ -44,8 +44,6 @@ public class Patched {
 	public Patched() {
 		ModLoadingContext.get().registerExtensionPoint(DisplayTest.class, () -> new DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (version, network) -> true));
 		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
-
-		PatchedTestConditions.registerSimple(new ResourceLocation(MOD_ID, "mod_loaded"), value -> platform().isModLoaded(assertIsString("mod_loaded", value)));
 	}
 
 	@Internal
@@ -60,13 +58,6 @@ public class Patched {
 
 	private void registerCommands(RegisterCommandsEvent e) {
 		e.getDispatcher().register(PatchedCommand.create(new ServerEnvironment()));
-	}
-
-	private static String assertIsString(String id, JsonElement value) {
-		if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString())
-			throw new PatchingException(id + ": value must be a string");
-
-		return value.getAsString();
 	}
 
 	/**

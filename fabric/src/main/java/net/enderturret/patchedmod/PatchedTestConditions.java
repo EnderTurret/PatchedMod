@@ -2,6 +2,9 @@ package net.enderturret.patchedmod;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.google.gson.JsonElement;
 
@@ -10,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
+import net.enderturret.patchedmod.util.PatchUtil;
 
 /**
  * Handles evaluating custom test conditions.
@@ -23,14 +27,19 @@ public final class PatchedTestConditions implements ITestEvaluator {
 
 	private PatchedTestConditions() {}
 
+	@Internal
+	public static void registerDefaults() {
+		PatchedTestConditions.registerSimple(new ResourceLocation(Patched.MOD_ID, "mod_loaded"),
+				value -> Patched.platform().isModLoaded(PatchUtil.assertIsString("mod_loaded", value)));
+	}
+
 	/**
 	 * Registers the given condition under the given name.
 	 * @param name The name of the condition. This will be the {@code type} value that the condition is invoked for.
 	 * @param condition The condition itself.
 	 */
 	public static void register(ResourceLocation name, ITestEvaluator condition) {
-		if (condition == null) throw new NullPointerException();
-		conditions.put(name.toString(), condition);
+		conditions.put(name.toString(), Objects.requireNonNull(condition));
 	}
 
 	/**
