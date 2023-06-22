@@ -1,155 +1,36 @@
-buildscript {
+plugins {
+
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+
+    version = '1.19.2-1.2.0'
+    group = 'net.enderturret'
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    java.withSourcesJar()
+
     repositories {
         maven {
             url = 'https://jitpack.io'
             content {
-                includeGroup 'com.github.DarkShadow44'
+                includeGroup 'com.github.EnderTurret'
             }
         }
     }
-    dependencies {
-        classpath group: 'com.github.DarkShadow44', name: 'MixinGradle', version: 'task_fix-SNAPSHOT'
-    }
-}
 
-plugins {
-    id 'eclipse'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'net.minecraftforge.gradle' version '5.+'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
-}
-
-apply plugin: 'org.spongepowered.mixin'
-
-version = '1.19.2-1.1.1'
-group = 'net.enderturret'
-archivesBaseName = 'Patched-forge'
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-mixin {
-    add sourceSets.main, 'patched.refmap.json'
-}
-
-repositories {
-    maven {
-        url = 'https://jitpack.io'
-        content {
-            includeGroup 'com.github.EnderTurret'
-        }
-    }
-}
-
-dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.2-43.1.65'
-
-    minecraftLibrary ('com.github.EnderTurret:Patched:1.2.1') {
-        exclude group: 'com.google.code.gson', module: 'gson'
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
     }
 
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-}
-
-minecraft {
-    mappings channel: 'parchment', version: '2022.11.27-1.19.2'
-	accessTransformer = file("$rootDir/src/main/resources/META-INF/accesstransformer.cfg")
-
-    runs {
-        client {
-            workingDirectory project.file('run')
-
-            arg '-mixin.config=mixins.patched.json'
-
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            mods {
-                patched {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-
-            arg '-mixin.config=mixins.patched.json'
-
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            mods {
-                patched {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            args '--mod', 'patched', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                patched {
-                    source sourceSets.main
-                }
-            }
-        }
-    }
-}
-
-reobf {
-    shadowJar {
-        mappings = createMcpToSrg.output
-    }
-    jar {
+    tasks.withType(GenerateModuleMetadata).configureEach {
         enabled = false
     }
-}
 
-shadowJar {
-    classifier ''
-
-    dependencies {
-        include(dependency('com.github.EnderTurret:Patched:1.2.1'))
-    }
-}
-
-jar.enabled = false
-
-jar {
-    manifest {
-        attributes([
-            'Specification-Title': 'Patched',
-            'Specification-Vendor': 'EnderTurret',
-            'Specification-Version': '1',
-            'Implementation-Title': 'Patched',
-            'Implementation-Version': "${version}",
-            'Implementation-Vendor' : 'EnderTurret',
-            'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            'MixinConfigs': 'mixins.patched.json'
-        ])
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-}
-
-shadowJar.finalizedBy('reobfShadowJar')
-
-// Compact JSON files for smol jars.
-
-import groovy.json.*
-
-processResources {
-    doLast {
-        fileTree(dir: outputs.files.asPath, include: '**/*.json').each {
-            File file -> file.text = JsonOutput.toJson(new JsonSlurper().parse(file))
-        }
+    tasks.withType(AbstractArchiveTask).configureEach {
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
     }
 }
