@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.client;
+package net.enderturret.patchedmod.fabric.client;
 
 import org.jetbrains.annotations.ApiStatus;
 
