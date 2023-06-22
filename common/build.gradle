@@ -14,3 +14,7 @@ dependencies {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 }
+
+genEclipseRuns.dependsOn eclipseClasspath
+genEclipseRuns.dependsOn eclipseProject
+genEclipseRuns.dependsOn eclipseJdt
