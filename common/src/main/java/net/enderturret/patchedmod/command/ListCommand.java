@@ -32,7 +32,7 @@ final class ListCommand {
 		return env.literal("list")
 				.then(env.literal("patches")
 						.then(env.argument("pack", StringArgumentType.greedyString())
-								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env))
+								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env, false))
 								.executes(ctx -> listPatches(ctx, env))))
 				.then(env.literal("packs").executes(ctx -> listPacks(ctx, env)));
 	}

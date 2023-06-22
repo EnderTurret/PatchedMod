@@ -43,7 +43,7 @@ final class DumpCommand {
 		return env.literal("dump")
 				.then(env.literal("patch")
 						.then(env.argument("pack", StringArgumentType.string())
-								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env))
+								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env, true))
 								.then(env.argument("location", ResourceLocationArgument.id())
 										.suggests((ctx, builder) -> suggestPatch(ctx, "pack", builder, env))
 										.executes(ctx -> dumpPatch(ctx, type, env)))))
