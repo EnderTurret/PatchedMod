@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.Resource.IoSupplier;
 
 import net.enderturret.patchedmod.util.MixinCallbacks;

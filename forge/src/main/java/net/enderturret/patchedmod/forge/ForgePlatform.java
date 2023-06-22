@@ -2,7 +2,7 @@ package net.enderturret.patchedmod.forge;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,5 +66,15 @@ final class ForgePlatform implements IPlatform {
 	@Override
 	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) {
 		return pack instanceof DelegatingPackResourcesAccess dpra ? dpra.callGetCandidatePacks(type, file) : List.of();
+	}
+
+	@Override
+	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace) {
+		// DelegatingPackResources:  minecraft:something
+		if (isGroup(pack)) return rl -> rl;
+		// PathPackResources:     minecraft:/something → minecraft:something
+		// FilePackResources is handled separately.
+		// VanillaPackResources:  minecraft:/something → minecraft:something
+		return rl -> new ResourceLocation(namespace, rl.getPath().substring(1));
 	}
 }

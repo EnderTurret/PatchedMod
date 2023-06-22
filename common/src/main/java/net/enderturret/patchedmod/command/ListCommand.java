@@ -20,6 +20,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.env.IEnvironment;
 
 /**
@@ -61,7 +62,7 @@ final class ListCommand {
 
 		for (PackType type : PackType.values())
 			for (String namespace : pack.getNamespaces(type))
-				patches.addAll(pack.getResources(type, namespace, "", s -> s.getPath().endsWith(".patch")));
+				patches.addAll(PatchUtil.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")));
 
 		final boolean single = patches.size() == 1;
 
@@ -73,7 +74,7 @@ final class ListCommand {
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
 		for (ResourceLocation loc : patches) {
-			final String patch = loc.getNamespace() + ":" + loc.getPath().substring(1);
+			final String patch = loc.toString();
 			c.append("\n  ").append(Component.literal(patch)
 					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
 							"/" + command + " dump patch " + StringArgumentType.escapeIfRequired(Patched.platform().getName(pack)) + " " + patch))

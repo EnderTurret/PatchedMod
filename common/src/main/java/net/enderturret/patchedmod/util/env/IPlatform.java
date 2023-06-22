@@ -1,6 +1,7 @@
 package net.enderturret.patchedmod.util.env;
 
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -49,6 +50,8 @@ public interface IPlatform {
 	 * @return The list of {@link PackResources} that contain the namespace of the given file.
 	 */
 	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file);
+
+	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace);
 
 	public default Stream<PackResources> getExpandedPacks(ResourceManager manager) {
 		return manager.listPacks()

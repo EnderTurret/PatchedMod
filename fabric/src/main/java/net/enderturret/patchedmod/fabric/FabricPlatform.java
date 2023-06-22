@@ -2,6 +2,7 @@ package net.enderturret.patchedmod.fabric;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,5 +57,15 @@ final class FabricPlatform implements IPlatform {
 
 	private static Collection<PackResources> transform(List<ModResourcePack> list) {
 		return list.stream().map(mrp -> (PackResources) mrp).toList();
+	}
+
+	@Override
+	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace) {
+		// GroupResourcePack and ModNioResourcePack
+		if (isGroup(pack)) return rl -> rl;
+		// PathPackResources:     minecraft:/something → minecraft:something
+		// FilePackResources is handled separately.
+		// VanillaPackResources:  minecraft:/something → minecraft:something
+		return rl -> new ResourceLocation(namespace, rl.getPath().substring(namespace.length() + 1));
 	}
 }
