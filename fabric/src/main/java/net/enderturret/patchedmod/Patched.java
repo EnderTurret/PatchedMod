@@ -60,32 +60,4 @@ public class Patched implements ModInitializer {
 		final String path = location.getPath();
 		return path.endsWith(".json") || (path.endsWith(".mcmeta") && !path.equals("pack.mcmeta"));
 	}
-
-	private static final class ServerEnvironment implements IEnvironment<CommandSourceStack> {
-
-		@Override
-		public boolean client() {
-			return false;
-		}
-
-		@Override
-		public ResourceManager getResourceManager(CommandSourceStack source) {
-			return source.getServer().getResourceManager();
-		}
-
-		@Override
-		public void sendSuccess(CommandSourceStack source, Component message, boolean allowLogging) {
-			source.sendSuccess(message, allowLogging);
-		}
-
-		@Override
-		public void sendFailure(CommandSourceStack source, Component message) {
-			source.sendFailure(message);
-		}
-
-		@Override
-		public boolean hasPermission(CommandSourceStack source, int level) {
-			return source.hasPermission(level);
-		}
-	}
 }
