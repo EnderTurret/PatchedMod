@@ -25,9 +25,7 @@ import net.minecraft.server.packs.ResourcePackFileNotFoundException;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
 import net.minecraft.server.packs.resources.FallbackResourceManager.PackEntry;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
-import net.minecraft.server.packs.resources.Resource;
-
-import net.minecraftforge.resource.DelegatingPackResources;
+import net.minecraft.server.packs.resources.Resource.IoSupplier;
 
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.audit.PatchAudit;
@@ -35,7 +33,6 @@ import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
 
 /**
  * <p>Handles callbacks from mixins -- what you would expect from the name.</p>
@@ -45,7 +42,6 @@ import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
 @Internal
 public class MixinCallbacks {
 
-	@Internal
 	private static final boolean DEBUG = Boolean.getBoolean("patched.debug");
 
 	/**
@@ -57,7 +53,7 @@ public class MixinCallbacks {
 	 * @return The new {@code IoSupplier}.
 	 */
 	@Internal
-	public static Resource.IoSupplier<InputStream> chain(Resource.IoSupplier<InputStream> delegate, FallbackResourceManager manager, ResourceLocation name, PackResources origin) {
+	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, ResourceLocation name, PackResources origin) {
 		return () -> new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, manager.type, name, stream, audit));
 	}
 
@@ -120,9 +116,11 @@ public class MixinCallbacks {
 		from = findTrueSource(from, type, name);
 
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
-			final PackEntry packEntry = manager.fallbacks.get(i);
-			if (hasPatches(packEntry.name(), packEntry.resources()))
-				for (PackEntry pack : packsIn(packEntry, type, patchName)) {
+			final PackEntry _packEntry = manager.fallbacks.get(i);
+			final Entry entry = new Entry(_packEntry);
+
+			if (hasPatches(entry))
+				for (Entry pack : packsIn(entry, type, patchName)) {
 					final String patchJson;
 
 					try (InputStream patchStream = pack.resources().getResource(type, patchName)) {
@@ -162,25 +160,24 @@ public class MixinCallbacks {
 	/**
 	 * Determines whether the given pack has patches enabled.
 	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
-	 * @param packName The name of the pack.
-	 * @param packResources The pack to check.
+	 * @param entry The pack to check.
 	 * @return {@code true} if the pack has patches enabled.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean hasPatches(String packName, PackResources packResources) {
-		if (!(packResources instanceof IPatchingPackResources patching))
+	private static boolean hasPatches(Entry entry) {
+		if (!(entry.resources() instanceof IPatchingPackResources patching))
 			return false;
 
 		if (!patching.initialized())
 			synchronized (patching) {
 				if (!patching.initialized()) {
-					if (patching instanceof DelegatingPackResourcesAccess dpra) {
+					if (Patched.platform().isGroup(entry.resources())) {
 						boolean enabled = false;
-						for (PackResources resources : dpra.getDelegates())
-							enabled |= hasPatches(resources.getName(), resources);
+						for (PackResources resources : Patched.platform().getChildren(entry.resources()))
+							enabled |= hasPatches(new Entry(resources));
 						patching.setHasPatches(enabled);
 					} else
-						try (InputStream is = packResources.getRootResource("pack.mcmeta")) {
+						try (InputStream is = entry.resources().getRootResource("pack.mcmeta")) {
 							final String json = PatchUtil.readString(is);
 							final JsonElement elem = JsonParser.parseString(json);
 
@@ -194,15 +191,15 @@ public class MixinCallbacks {
 						} catch (ResourcePackFileNotFoundException e) {
 							patching.setHasPatches(false);
 						} catch (Exception e) {
-							Patched.platform().logger().error("Failed to read pack.mcmeta in {}:", packName, e);
+							Patched.platform().logger().error("Failed to read pack.mcmeta in {}:", entry.name(), e);
 							patching.setHasPatches(false);
 						}
 
 					if (patching.hasPatches())
-						Patched.platform().logger().debug("Enabled patching for {}.", packName);
+						Patched.platform().logger().debug("Enabled patching for {}.", entry.name());
 
 					if (DEBUG)
-						Patched.platform().logger().debug("{} patches state: {}", packName, patching.hasPatches());
+						Patched.platform().logger().debug("{} patches state: {}", entry.name(), patching.hasPatches());
 				}
 			}
 
@@ -217,13 +214,13 @@ public class MixinCallbacks {
 	 * @param patchName The patch to look for.
 	 * @return The packs containing the specified patch.
 	 */
-	private static Iterable<PackEntry> packsIn(PackEntry entry, PackType type, ResourceLocation patchName) {
-		if (entry.resources() instanceof DelegatingPackResourcesAccess dpra) {
+	private static Iterable<Entry> packsIn(Entry entry, PackType type, ResourceLocation patchName) {
+		if (Patched.platform().isGroup(entry.resources())) {
 			return Iterables.transform(
-					Iterables.filter(dpra.callGetCandidatePacks(type, patchName),
-							pack -> hasPatches(pack.getName(), pack) && pack.hasResource(type, patchName)),
-					pack -> new PackEntry(pack.getName(), pack, null));
-		} else if (hasPatches(entry.name(), entry.resources()) && entry.resources().hasResource(type, patchName))
+					Iterables.filter(Patched.platform().getFilteredChildren(entry.resources(), type, patchName),
+							pack -> hasPatches(new Entry(pack)) && pack.hasResource(type, patchName)),
+					Entry::new);
+		} else if (hasPatches(entry) && entry.resources().hasResource(type, patchName))
 			return List.of(entry);
 
 		return List.of();
@@ -233,8 +230,9 @@ public class MixinCallbacks {
 	 * <p>Given a pack and a file, tries to find the true source of the file.</p>
 	 * <p>
 	 * Sometimes a pack may "provide" a file without actually containing it itself.
-	 * In particular, {@link DelegatingPackResources} combines a number of packs together, like {@link MultiPackResourceManager}.
-	 * We need to know which pack the file actually came from in order to figure out which patches to apply, so that is what this method is for.
+	 * In particular, mod loaders tend to combine a number of packs together in a way similar to {@link MultiPackResourceManager}.
+	 * This is done to condense all the mod resource packs down into one entry in the pack screen (and similar for data packs).
+	 * However, we need to know which pack the file actually came from in order to figure out which patches to apply, so that is what this method is for.
 	 * </p>
 	 * @param from The pack the file is provided by.
 	 * @param type The pack type.
@@ -242,11 +240,30 @@ public class MixinCallbacks {
 	 * @return The true source of the file.
 	 */
 	private static PackResources findTrueSource(PackResources from, PackType type, ResourceLocation name) {
-		if (from instanceof DelegatingPackResourcesAccess dpra)
-			for (PackResources pack : dpra.callGetCandidatePacks(type, name))
+		if (Patched.platform().isGroup(from))
+			for (PackResources pack : Patched.platform().getFilteredChildren(from, type, name))
 				if (pack.hasResource(type, name))
 					return pack;
 
 		return from;
+	}
+
+	/**
+	 * An alternative to ATing {@link PackEntry}'s constructor public.
+	 * @author EnderTurret
+	 * @param name The name of the pack.
+	 * @param resources The pack itself.
+	 */
+	static record Entry(String name, PackResources resources) {
+
+		Entry {}
+
+		Entry(PackEntry packEntry) {
+			this(packEntry.resources());
+		}
+
+		Entry(PackResources resources) {
+			this(Patched.platform().getName(resources), resources);
+		}
 	}
 }
