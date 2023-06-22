@@ -45,6 +45,9 @@ import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
 @Internal
 public class MixinCallbacks {
 
+	@Internal
+	private static final boolean DEBUG = Boolean.getBoolean("patched.debug");
+
 	/**
 	 * "Chains" the given {@code IoSupplier}, returning an {@code IoSupplier} that patches the data returned by it.
 	 * @param delegate The delegate {@code IoSupplier}.
@@ -198,7 +201,7 @@ public class MixinCallbacks {
 					if (patching.hasPatches())
 						Patched.LOGGER.debug("Enabled patching for {}.", packName);
 
-					if (Patched.DEBUG)
+					if (DEBUG)
 						Patched.LOGGER.debug("{} patches state: {}", packName, patching.hasPatches());
 				}
 			}
