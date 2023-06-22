@@ -51,8 +51,6 @@ public final class PatchUtil {
 	public static List<ResourceLocation> getResources(PackResources pack, PackType type, String namespace, Predicate<ResourceLocation> filter) {
 		if (pack instanceof FilePackResources fpp) return getFileResources(fpp, type, namespace, filter);
 
-		final List<ResourceLocation> ret = new ArrayList<>();
-
 		try {
 			final Function<ResourceLocation, ResourceLocation> renamer = Patched.platform().getRenamer(pack, namespace);
 
@@ -64,7 +62,7 @@ public final class PatchUtil {
 			Patched.platform().logger().error("Exception listing resources:", e);
 		}
 
-		return ret;
+		return List.of();
 	}
 
 	/**
