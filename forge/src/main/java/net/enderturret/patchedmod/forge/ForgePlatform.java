@@ -70,8 +70,8 @@ final class ForgePlatform implements IPlatform {
 
 	@Override
 	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace) {
-		// DelegatingPackResources:  minecraft:something
-		if (isGroup(pack)) return rl -> rl;
+		// DelegatingPackResources & PathPackResources
+		if (isGroup(pack) || pack instanceof PathPackResources) return rl -> rl;
 		// PathPackResources:     minecraft:/something → minecraft:something
 		// FilePackResources is handled separately.
 		// VanillaPackResources:  minecraft:/something → minecraft:something
