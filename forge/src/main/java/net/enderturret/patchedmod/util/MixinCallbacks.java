@@ -163,8 +163,18 @@ public class MixinCallbacks {
 	 * @param entry The pack to check.
 	 * @return {@code true} if the pack has patches enabled.
 	 */
-	@SuppressWarnings("resource")
 	private static boolean hasPatches(Entry entry) {
+		return entry.resources() instanceof IPatchingPackResources ppp && ppp.hasPatches();
+	}
+
+	/**
+	 * Determines whether the given pack has patches enabled.
+	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
+	 * @param entry The pack to check.
+	 * @return {@code true} if the pack has patches enabled.
+	 */
+	@SuppressWarnings("resource")
+	static boolean checkHasPatches(Entry entry) {
 		if (!(entry.resources() instanceof IPatchingPackResources patching))
 			return false;
 
