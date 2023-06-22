@@ -14,9 +14,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-
+import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.util.IEnvironment;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 
@@ -52,6 +50,6 @@ public final class PatchedCommand {
 
 	static MutableComponent translate(String key, String text, Object... args) {
 		// Prefer the translation when running commands on the client.
-		return FMLEnvironment.dist == Dist.CLIENT ? Component.translatable(key, args) : Component.literal(text);
+		return Patched.platform().isPhysicalClient() ? Component.translatable(key, args) : Component.literal(text);
 	}
 }

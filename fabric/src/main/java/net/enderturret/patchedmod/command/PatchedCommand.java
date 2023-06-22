@@ -50,6 +50,6 @@ public final class PatchedCommand {
 
 	static MutableComponent translate(String key, String text, Object... args) {
 		// Prefer the translation when running commands on the client.
-		return Patched.physicalClient ? Component.translatable(key, args) : Component.literal(text);
+		return Patched.platform().isPhysicalClient() ? Component.translatable(key, args) : Component.literal(text);
 	}
 }

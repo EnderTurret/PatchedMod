@@ -1,5 +1,7 @@
 package net.enderturret.patchedmod;
 
+import java.util.Objects;
+
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import net.enderturret.patchedmod.command.PatchedCommand;
 import net.enderturret.patchedmod.util.IEnvironment;
 import net.enderturret.patchedmod.util.MixinCallbacks;
 import net.enderturret.patchedmod.util.PatchUtil;
+import net.enderturret.patchedmod.util.env.IPlatform;
 
 /**
  * <p>The main mod class.</p>
@@ -30,11 +33,7 @@ public class Patched implements ModInitializer {
 
 	public static final String MOD_ID = "patched";
 
-	@Internal
-	public static final Logger LOGGER = LoggerFactory.getLogger("Patched");
-
-	// I'm not sure if Fabric provides a less inconvenient way to get the physical side, so here's this.
-	public static boolean physicalClient = false;
+	private static IPlatform platform;
 
 	@Override
 	public void onInitialize() {
@@ -42,7 +41,17 @@ public class Patched implements ModInitializer {
 			dispatcher.register(PatchedCommand.create(new ServerEnvironment()));
 		});
 
-		PatchedTestConditions.registerSimple(new ResourceLocation(MOD_ID, "mod_loaded"), value -> FabricLoader.getInstance().isModLoaded(assertIsString("mod_loaded", value)));
+		PatchedTestConditions.registerSimple(new ResourceLocation(MOD_ID, "mod_loaded"), value -> platform().isModLoaded(assertIsString("mod_loaded", value)));
+	}
+
+	@Internal
+	public static IPlatform platform() {
+		return platform;
+	}
+
+	@Internal
+	public static void setPlatform(IPlatform value) {
+		platform = Objects.requireNonNull(value);
 	}
 
 	private static String assertIsString(String id, JsonElement value) {

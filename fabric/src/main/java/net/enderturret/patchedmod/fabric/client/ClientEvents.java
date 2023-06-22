@@ -13,6 +13,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.command.PatchedCommand;
+import net.enderturret.patchedmod.fabric.PatchedFabric;
 import net.enderturret.patchedmod.util.IEnvironment;
 
 /**
@@ -24,7 +25,7 @@ public final class ClientEvents implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		Patched.physicalClient = true;
+		PatchedFabric.physicalClient = true;
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> {
 			dispatcher.register(PatchedCommand.create(new ClientEnvironment()));
 		});

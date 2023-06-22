@@ -128,7 +128,7 @@ public class MixinCallbacks {
 					try (InputStream patchStream = pack.resources().getResource(type, patchName)) {
 						patchJson = PatchUtil.readString(patchStream);
 					} catch (IOException e) {
-						Patched.LOGGER.warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
+						Patched.platform().logger().warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
 						continue;
 					}
 
@@ -137,7 +137,7 @@ public class MixinCallbacks {
 					try {
 						patch = Patches.readPatch(PatchUtil.GSON, patchJson);
 					} catch (JsonParseException e) {
-						Patched.LOGGER.warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
+						Patched.platform().logger().warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
 						continue;
 					}
 
@@ -145,12 +145,12 @@ public class MixinCallbacks {
 						if (audit != null)
 							audit.setPatchPath(pack.name());
 
-						Patched.LOGGER.debug("Applying patch {} from {}.", patchName, pack.name());
+						Patched.platform().logger().debug("Applying patch {} from {}.", patchName, pack.name());
 						patch.patch(elem, context == null ? context = PatchUtil.CONTEXT.audit(audit) : context);
 					} catch (PatchingException e) {
-						Patched.LOGGER.warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
+						Patched.platform().logger().warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
 					} catch (Exception e) {
-						Patched.LOGGER.warn("Failed to apply patch {} from {}:", patchName, pack.name(), e);
+						Patched.platform().logger().warn("Failed to apply patch {} from {}:", patchName, pack.name(), e);
 					}
 
 					if (pack.resources() == from)
@@ -194,15 +194,15 @@ public class MixinCallbacks {
 						} catch (ResourcePackFileNotFoundException e) {
 							patching.setHasPatches(false);
 						} catch (Exception e) {
-							Patched.LOGGER.error("Failed to read pack.mcmeta in {}:", packName, e);
+							Patched.platform().logger().error("Failed to read pack.mcmeta in {}:", packName, e);
 							patching.setHasPatches(false);
 						}
 
 					if (patching.hasPatches())
-						Patched.LOGGER.debug("Enabled patching for {}.", packName);
+						Patched.platform().logger().debug("Enabled patching for {}.", packName);
 
 					if (DEBUG)
-						Patched.LOGGER.debug("{} patches state: {}", packName, patching.hasPatches());
+						Patched.platform().logger().debug("{} patches state: {}", packName, patching.hasPatches());
 				}
 			}
 

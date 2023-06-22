@@ -52,7 +52,7 @@ public final class PatchUtil {
 			ret = GSON.toJson(elem);
 		} catch (Exception e) {
 			if (logError)
-				Patched.LOGGER.warn("Failed to parse {} as json:", location, e);
+				Patched.platform().logger().warn("Failed to parse {} as json:", location, e);
 
 			if (requireJson)
 				return null;
@@ -79,7 +79,7 @@ public final class PatchUtil {
 			return JsonParser.parseString(ret);
 		} catch (Exception e) {
 			if (logError)
-				Patched.LOGGER.warn("Failed to parse {} as json:", location, e);
+				Patched.platform().logger().warn("Failed to parse {} as json:", location, e);
 		}
 
 		return null;
