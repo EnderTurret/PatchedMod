@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.VanillaPackResources;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.ModList;
@@ -71,7 +72,8 @@ final class ForgePlatform implements IPlatform {
 	@Override
 	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace) {
 		// DelegatingPackResources & PathPackResources
-		if (isGroup(pack) || pack instanceof PathPackResources) return rl -> rl;
+		if (isGroup(pack) || pack instanceof PathPackResources || pack instanceof VanillaPackResources)
+			return rl -> rl;
 		// PathPackResources:     minecraft:/something → minecraft:something
 		// FilePackResources is handled separately.
 		// VanillaPackResources:  minecraft:/something → minecraft:something
