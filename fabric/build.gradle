@@ -3,7 +3,9 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
-archivesBaseName = 'Patched-fabric'
+base {
+    archivesName = 'Patched-fabric'
+}
 
 configurations {
     implementation.extendsFrom shadow
@@ -65,20 +67,6 @@ processResources {
     from project(':PatchedModCommon').sourceSets.main.resources
 }
 
-jar {
-    manifest {
-        attributes([
-            'Specification-Title': 'Patched',
-            'Specification-Vendor': 'EnderTurret',
-            'Specification-Version': '1',
-            'Implementation-Title': 'Patched',
-            'Implementation-Version': "${version}",
-            'Implementation-Vendor' : 'EnderTurret',
-            'MixinConfigs': 'mixins.patched.json'
-        ])
-    }
-}
-
 import net.fabricmc.loom.task.RemapJarTask
 
 task remappedShadowJar(type: RemapJarTask, dependsOn: shadowJar) {
@@ -96,15 +84,5 @@ processResources {
 
     filesMatching('fabric.mod.json') {
         expand 'version': project.version
-    }
-}
-
-import groovy.json.*
-
-processResources {
-    doLast {
-        fileTree(dir: outputs.files.asPath, include: '**/*.json').each {
-            File file -> file.text = JsonOutput.toJson(new JsonSlurper().parse(file))
-        }
     }
 }
