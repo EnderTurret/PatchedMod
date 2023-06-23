@@ -9,7 +9,7 @@ minecraft {
 
 dependencies {
     compileOnly 'org.spongepowered:mixin:0.8.5'
-    compileOnly ('com.github.EnderTurret:Patched:1.2.1') {
+    compileOnly ("com.github.EnderTurret:Patched:$patchedVersion") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 }

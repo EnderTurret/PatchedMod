@@ -5,6 +5,10 @@ subprojects {
     version = '1.19.2-1.2.0'
     group = 'net.enderturret'
 
+    ext {
+        patchedVersion = '1.2.1'
+    }
+
     java.toolchain.languageVersion = JavaLanguageVersion.of(17)
     java.withSourcesJar()
 
