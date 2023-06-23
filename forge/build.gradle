@@ -1,5 +1,4 @@
 plugins {
-    id 'eclipse'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'net.minecraftforge.gradle' version '[6.0, 6.2)'
     id 'org.spongepowered.mixin' version '0.7.33'
@@ -17,7 +16,10 @@ mixin {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.2-43.2.14'
 
-    compileOnly project(':PatchedModCommon')
+    compileOnly (project(':PatchedModCommon')) {
+        exclude group: 'org.spongepowered', module: 'mixin'
+        exclude group: 'net.minecraft', module: 'joined_aw'
+    }
 
     minecraftLibrary ('com.github.EnderTurret:Patched:1.2.1') {
         exclude group: 'com.google.code.gson', module: 'gson'
@@ -31,9 +33,8 @@ minecraft {
 	accessTransformer = file("$rootDir/forge/src/main/resources/META-INF/accesstransformer.cfg")
 
     runs {
-        client {
+        configureEach {
             workingDirectory project.file('run')
-            taskName 'runPatchedClientForge'
 
             arg '-mixin.config=mixins.patched.json'
 
@@ -46,42 +47,20 @@ minecraft {
                     source project(':PatchedModCommon').sourceSets.main
                 }
             }
+        }
+
+        client {
+            taskName 'runPatchedClientForge'
         }
 
         server {
-            workingDirectory project.file('run')
             taskName 'runPatchedServerForge'
-
-            arg '-mixin.config=mixins.patched.json'
-
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            mods {
-                patched {
-                    source sourceSets.main
-                    source project(':PatchedModCommon').sourceSets.main
-                }
-            }
         }
 
         data {
-            workingDirectory project.file('run')
             taskName 'runPatchedDataForge'
 
-            arg '-mixin.config=mixins.patched.json'
-
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
             args '--mod', 'patched', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                patched {
-                    source sourceSets.main
-                    source project(':PatchedModCommon').sourceSets.main
-                }
-            }
         }
     }
 }
@@ -117,31 +96,7 @@ shadowJar {
 
 jar.enabled = false
 
-jar {
-    manifest {
-        attributes([
-            'Specification-Title': 'Patched',
-            'Specification-Vendor': 'EnderTurret',
-            'Specification-Version': '1',
-            'Implementation-Title': 'Patched',
-            'Implementation-Version': "${version}",
-            'Implementation-Vendor' : 'EnderTurret',
-            'MixinConfigs': 'mixins.patched.json'
-        ])
-    }
-}
-
 shadowJar.finalizedBy('reobfShadowJar')
 
 // Fix mixingradle.
 eclipseJdtApt.dependsOn createMcpToSrg
-
-import groovy.json.*
-
-processResources {
-    doLast {
-        fileTree(dir: outputs.files.asPath, include: '**/*.json').each {
-            File file -> file.text = JsonOutput.toJson(new JsonSlurper().parse(file))
-        }
-    }
-}
