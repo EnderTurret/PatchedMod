@@ -21,7 +21,7 @@ dependencies {
     modImplementation 'org.quiltmc:quilt-loader:0.19.1'
     modImplementation 'org.quiltmc:qsl:6.0.3+1.20.1'
 
-    shadow ('com.github.EnderTurret:Patched:1.2.1') {
+    shadow ("com.github.EnderTurret:Patched:$patchedVersion") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 

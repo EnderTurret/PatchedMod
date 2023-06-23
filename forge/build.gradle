@@ -21,7 +21,7 @@ dependencies {
         exclude group: 'net.minecraft', module: 'joined_aw'
     }
 
-    minecraftLibrary ('com.github.EnderTurret:Patched:1.2.1') {
+    minecraftLibrary ("com.github.EnderTurret:Patched:$patchedVersion") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
@@ -90,7 +90,7 @@ shadowJar {
     archiveClassifier = ''
 
     dependencies {
-        include(dependency('com.github.EnderTurret:Patched:1.2.1'))
+        include(dependency("com.github.EnderTurret:Patched:$patchedVersion"))
     }
 }
 
