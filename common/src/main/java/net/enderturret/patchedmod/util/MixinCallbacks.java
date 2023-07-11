@@ -26,6 +26,7 @@ import net.minecraft.server.packs.resources.FallbackResourceManager.PackEntry;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 
+import net.enderturret.patched.JsonDocument;
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patched.exception.PatchingException;
@@ -84,9 +85,10 @@ public class MixinCallbacks {
 
 		try {
 			final JsonElement elem = JsonParser.parseString(json);
+			final JsonDocument doc = new JsonDocument(elem);
 
-			if (patch(manager, from, type, name, elem, audit)) {
-				json = PatchUtil.GSON.toJson(elem);
+			if (patch(manager, from, type, name, doc, audit)) {
+				json = PatchUtil.GSON.toJson(doc.getRoot());
 				bytes = json.getBytes(StandardCharsets.UTF_8);
 			}
 		} catch (JsonParseException e) {
@@ -108,7 +110,7 @@ public class MixinCallbacks {
 	 * @return Whether any patches were actually applied.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, JsonElement elem, @Nullable PatchAudit audit) {
+	private static boolean patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, JsonDocument elem, @Nullable PatchAudit audit) {
 		final ResourceLocation patchName = new ResourceLocation(name.getNamespace(), name.getPath() + ".patch");
 
 		PatchContext context = null;
@@ -142,9 +144,12 @@ public class MixinCallbacks {
 					try {
 						if (audit != null)
 							audit.setPatchPath(pack.name());
+						if (context == null)
+							context = PatchUtil.CONTEXT.audit(audit);
 
 						Patched.platform().logger().debug("Applying patch {} from {}.", patchName, pack.name());
-						patch.patch(elem, context == null ? context = PatchUtil.CONTEXT.audit(audit) : context);
+
+						patch.patch(elem, context);
 					} catch (PatchingException e) {
 						Patched.platform().logger().warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
 					} catch (Exception e) {

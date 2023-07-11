@@ -41,12 +41,15 @@ public final class PatchUtil {
 	/**
 	 * The context used for patching Json. This context has all extensions enabled by default.
 	 */
-	public static final PatchContext CONTEXT = PatchContext.newContext().sbExtensions(true).patchedExtensions(true).testEvaluator(PatchedTestConditions.INSTANCE);
+	public static final PatchContext CONTEXT = PatchContext.newContext()
+			.testExtensions(true)
+			.patchedExtensions(true)
+			.testEvaluator(PatchedTestConditions.INSTANCE);
 
 	/**
 	 * The {@link Gson} instance used for reading patches and {@linkplain #readPrettyJson(InputStream, String, boolean, boolean) prettying Json data}.
 	 */
-	public static final Gson GSON = Patches.patchGson(CONTEXT.sbExtensions(), CONTEXT.patchedExtensions())
+	public static final Gson GSON = Patches.patchGson(CONTEXT)
 			.setPrettyPrinting().create();
 
 	public static List<ResourceLocation> getResources(PackResources pack, PackType type, String namespace, Predicate<ResourceLocation> filter) {
