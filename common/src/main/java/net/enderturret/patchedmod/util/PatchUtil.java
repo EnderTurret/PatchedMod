@@ -216,6 +216,6 @@ public final class PatchUtil {
 	 */
 	public static boolean isPatchable(ResourceLocation location) {
 		final String path = location.getPath();
-		return path.endsWith(".json") || (path.endsWith(".mcmeta") && !path.equals("pack.mcmeta"));
+		return path.endsWith(".json") || path.endsWith(".json.patch") || (path.endsWith(".mcmeta") && !path.equals("pack.mcmeta"));
 	}
 }
