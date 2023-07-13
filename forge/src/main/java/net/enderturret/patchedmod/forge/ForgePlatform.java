@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,17 @@ final class ForgePlatform implements IPlatform {
 	@Override
 	public boolean isModLoaded(String modId) {
 		return ModList.get().isLoaded(modId);
+	}
+
+	@Override
+	public boolean isModLoaded(String modId, String version) {
+		return ModList.get().getModContainerById(modId)
+				.map(mc -> {
+					final ArtifactVersion theirVersion = mc.getModInfo().getVersion();
+					final DefaultArtifactVersion realVersion = new DefaultArtifactVersion(version);
+					return theirVersion.compareTo(realVersion);
+				})
+				.orElse(-1) >= 0;
 	}
 
 	@Override

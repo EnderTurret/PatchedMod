@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.quiltmc.loader.api.QuiltLoader;
+import org.quiltmc.loader.api.Version;
 import org.quiltmc.qsl.resource.loader.impl.ModNioResourcePack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,13 @@ final class QuiltPlatform implements IPlatform {
 	@Override
 	public boolean isModLoaded(String modId) {
 		return QuiltLoader.isModLoaded(modId);
+	}
+
+	@Override
+	public boolean isModLoaded(String modId, String version) {
+		return QuiltLoader.getModContainer(modId)
+				.map(mc -> mc.metadata().version().compareTo(Version.of(version)))
+				.orElse(-1) >= 0;
 	}
 
 	@Override

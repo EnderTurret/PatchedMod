@@ -198,16 +198,21 @@ public final class PatchUtil {
 
 	/**
 	 * If the given value is a {@link String}, returns it. Otherwise, throws an exception.
-	 * @param name The name that the given value is associated with.
+	 * @param name Some extra context for the message. Used in {@link PatchedTestConditions} to identify the test condition.
+	 * @param field The name that the given value is associated with.
 	 * @param value The given value.
 	 * @return The given value as a {@link String}.
 	 * @throws PatchingException
 	 */
-	public static String assertIsString(String name, JsonElement value) throws PatchingException {
+	public static String assertIsString(String name, String field, JsonElement value) throws PatchingException {
 		if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString())
-			throw new PatchingException(name + ": value must be a string, was \"" + value + "\"");
+			throw new PatchingException(name + ": " + field + " must be a string, was \"" + value + "\"");
 
 		return value.getAsString();
+	}
+
+	public static String assertIsString(String name, JsonElement value) throws PatchingException {
+		return assertIsString(name, "value", value);
 	}
 
 	/**

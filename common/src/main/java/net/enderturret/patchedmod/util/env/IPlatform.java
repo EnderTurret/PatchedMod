@@ -22,7 +22,9 @@ public interface IPlatform {
 	public Logger logger();
 
 	public boolean isPhysicalClient();
+
 	public boolean isModLoaded(String modId);
+	public boolean isModLoaded(String modId, String version);
 
 	public PackOutput getPackOutput(DataGenerator generator);
 
