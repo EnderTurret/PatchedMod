@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.server.packs.resources.IoSupplier;
@@ -29,6 +30,19 @@ public class PatchingInputStream extends FilterInputStream {
 			in = patcher.patch(in, audit);
 			patcher = null;
 		}
+	}
+
+	/**
+	 * Completely disables patching of this file.
+	 * <b>This is for internal use only</b>; there is literally no reason a mod should want to shut off patching files.
+	 * Do <b>not</b> touch this method. Don't even <i>think</i> about touching it.
+	 * The last thing I need to deal with are mods that intentionally sabotage this mod because they feel like it.
+	 * @deprecated Certain objects may be vital to your success; do not destroy patching apparatus.
+	 */
+	@Internal
+	@Deprecated
+	public void _disablePatching() {
+		patcher = null;
 	}
 
 	public void withAudit(PatchAudit audit) {
