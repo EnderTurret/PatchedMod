@@ -3,7 +3,7 @@ plugins {
 }
 
 minecraft {
-    version '1.19.2'
+    version '1.18.2'
     accessWideners "$rootDir/common/src/main/resources/patched_common.accesswidener"
 }
 

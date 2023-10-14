@@ -18,11 +18,11 @@
       },
       {
         "id": "quilt_client_command",
-        "versions": ">=3.0.0-beta.29"
+        "versions": ">=1.1.0-beta.26"
       },
       {
         "id": "minecraft",
-        "versions": "~1.19.2"
+        "versions": "~1.18.2"
       },
       {
         "id": "java",
