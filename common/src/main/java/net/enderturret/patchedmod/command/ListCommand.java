@@ -14,6 +14,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -75,7 +76,7 @@ final class ListCommand {
 
 		for (ResourceLocation loc : patches) {
 			final String patch = loc.toString();
-			c.append("\n  ").append(Component.literal(patch)
+			c.append("\n  ").append(new TextComponent(patch)
 					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
 							"/" + command + " dump patch " + StringArgumentType.escapeIfRequired(Patched.platform().getName(pack)) + " " + patch))
 							.withUnderlined(true)));
@@ -104,7 +105,7 @@ final class ListCommand {
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
 		for (String pack : packs)
-			c.append("\n  ").append(Component.literal(pack)
+			c.append("\n  ").append(new TextComponent(pack)
 					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
 							"/" + command + " list patches " + pack))
 							.withUnderlined(true)));

@@ -24,7 +24,7 @@ public final class ClientEvents implements ClientModInitializer {
 	@Override
 	public void onInitializeClient(ModContainer mod) {
 		PatchedQuilt.physicalClient = true;
-		ClientCommandRegistrationCallback.EVENT.register((dispatcher, context, selection) -> {
+		ClientCommandRegistrationCallback.EVENT.register(dispatcher -> {
 			dispatcher.register(PatchedCommand.create(new ClientEnvironment()));
 		});
 	}

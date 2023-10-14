@@ -18,7 +18,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.forgespi.language.IModInfo;
-import net.minecraftforge.resource.PathPackResources;
+import net.minecraftforge.resource.PathResourcePack;
 
 import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
 import net.enderturret.patchedmod.util.env.IPlatform;
@@ -55,7 +55,7 @@ final class ForgePlatform implements IPlatform {
 
 	@Override
 	public String getName(PackResources pack) {
-		return pack instanceof PathPackResources ppp ? "mod/" + findModNameFromModFile(pack.getName()) : pack.getName();
+		return pack instanceof PathResourcePack ppp ? "mod/" + findModNameFromModFile(pack.getName()) : pack.getName();
 	}
 
 	private static String findModNameFromModFile(String modFile) {
@@ -84,8 +84,8 @@ final class ForgePlatform implements IPlatform {
 
 	@Override
 	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace) {
-		// DelegatingPackResources & PathPackResources
-		if (isGroup(pack) || pack instanceof PathPackResources || pack instanceof VanillaPackResources)
+		// DelegatingResourcePack & PathResourcePack
+		if (isGroup(pack) || pack instanceof PathResourcePack || pack instanceof VanillaPackResources)
 			return rl -> rl;
 		// PathPackResources:     minecraft:/something → minecraft:something
 		// FilePackResources is handled separately.

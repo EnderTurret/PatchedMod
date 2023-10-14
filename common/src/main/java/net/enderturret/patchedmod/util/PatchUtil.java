@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackResources;
@@ -57,7 +58,14 @@ public final class PatchUtil {
 		try {
 			final Function<ResourceLocation, ResourceLocation> renamer = Patched.platform().getRenamer(pack, namespace);
 
-			return pack.getResources(type, namespace, "", filter)
+			return pack.getResources(type, namespace, "", Short.MAX_VALUE,
+					str -> {
+						try {
+							return filter.test(new ResourceLocation(str));
+						} catch (ResourceLocationException e) {
+							return false;
+						}
+					})
 					.stream()
 					.map(renamer::apply)
 					.toList();
@@ -91,10 +99,12 @@ public final class PatchUtil {
 			if (entry.isDirectory() || !entry.getName().startsWith(root)) continue;
 
 			final String path = entry.getName().substring(root.length());
-			final ResourceLocation loc = ResourceLocation.tryBuild(namespace, path);
+			try {
+				final ResourceLocation loc = new ResourceLocation(namespace, path);
 
-			if (filter.test(loc))
-				ret.add(loc);
+				if (filter.test(loc))
+					ret.add(loc);
+			} catch (ResourceLocationException ignored) {}
 		}
 
 		return ret;

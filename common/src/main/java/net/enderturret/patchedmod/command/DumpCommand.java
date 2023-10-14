@@ -2,6 +2,7 @@ package net.enderturret.patchedmod.command;
 
 import static net.enderturret.patchedmod.command.PatchedCommand.translate;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.NoSuchFileException;
@@ -19,6 +20,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -151,7 +153,7 @@ final class DumpCommand {
 				env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));
 				return 0;
 			}
-			env.sendSuccess(ctx.getSource(), Component.literal(src), false);
+			env.sendSuccess(ctx.getSource(), new TextComponent(src), false);
 		} catch (IOException e) {
 			Patched.platform().logger().warn("Failed to read resource '{}' from {}:", location, packName, e);
 			return 0;
@@ -165,16 +167,7 @@ final class DumpCommand {
 		final ResourceLocation location = ctx.getArgument("location", ResourceLocation.class);
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final Optional<Resource> op = man.getResource(location);
-
-		if (op.isEmpty()) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
-			return 0;
-		}
-
-		final Resource res = op.get();
-
-		try (InputStream is = res.open()) {
+		try (Resource res = man.getResource(location); InputStream is = res.getInputStream()) {
 			final PatchAudit audit = useAudit ? new PatchAudit("null") : null;
 
 			if (audit != null && is instanceof PatchingInputStream pis)
@@ -190,7 +183,7 @@ final class DumpCommand {
 				return 0;
 			}
 
-			env.sendSuccess(ctx.getSource(), Component.literal(audit != null ? audit.toString(src) : PatchUtil.GSON.toJson(src)), false);
+			env.sendSuccess(ctx.getSource(), new TextComponent(audit != null ? audit.toString(src) : PatchUtil.GSON.toJson(src)), false);
 		} catch (NoSuchFileException e) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
 			return 0;

@@ -3,7 +3,7 @@ package net.enderturret.patchedmod.fabric;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.PatchedTestConditions;
@@ -19,7 +19,7 @@ public final class PatchedFabric implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		CommandRegistrationCallback.EVENT.register((dispatcher, context, dedicated) -> {
+		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
 			dispatcher.register(PatchedCommand.create(new IEnvironment.ServerEnvironment()));
 		});
 		Patched.setPlatform(new FabricPlatform());

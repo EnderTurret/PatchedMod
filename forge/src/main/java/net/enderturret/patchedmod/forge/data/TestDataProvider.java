@@ -6,8 +6,8 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.data.DataGenerator;
 
-import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 import net.enderturret.patchedmod.data.PatchProvider;
 
@@ -21,28 +21,30 @@ public final class TestDataProvider {
 
 	@SubscribeEvent
 	static void gatherData(GatherDataEvent e) {
-		e.getGenerator().addProvider(e.includeClient(), new PatchProvider(e.getGenerator(), DataGenerator.Target.RESOURCE_PACK, "patched") {
-			@Override
-			public void registerPatches() {
-				patch(id("minecraft", "models/item/poisonous_potato"))
-					.compound()
-					.test("patched:mod_loaded", "forge")
-					.replace("/parent", "minecraft:block/anvil")
-					.end();
+		if (e.includeClient())
+			e.getGenerator().addProvider(new PatchProvider(e.getGenerator(), "patched") {
+				@Override
+				public void registerPatches() {
+					patch(id("minecraft", "models/item/poisonous_potato"))
+						.compound()
+						.test("patched:mod_loaded", "forge")
+						.replace("/parent", "minecraft:block/anvil")
+						.end();
 
-				patch(id("minecraft", "models/block/amethyst_block"))
-					.replace("/textures/all", "minecraft:block/beacon");
-			}
-		});
-		e.getGenerator().addProvider(e.includeServer(), new PatchProvider(e.getGenerator(), DataGenerator.Target.DATA_PACK, "patched") {
-			@Override
-			public void registerPatches() {
-				patch(id("minecraft", "recipes/andesite"))
-					.add("/ingredients/-", Map.of("item", "minecraft:diamond"));
+					patch(id("minecraft", "models/block/amethyst_block"))
+						.replace("/textures/all", "minecraft:block/beacon");
+				}
+			});
+		if (e.includeServer())
+			e.getGenerator().addProvider(new PatchProvider(e.getGenerator(), "patched") {
+				@Override
+				public void registerPatches() {
+					patch(id("minecraft", "recipes/andesite"))
+						.add("/ingredients/-", Map.of("item", "minecraft:diamond"));
 
-				patch(id("minecraft", "recipes/ender_eye"))
-					.remove("/ingredients/1");
-			}
-		});
+					patch(id("minecraft", "recipes/ender_eye"))
+						.remove("/ingredients/1");
+				}
+			});
 	}
 }

@@ -12,6 +12,8 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
@@ -48,6 +50,6 @@ public final class PatchedCommand {
 
 	static MutableComponent translate(String key, String text, Object... args) {
 		// Prefer the translation when running commands on the client.
-		return Patched.platform().isPhysicalClient() ? Component.translatable(key, args) : Component.literal(text);
+		return Patched.platform().isPhysicalClient() ? new TranslatableComponent(key, args) : new TextComponent(text);
 	}
 }

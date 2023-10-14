@@ -8,8 +8,6 @@ import java.util.Objects;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.server.packs.resources.Resource.IoSupplier;
-
 import net.enderturret.patched.audit.PatchAudit;
 
 @SuppressWarnings("resource")
@@ -20,8 +18,8 @@ public class PatchingInputStream extends FilterInputStream {
 	@Nullable
 	private PatchAudit audit = null;
 
-	public PatchingInputStream(IoSupplier<InputStream> delegate, PatchFunction patcher) throws IOException {
-		super(delegate.get());
+	public PatchingInputStream(InputStream delegate, PatchFunction patcher) {
+		super(delegate);
 		this.patcher = Objects.requireNonNull(patcher);
 	}
 

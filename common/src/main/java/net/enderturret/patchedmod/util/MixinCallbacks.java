@@ -24,9 +24,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.ResourcePackFileNotFoundException;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
-import net.minecraft.server.packs.resources.FallbackResourceManager.PackEntry;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
-import net.minecraft.server.packs.resources.Resource.IoSupplier;
 
 import net.enderturret.patched.JsonDocument;
 import net.enderturret.patched.Patches;
@@ -55,8 +53,8 @@ public class MixinCallbacks {
 	 * @return The new {@code IoSupplier}.
 	 */
 	@Internal
-	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, ResourceLocation name, PackResources origin) {
-		return () -> new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, manager.type, name, stream, audit));
+	public static InputStream chain(InputStream delegate, FallbackResourceManager manager, ResourceLocation name, PackResources origin) {
+		return new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, manager.type, name, stream, audit));
 	}
 
 	/**
@@ -258,10 +256,6 @@ public class MixinCallbacks {
 	static record Entry(String name, PackResources resources) {
 
 		Entry {}
-
-		Entry(PackEntry packEntry) {
-			this(packEntry.resources());
-		}
 
 		Entry(PackResources resources) {
 			this(Patched.platform().getName(resources), resources);
