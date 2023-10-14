@@ -25,7 +25,7 @@ The best way to show its structure is likely through an example:
 
 As you might expect, this condition checks if Sodium (or one of its many forks) is loaded.
 
-As of version `2.2.0`, you can also test against specific mod versions:
+As of version `3.2.0+1.20.1`, you can also test against specific mod versions:
 
 ```json
 {
