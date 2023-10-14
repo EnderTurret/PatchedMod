@@ -44,3 +44,44 @@ For example:
 
 In this example, it is very clear what was changed, and we even know who changed it.
 Specifically, we can gather that the "Better Steel" data pack replaced the ingredient with a different one.
+
+There are also a few variations of this command.
+Using the previous example, here's what it looks like using `/patched dump file <location> raw`:
+
+```
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:netherite_ingot"
+    },
+    {
+      "item": "minecraft:flint"
+    }
+  ],
+  "result": {
+    "item": "minecraft:flint_and_steel"
+  }
+}
+```
+
+Looks pretty plain, right? This is the patched file without comments (which is what the code reading the file actually sees).
+
+Finally, the command `/patched dump file <location> unpatched` can be used to dump the original file:
+
+```
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "minecraft:flint"
+    }
+  ],
+  "result": {
+    "item": "minecraft:flint_and_steel"
+  }
+}
+```

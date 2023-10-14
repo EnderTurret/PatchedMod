@@ -1,20 +1,22 @@
 # API Documentation
 
 From an API standpoint, there's not much that the mod itself provides.
-The main things are [custom test condition registration](#custom-test-registration) and [rudimentary data generation support](#rudimentary-datagen)
+The main things are [custom test condition registration](#custom-test-registration) and [rudimentary data generation support](#rudimentary-datagen).
 
 ### Custom Test Registration
 
-Patched provides `PatchedTestConditions`, which you can use to register custom test conditions or evaluate them.
+Patched provides `PatchedTestConditions`, which can be used to register or evaluate custom test conditions.
 
-The main method of interest is `register(ResourceLocation, ITestEvaluator)`, and is where you can register your test conditions.
-`ITestEvaluator` comes from the library, so you should look there for information on it.
+The main method of interest is `register(ResourceLocation, ITestEvaluator)`, and is where one can register test conditions.
+`ITestEvaluator` comes from the library, so information on it can be found there.
 
 A similar version is `registerSimple(ResourceLocation, ISimpleTestEvaluator)`, which is a version suitable for lambda test conditions only making use of the `value` property.
 
+There also exist the builtin test conditions which can serve as examples.
+
 ### Rudimentary Datagen
 
-Patched also provides a patch `DataProvider` called `PatchProvider` which can be used to generate patch files.
+Patched provides a patch `DataProvider` called `PatchProvider` which can be used to generate patch files.
 
 To use it, simply override `registerPatches()` and call `patch(ResourceLocation)` to begin a patch file definition.
 For the `ResourceLocation` argument, there are two `id()` helper methods that can make these less tedious to write.
