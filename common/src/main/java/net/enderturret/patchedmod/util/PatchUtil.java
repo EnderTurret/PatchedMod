@@ -78,7 +78,7 @@ public final class PatchUtil {
 
 	/**
 	 * This method is a better implementation of
-	 * {@link FilePackResources#listResources(PackType, String, String, net.minecraft.server.packs.PackResources.ResourceOutput)}
+	 * {@link FilePackResources#getResources(PackType, String, String, int, Predicate)}
 	 * that actually works for what we need -- getting all resources under a particular namespace.
 	 * @param pack The pack in question.
 	 * @param type The pack type.

@@ -248,7 +248,7 @@ public class MixinCallbacks {
 	}
 
 	/**
-	 * An alternative to ATing {@link PackEntry}'s constructor public.
+	 * An alternative to ATing {@code PackEntry}'s constructor public on 1.19 and higher.
 	 * @author EnderTurret
 	 * @param name The name of the pack.
 	 * @param resources The pack itself.
