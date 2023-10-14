@@ -49,7 +49,9 @@ final class DumpCommand {
 				.then(env.literal("file")
 						.then(env.argument("location", ResourceLocationArgument.id())
 								.suggests((ctx, builder) -> suggestResource(ctx, type, builder, env))
-								.executes(ctx -> dumpFile(ctx, env))));
+								.executes(ctx -> dumpFile(ctx, env, true, true))
+								.then(env.literal("raw").executes(ctx -> dumpFile(ctx, env, false, true)))
+								.then(env.literal("unpatched").executes(ctx -> dumpFile(ctx, env, false, false)))));
 	}
 
 	@SuppressWarnings("resource")
@@ -158,7 +160,8 @@ final class DumpCommand {
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static <T> int dumpFile(CommandContext<T> ctx, IEnvironment<T> env) {
+	@SuppressWarnings("deprecation")
+	private static <T> int dumpFile(CommandContext<T> ctx, IEnvironment<T> env, boolean useAudit, boolean usePatches) {
 		final ResourceLocation location = ctx.getArgument("location", ResourceLocation.class);
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
@@ -172,10 +175,13 @@ final class DumpCommand {
 		final Resource res = op.get();
 
 		try (InputStream is = res.open()) {
-			final PatchAudit audit = new PatchAudit("null");
+			final PatchAudit audit = useAudit ? new PatchAudit("null") : null;
 
-			if (is instanceof PatchingInputStream pis)
+			if (audit != null && is instanceof PatchingInputStream pis)
 				pis.withAudit(audit);
+
+			if (!usePatches && is instanceof PatchingInputStream pis)
+				pis._disablePatching();
 
 			final JsonElement src = PatchUtil.readJson(is, location.toString(), false);
 
@@ -184,7 +190,7 @@ final class DumpCommand {
 				return 0;
 			}
 
-			env.sendSuccess(ctx.getSource(), Component.literal(audit.toString(src)), false);
+			env.sendSuccess(ctx.getSource(), Component.literal(audit != null ? audit.toString(src) : PatchUtil.GSON.toJson(src)), false);
 		} catch (NoSuchFileException e) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
 			return 0;
