@@ -52,8 +52,10 @@ public final class PatchUtil {
 	public static final Gson GSON = Patches.patchGson(CONTEXT)
 			.setPrettyPrinting().create();
 
+	private static boolean fileResourcesHookWorks = true;
+
 	public static List<ResourceLocation> getResources(PackResources pack, PackType type, String namespace, Predicate<ResourceLocation> filter) {
-		if (pack instanceof FilePackResources fpp) return getFileResources(fpp, type, namespace, filter);
+		if (pack instanceof FilePackResources fpp) return fileResourcesHookWorks ? getFileResources(fpp, type, namespace, filter) : List.of();
 
 		final List<ResourceLocation> ret = new ArrayList<>();
 
@@ -105,7 +107,15 @@ public final class PatchUtil {
 	private static List<ResourceLocation> getFileResources(FilePackResources pack, PackType type, String namespace, Predicate<ResourceLocation> filter) {
 		final List<ResourceLocation> ret = new ArrayList<>();
 
-		final ZipFile zip = ((FilePackResourcesAccess) pack).callGetOrCreateZipFile();
+		final ZipFile zip;
+		try {
+			zip = ((FilePackResourcesAccess) pack).callGetOrCreateZipFile();
+		} catch (Throwable e) {
+			Patched.platform().logger().error("Accessing FilePackResources ZipFile threw an exception! Listing FilePackResources contents is now disabled. Informational commands for zip packs may not work correctly!", e);
+			fileResourcesHookWorks = false;
+			return List.of();
+		}
+
 		if (zip == null) return ret;
 
 		final String root = type.getDirectory() + "/" + namespace + "/";
