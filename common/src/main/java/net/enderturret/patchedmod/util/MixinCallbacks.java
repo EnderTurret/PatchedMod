@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -71,47 +72,28 @@ public class MixinCallbacks {
 	private static InputStream patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, InputStream stream, @Nullable PatchAudit audit) {
 		if (stream == null || !PatchUtil.isPatchable(name)) return stream;
 
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final LazyPatchingWrapper wrapper = new LazyPatchingWrapper(stream);
 
 		try {
-			stream.transferTo(baos);
-			stream.close();
-		} catch (IOException e) {
-			throw new UncheckedIOException("Failed to transfer data to byte array", e);
+			patch(manager, from, type, name, wrapper, audit);
+		} catch (BailException e) {
+			// Let the future data consumer handle these.
 		}
 
-		byte[] bytes = baos.toByteArray();
-
-		String json = new String(bytes, StandardCharsets.UTF_8);
-
-		try {
-			final JsonElement elem = JsonParser.parseString(json);
-			final JsonDocument doc = new JsonDocument(elem);
-
-			if (patch(manager, from, type, name, doc, audit)) {
-				json = PatchUtil.GSON.toJson(doc.getRoot());
-				bytes = json.getBytes(StandardCharsets.UTF_8);
-			}
-		} catch (JsonParseException e) {
-			// Let the future data consumer handle this.
-		}
-
-		return new ByteArrayInputStream(bytes);
+		return wrapper.getOrCreateStream();
 	}
 
 	/**
-	 * <p>Patches the given Json data using patches from all of the packs with the given pack type.</p>
-	 * <p>The Json data is manipulated directly, so don't pass in anything you don't want modified.</p>
-	 * @param manager The resource manager that the Json data is from.
-	 * @param from The resource or data pack that the data originated from.
-	 * @param type The type of pack this Json data is from.
-	 * @param name The location of the Json data.
-	 * @param elem The Json data to patch.
-	 * @param audit The audit to record changes made by the patches.
+	 * Patches the given stream using patches from all of the packs with the given pack type.
+	 * @param manager The resource manager that the stream is from.
+	 * @param from The resource or data pack that the stream originated from.
+	 * @param type The type of pack this stream is from.
+	 * @param name The location of the stream.
+	 * @param wrapper The stream to patch.
 	 * @return Whether any patches were actually applied.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, JsonDocument elem, @Nullable PatchAudit audit) {
+	private static boolean patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
 		final ResourceLocation patchName = new ResourceLocation(name.getNamespace(), name.getPath() + ".patch");
 
 		PatchContext context = null;
@@ -119,8 +101,7 @@ public class MixinCallbacks {
 		from = findTrueSource(from, type, name);
 
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
-			final PackEntry _packEntry = manager.fallbacks.get(i);
-			final Entry entry = new Entry(_packEntry);
+			final Entry entry = new Entry(manager.fallbacks.get(i));
 
 			if (hasPatches(entry))
 				for (Entry pack : packsIn(entry, type, patchName)) {
@@ -128,7 +109,7 @@ public class MixinCallbacks {
 
 					try (InputStream patchStream = pack.resources().getResource(type, patchName)) {
 						patchJson = PatchUtil.readString(patchStream);
-					} catch (IOException e) {
+					} catch (Exception e) {
 						Patched.platform().logger().warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
 						continue;
 					}
@@ -137,7 +118,7 @@ public class MixinCallbacks {
 
 					try {
 						patch = Patches.readPatch(PatchUtil.GSON, patchJson);
-					} catch (JsonParseException e) {
+					} catch (Exception e) {
 						Patched.platform().logger().warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
 						continue;
 					}
@@ -150,7 +131,9 @@ public class MixinCallbacks {
 
 						Patched.platform().logger().debug("Applying patch {} from {}.", patchName, pack.name());
 
-						patch.patch(elem, context);
+						patch.patch(wrapper.get(), context);
+					} catch (BailException e) {
+						throw e;
 					} catch (PatchingException e) {
 						Patched.platform().logger().warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
 					} catch (Exception e) {
@@ -283,5 +266,68 @@ public class MixinCallbacks {
 		Entry(PackResources resources) {
 			this(Patched.platform().getName(resources), resources);
 		}
+	}
+
+	/**
+	 * A class that wraps an {@link InputStream} in such a way that we can avoid reading from it if no patching is performed.
+	 * @author EnderTurret
+	 */
+	private static class LazyPatchingWrapper {
+
+		private InputStream stream;
+		private byte[] oldBytes;
+		private JsonDocument doc;
+
+		public LazyPatchingWrapper(InputStream stream) {
+			this.stream = stream;
+		}
+
+		public InputStream getOrCreateStream() {
+			if (oldBytes == null) return Objects.requireNonNull(stream);
+
+			if (doc != null)
+				oldBytes = PatchUtil.GSON.toJson(doc.getRoot()).getBytes(StandardCharsets.UTF_8);
+
+			return new ByteArrayInputStream(oldBytes);
+		}
+
+		public JsonDocument get() {
+			if (doc == null)
+				doc = new JsonDocument(read());
+
+			return doc;
+		}
+
+		private JsonElement read() {
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+			try {
+				stream.transferTo(baos);
+				stream.close();
+				stream = null;
+			} catch (IOException e) {
+				throw new UncheckedIOException("Failed to transfer data to byte array", e);
+			}
+
+			oldBytes = baos.toByteArray();
+
+			String json = new String(oldBytes, StandardCharsets.UTF_8);
+
+			try {
+				return JsonParser.parseString(json);
+			} catch (Exception e) {
+				throw new BailException(e);
+			}
+		}
+	}
+
+	/**
+	 * An exception thrown to signal that we should really just bail out and let someone else handle this mess.
+	 * @author EnderTurret
+	 */
+	private static class BailException extends RuntimeException {
+
+		public BailException() {}
+		public BailException(Throwable cause) { super(cause); }
 	}
 }
