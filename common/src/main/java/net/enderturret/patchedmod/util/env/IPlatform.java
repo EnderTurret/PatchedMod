@@ -20,7 +20,9 @@ public interface IPlatform {
 	public Logger logger();
 
 	public boolean isPhysicalClient();
+
 	public boolean isModLoaded(String modId);
+	public boolean isModLoaded(String modId, String version);
 
 	/**
 	 * <p>Minecraft generally gives each pack a "name" or "id", like {@code "file/[file name]"} for resource/data packs.

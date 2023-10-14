@@ -144,7 +144,7 @@ final class DumpCommand {
 		}
 
 		try (InputStream is = pack.getResource(type, location)) {
-			final String src = PatchUtil.readPrettyJson(is, location.toString() + "(in " + packName + ")", true, true);
+			final String src = PatchUtil.readPrettyJson(is, location.toString() + " (in " + packName + ")", true, true);
 			if (src == null) {
 				env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));
 				return 0;

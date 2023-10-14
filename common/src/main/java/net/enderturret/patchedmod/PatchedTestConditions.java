@@ -3,10 +3,12 @@ package net.enderturret.patchedmod;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import net.minecraft.resources.ResourceLocation;
 
@@ -23,14 +25,21 @@ public final class PatchedTestConditions implements ITestEvaluator {
 
 	public static final PatchedTestConditions INSTANCE = new PatchedTestConditions();
 
-	private static Map<String, ITestEvaluator> conditions = new HashMap<>();
+	private static Map<String, ITestEvaluator> conditions = new ConcurrentHashMap<>();
 
 	private PatchedTestConditions() {}
 
 	@Internal
 	public static void registerDefaults() {
-		PatchedTestConditions.registerSimple(new ResourceLocation(Patched.MOD_ID, "mod_loaded"),
-				value -> Patched.platform().isModLoaded(PatchUtil.assertIsString("mod_loaded", value)));
+		registerSimple(id("mod_loaded"),
+				value -> {
+					if (value instanceof JsonObject obj) {
+						final String modId = PatchUtil.assertIsString("mod_loaded", "mod", obj.get("mod"));
+						final String version = PatchUtil.assertIsString("mod_loaded", "version", obj.get("version"));
+						return Patched.platform().isModLoaded(modId, version);
+					}
+					return Patched.platform().isModLoaded(PatchUtil.assertIsString("mod_loaded", value));
+				});
 	}
 
 	/**
@@ -50,6 +59,10 @@ public final class PatchedTestConditions implements ITestEvaluator {
 	 */
 	public static void registerSimple(ResourceLocation name, ISimpleTestEvaluator condition) {
 		register(name, condition);
+	}
+
+	private static ResourceLocation id(String path) {
+		return new ResourceLocation(Patched.MOD_ID, path);
 	}
 
 	@Override

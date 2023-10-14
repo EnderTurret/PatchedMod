@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import net.fabricmc.fabric.api.resource.ModResourcePack;
 import net.fabricmc.fabric.impl.resource.loader.ModNioResourcePack;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.Version;
+import net.fabricmc.loader.api.VersionParsingException;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
@@ -35,6 +37,20 @@ final class FabricPlatform implements IPlatform {
 	@Override
 	public boolean isModLoaded(String modId) {
 		return FabricLoader.getInstance().isModLoaded(modId);
+	}
+
+	@Override
+	public boolean isModLoaded(String modId, String version) {
+		final Version version2;
+		try {
+			version2 = Version.parse(version);
+		} catch (VersionParsingException e) {
+			return false;
+		}
+
+		return FabricLoader.getInstance().getModContainer(modId)
+				.map(mc -> mc.getMetadata().getVersion().compareTo(version2))
+				.orElse(-1) >= 0;
 	}
 
 	@Override
