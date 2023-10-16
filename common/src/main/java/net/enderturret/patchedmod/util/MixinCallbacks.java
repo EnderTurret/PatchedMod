@@ -11,6 +11,7 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.event.Level;
 
 import com.google.common.collect.Iterables;
 import com.google.gson.JsonElement;
@@ -43,7 +44,8 @@ import net.enderturret.patchedmod.Patched;
 @Internal
 public class MixinCallbacks {
 
-	private static final boolean DEBUG = Boolean.getBoolean("patched.debug");
+	@Internal
+	public static final boolean DEBUG = Boolean.getBoolean("patched.debug");
 
 	/**
 	 * "Chains" the given {@code IoSupplier}, returning an {@code IoSupplier} that patches the data returned by it.
@@ -129,7 +131,7 @@ public class MixinCallbacks {
 						if (context == null)
 							context = PatchUtil.CONTEXT.audit(audit);
 
-						Patched.platform().logger().debug("Applying patch {} from {}.", patchName, pack.name());
+						Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}.", patchName, pack.name());
 
 						patch.patch(wrapper.get(), context);
 					} catch (BailException e) {
@@ -200,10 +202,7 @@ public class MixinCallbacks {
 					}
 
 					if (patching.hasPatches())
-						Patched.platform().logger().debug("Enabled patching for {}.", entry.name());
-
-					if (DEBUG)
-						Patched.platform().logger().debug("{} patches state: {}", entry.name(), patching.hasPatches());
+						Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Enabled patching for {}.", entry.name());
 				}
 			}
 
