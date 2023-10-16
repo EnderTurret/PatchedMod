@@ -132,15 +132,21 @@ final class DumpCommand {
 		final ResourceLocation location = ctx.getArgument("location", ResourceLocation.class);
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final PackResources pack = Patched.platform().getExpandedPacks(man)
+		final List<PackResources> packs = Patched.platform().getExpandedPacks(man)
 				.filter(p -> packName.equals(Patched.platform().getName(p)))
-				.findFirst()
-				.orElse(null);
+				.toList();
 
-		if (pack == null) {
+		if (packs.isEmpty()) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.dump.pack_not_found", "That pack doesn't exist."));
 			return 0;
 		}
+
+		if (packs.size() > 1) {
+			env.sendFailure(ctx.getSource(), translate("command.patched.list.too_many_packs", "There is more than one pack with that name."));
+			return 0;
+		}
+
+		final PackResources pack = packs.get(0);
 
 		if (!Patched.platform().hasPatches(pack)) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));

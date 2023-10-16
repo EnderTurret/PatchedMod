@@ -1,5 +1,6 @@
 {
   "command.patched.list.pack_not_found": "That pack doesn't exist.",
+  "command.patched.list.too_many_packs": "There is more than one pack with that name.",
   "command.patched.list.patching_disabled": "That pack doesn't have patches enabled.",
   "command.patched.list.patches.single": "There is 1 patch in %2$s:",
   "command.patched.list.patches.multi": "There are %1$s patches in %2$s:",
