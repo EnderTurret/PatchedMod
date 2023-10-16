@@ -53,7 +53,23 @@ final class QuiltPlatform implements IPlatform {
 
 	@Override
 	public String getName(PackResources pack) {
-		return pack instanceof ModNioResourcePackAccess mod ? "mod/" + mod.getModInfo().name() : pack.packId();
+		if (pack instanceof ModNioResourcePackAccess mod) {
+			final String modId = mod.getModInfo().id();
+			final String packId;
+
+			if (!modId.equals(pack.packId()))
+				if (pack.packId().startsWith(modId)) {
+					final String temp = pack.packId().substring(modId.length());
+					packId = temp.startsWith(":") ? temp.substring(1) : temp;
+				} else
+					packId = pack.packId();
+			else
+				packId = null;
+
+			return "mod/" + mod.getModInfo().name() + (packId != null ? "/" + packId : "");
+		}
+
+		return pack.packId();
 	}
 
 	@Override
@@ -71,6 +87,7 @@ final class QuiltPlatform implements IPlatform {
 		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.getNamespacedPacks().getOrDefault(file.getNamespace(), List.of())) : List.of();
 	}
 
+	@SuppressWarnings("unchecked")
 	private static Collection<PackResources> transform(List<? extends PackResources> list) {
 		return (List<PackResources>) list;
 	}

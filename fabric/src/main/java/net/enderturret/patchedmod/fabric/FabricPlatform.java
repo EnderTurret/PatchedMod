@@ -62,7 +62,23 @@ final class FabricPlatform implements IPlatform {
 
 	@Override
 	public String getName(PackResources pack) {
-		return pack instanceof ModResourcePack mod ? "mod/" + mod.getFabricModMetadata().getName() : pack.packId();
+		if (pack instanceof ModResourcePack mod) {
+			final String modId = mod.getFabricModMetadata().getId();
+			final String packId;
+
+			if (!modId.equals(pack.packId()))
+				if (pack.packId().startsWith(modId)) {
+					final String temp = pack.packId().substring(modId.length());
+					packId = temp.startsWith(":") ? temp.substring(1) : temp;
+				} else
+					packId = pack.packId();
+			else
+				packId = null;
+
+			return "mod/" + mod.getFabricModMetadata().getName() + (packId != null ? "/" + packId : "");
+		}
+
+		return pack.packId();
 	}
 
 	@Override

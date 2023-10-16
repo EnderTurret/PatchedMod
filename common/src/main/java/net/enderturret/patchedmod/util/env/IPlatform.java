@@ -30,7 +30,7 @@ public interface IPlatform {
 
 	/**
 	 * <p>Minecraft generally gives each pack a "name" or "id", like {@code "file/[file name]"} for resource/data packs.
-	 * Mod loaders on the other hand give mod resource/data packs... less consistent results.</p>
+	 * Mod loaders on the other hand give mod resource/data packs... less consistent ones.</p>
 	 * <p>In particular:
 	 * <table border="1">
 	 * <tr><th>Mod loader</th><th>Pack id</th></tr>
@@ -39,6 +39,8 @@ public interface IPlatform {
 	 * </table></p>
 	 * <p>This method allows for changing this to be more consistent across loaders.
 	 * The proposed new format is this: {@code "mod/[mod name]"}</p>
+	 * <p>More recently, it has come to my attention that Fabric <i>reuses</i> its resource pack type for mods' builtin ones, too.
+	 * For example, {@code "mymod:someoptionalpack"}. The corresponding format we use for these is {@code "mod/[mod name]/[stripped pack id]"}.</p>
 	 * @param pack The pack in question.
 	 * @return The "name" of the pack.
 	 */
