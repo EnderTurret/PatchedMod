@@ -84,7 +84,7 @@ final class ListCommand {
 
 		for (ResourceLocation loc : patches) {
 			final String patch = loc.toString();
-			c.append("\n  ").append(Component.literal(patch)
+			c.append("\n").append(Component.literal(patch)
 					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
 							"/" + command + " dump patch " + StringArgumentType.escapeIfRequired(Patched.platform().getName(pack)) + " " + patch))
 							.withUnderlined(true)));
