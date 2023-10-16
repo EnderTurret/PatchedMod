@@ -54,19 +54,19 @@ final class QuiltPlatform implements IPlatform {
 	@Override
 	public String getName(PackResources pack) {
 		if (pack instanceof ModNioResourcePackAccess mod) {
-			final String modId = mod.getModInfo().id();
+			final String modName = mod.getModInfo().name();
 			final String packId;
 
-			if (!modId.equals(pack.packId()))
-				if (pack.packId().startsWith(modId)) {
-					final String temp = pack.packId().substring(modId.length());
+			if (!modName.equals(pack.packId()))
+				if (pack.packId().startsWith(modName)) {
+					final String temp = pack.packId().substring(modName.length());
 					packId = temp.startsWith(":") ? temp.substring(1) : temp;
 				} else
 					packId = pack.packId();
 			else
 				packId = null;
 
-			return "mod/" + mod.getModInfo().name() + (packId != null ? "/" + packId : "");
+			return "mod/" + modName + (packId != null ? "/" + packId : "");
 		}
 
 		return pack.packId();
