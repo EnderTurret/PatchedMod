@@ -3,6 +3,7 @@ package net.enderturret.patchedmod.command;
 import static net.enderturret.patchedmod.command.PatchedCommand.translate;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import com.mojang.brigadier.Command;
@@ -12,6 +13,7 @@ import com.mojang.brigadier.context.CommandContext;
 
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -35,7 +37,8 @@ final class ListCommand {
 						.then(env.argument("pack", StringArgumentType.greedyString())
 								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env, false))
 								.executes(ctx -> listPatches(ctx, env))))
-				.then(env.literal("packs").executes(ctx -> listPacks(ctx, env)));
+				.then(env.literal("packs").executes(ctx -> listPacks(ctx, env, false))
+						.then(env.literal("verbose").executes(ctx -> listPacks(ctx, env, true))));
 	}
 
 	@SuppressWarnings("resource")
@@ -86,28 +89,52 @@ final class ListCommand {
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static <T> int listPacks(CommandContext<T> ctx, IEnvironment<T> env) {
+	private static <T> int listPacks(CommandContext<T> ctx, IEnvironment<T> env, boolean listAll) {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final List<String> packs = Patched.platform().getPatchingPacks(man)
-				.map(Patched.platform()::getName)
-				.sorted()
+		record Entry(PackResources pack, String name, boolean patching) {}
+
+		final List<Entry> packs = Patched.platform().getExpandedPacks(man)
+				.map(p -> new Entry(p, Patched.platform().getName(p), Patched.platform().hasPatches(p)))
+				.sorted(Comparator.comparing(Entry::name))
 				.toList();
 
-		final boolean single = packs.size() == 1;
+		final List<Entry> patching = packs.stream()
+				.filter(Entry::patching)
+				.toList();
+
+		final boolean single = patching.size() == 1;
 
 		final MutableComponent c = translate("command.patched.list.packs." + (single ? "single" : "multi"),
 				"There " + (!single ? "are" : "is")
-				+ " " + packs.size() + " pack" + (!single ? "s" : "")
-				+ " with patching enabled:", packs.size());
+				+ " " + patching.size() + " pack" + (!single ? "s" : "")
+				+ " with patching enabled:", patching.size());
 
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
-		for (String pack : packs)
-			c.append("\n  ").append(Component.literal(pack)
-					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-							"/" + command + " list patches " + pack))
+		for (Entry pack : patching) {
+			final ClickEvent click = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+					"/" + command + " list patches " + pack.name);
+			final HoverEvent hover = listAll ? new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+					Component.literal(pack.pack.packId())) : null;
+
+			c.append("\n  ").append(Component.literal(pack.name)
+					.setStyle(Style.EMPTY.withClickEvent(click)
+							.withHoverEvent(hover)
 							.withUnderlined(true)));
+		}
+
+		final List<Entry> notPatching = packs.stream()
+				.filter(e -> !e.patching)
+				.toList();
+
+		if (listAll && !notPatching.isEmpty()) {
+			c.append("\n\n").append(translate("command.patched.list.packs.verbose", "Additionally, the following packs do not have patching enabled:"));
+			for (Entry pack : notPatching)
+				c.append("\n  ").append(Component.literal(pack.name)
+						.setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								Component.literal(pack.pack.packId())))));
+		}
 
 		env.sendSuccess(ctx.getSource(), c, false);
 
