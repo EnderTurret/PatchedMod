@@ -79,6 +79,8 @@ public class MixinCallbacks {
 			patch(manager, from, type, name, wrapper, audit);
 		} catch (BailException e) {
 			// Let the future data consumer handle these.
+		} catch (Exception e) {
+			Patched.platform().logger().error("An exception occurred while attempting to patch {}:", name, e);
 		}
 
 		return wrapper.getOrCreateStream();
@@ -103,7 +105,9 @@ public class MixinCallbacks {
 		from = findTrueSource(from, type, name);
 
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
-			final Entry entry = new Entry(manager.fallbacks.get(i));
+			final PackEntry packEntry = manager.fallbacks.get(i);
+			if (packEntry.resources() == null) continue;
+			final Entry entry = new Entry(packEntry);
 
 			if (hasPatches(entry))
 				for (Entry pack : packsIn(entry, type, patchName)) {
@@ -262,11 +266,11 @@ public class MixinCallbacks {
 		Entry {}
 
 		Entry(PackEntry packEntry) {
-			this(packEntry.resources());
+			this(Objects.requireNonNull(packEntry.resources(), "packEntry.resources()"));
 		}
 
 		Entry(PackResources resources) {
-			this(Patched.platform().getName(resources), resources);
+			this(Patched.platform().getName(Objects.requireNonNull(resources, "resources")), resources);
 		}
 	}
 
