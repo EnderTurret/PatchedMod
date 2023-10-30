@@ -11,6 +11,10 @@ base {
     archivesName = 'Patched-neoforge'
 }
 
+mixin {
+    config 'mixins.patched.json'
+}
+
 dependencies {
     implementation 'net.neoforged:neoforge:20.2.3-beta'
 
@@ -74,3 +78,7 @@ shadowJar {
 }
 
 jar.enabled = false
+
+artifacts {
+    archives shadowJar
+}
