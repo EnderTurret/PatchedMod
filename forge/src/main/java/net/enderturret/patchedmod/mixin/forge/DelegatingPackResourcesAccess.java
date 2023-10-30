@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
-import net.minecraftforge.resource.DelegatingPackResources;
+import net.neoforged.neoforge.resource.DelegatingPackResources;
 
 /**
  * Provides access to some private things in {@link DelegatingPackResources} so that we can handle mod packs correctly.

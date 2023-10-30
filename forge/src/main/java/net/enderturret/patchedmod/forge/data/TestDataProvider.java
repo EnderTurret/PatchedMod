@@ -6,8 +6,8 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.data.PackOutput;
 
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 import net.enderturret.patchedmod.data.PatchProvider;
 
