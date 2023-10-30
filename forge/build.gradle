@@ -1,27 +1,26 @@
 plugins {
+    id 'java-library'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'net.minecraftforge.gradle' version '[6.0, 6.2)'
-    id 'org.spongepowered.mixin' version '0.7.33'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'net.neoforged.gradle.userdev' version '7.0.5'
+    id 'net.neoforged.gradle.mixin' version '7.0.5'
+    // TODO: See minecraft.mappings
+    //id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
 base {
-    archivesName = 'Patched-forge'
-}
-
-mixin {
-    add sourceSets.main, 'patched.refmap.json'
+    archivesName = 'Patched-neoforge'
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.1-47.1.0'
+    implementation 'net.neoforged:neoforge:20.2.3-beta'
 
     compileOnly (project(':PatchedModCommon')) {
         exclude group: 'org.spongepowered', module: 'mixin'
         exclude group: 'net.minecraft', module: 'joined_aw'
     }
 
-    minecraftLibrary ("com.github.EnderTurret:Patched:$patchedVersion") {
+    // TODO: https://github.com/neoforged/NeoGradle/issues/12
+    implementation ("com.github.EnderTurret:Patched:$patchedVersion") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
@@ -29,39 +28,28 @@ dependencies {
 }
 
 minecraft {
-    mappings channel: 'parchment', version: '2023.07.09-1.20.1'
-	accessTransformer = file("$rootDir/forge/src/main/resources/META-INF/accesstransformer.cfg")
+    // TODO: It looks like you can't change the mappings right now
+    //mappings channel: 'parchment', version: '2023.10.22-1.20.2'
+    accessTransformers.file rootProject.file('forge/src/main/resources/META-INF/accesstransformer.cfg')
+}
 
-    runs {
-        configureEach {
-            workingDirectory project.file('run')
+runs {
+    configureEach {
+        workingDirectory project.file('run')
 
-            arg '-mixin.config=mixins.patched.json'
+        programArgument '-mixin.config=mixins.patched.json'
 
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+        modSource sourceSets.main
+        // TODO: Supposedly also https://github.com/neoforged/NeoGradle/issues/12
+        //modSource project(':PatchedModCommon').sourceSets.main
+    }
 
-            mods {
-                patched {
-                    source sourceSets.main
-                    source project(':PatchedModCommon').sourceSets.main
-                }
-            }
-        }
+    runPatchedClientNeoForge {}
 
-        client {
-            taskName 'runPatchedClientForge'
-        }
+    runPatchedServerNeoForge {}
 
-        server {
-            taskName 'runPatchedServerForge'
-        }
-
-        data {
-            taskName 'runPatchedDataForge'
-
-            args '--mod', 'patched', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-        }
+    runPatchedDataNeoForge {
+        programArguments.addAll '--mod', 'patched', '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
     }
 }
 
@@ -77,15 +65,6 @@ processResources {
     from project(':PatchedModCommon').sourceSets.main.resources
 }
 
-reobf {
-    shadowJar {
-        mappings = createMcpToSrg.output
-    }
-    jar {
-        enabled = false
-    }
-}
-
 shadowJar {
     archiveClassifier = ''
 
@@ -95,8 +74,3 @@ shadowJar {
 }
 
 jar.enabled = false
-
-shadowJar.finalizedBy('reobfShadowJar')
-
-// Fix mixingradle.
-eclipseJdtApt.dependsOn createMcpToSrg
