@@ -31,6 +31,7 @@ import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.PatchedTestConditions;
 import net.enderturret.patchedmod.mixin.FilePackResourcesAccess;
+import net.enderturret.patchedmod.mixin.SharedZipFileAccessAccess;
 
 /**
  * An assortment of utilities related to patching Json data.
@@ -109,7 +110,7 @@ public final class PatchUtil {
 
 		final ZipFile zip;
 		try {
-			zip = ((FilePackResourcesAccess) pack).callGetOrCreateZipFile();
+			zip = ((SharedZipFileAccessAccess) ((FilePackResourcesAccess) pack).getZipFileAccess()).callGetOrCreateZipFile();
 		} catch (Throwable e) {
 			Patched.platform().logger().error("Accessing FilePackResources ZipFile threw an exception! Listing FilePackResources contents is now disabled. Informational commands for zip packs may not work correctly!", e);
 			fileResourcesHookWorks = false;

@@ -7,7 +7,8 @@
     "forge.DelegatingPackResourcesAccess",
     "FilePackResourcesAccess",
     "MixinAbstractPackResources",
-    "MixinFallbackResourceManager"
+    "MixinFallbackResourceManager",
+    "SharedZipFileAccessAccess"
   ],
   "client": []
 }

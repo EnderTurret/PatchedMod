@@ -9,7 +9,8 @@
     "quilt.ModNioResourcePackAccess",
     "FilePackResourcesAccess",
     "MixinAbstractPackResources",
-    "MixinFallbackResourceManager"
+    "MixinFallbackResourceManager",
+    "SharedZipFileAccessAccess"
   ],
   "client": []
 }

@@ -8,7 +8,8 @@
     "fabric.MixinFabricResourcePacks",
     "FilePackResourcesAccess",
     "MixinAbstractPackResources",
-    "MixinFallbackResourceManager"
+    "MixinFallbackResourceManager",
+    "SharedZipFileAccessAccess"
   ],
   "client": []
 }
