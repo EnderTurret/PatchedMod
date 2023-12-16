@@ -39,8 +39,7 @@ runs {
         workingDirectory project.file('run')
 
         modSource sourceSets.main
-        // TODO: Supposedly also https://github.com/neoforged/NeoGradle/issues/12
-        //modSource project(':PatchedModCommon').sourceSets.main
+        modSource project(':PatchedModCommon').sourceSets.main
 
         dependencies {
             runtime configuration(project.configurations.minecraftLibrary)
