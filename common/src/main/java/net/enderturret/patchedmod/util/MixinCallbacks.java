@@ -35,10 +35,11 @@ import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.mixin.FallbackResourceManagerAccess;
 
 /**
  * <p>Handles callbacks from mixins -- what you would expect from the name.</p>
- * <p>Specifically, this handles actually patching things.</p>
+ * <p>Specifically, this handles the overall management of patching files and setting up packs for patching.</p>
  * @author EnderTurret
  */
 @Internal
@@ -57,7 +58,12 @@ public class MixinCallbacks {
 	 */
 	@Internal
 	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, ResourceLocation name, PackResources origin) {
-		return () -> new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, manager.type, name, stream, audit));
+		return () -> new PatchingInputStream(delegate, (stream, audit) -> {
+			if (!(manager instanceof FallbackResourceManagerAccess access))
+				return stream; // Don't attempt patching if our mixin hasn't applied for some reason.
+
+			return patch(manager, origin, access.getType(), name, stream, audit);
+		});
 	}
 
 	/**

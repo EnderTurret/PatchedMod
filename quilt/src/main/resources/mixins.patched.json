@@ -7,6 +7,7 @@
     "quilt.GroupResourcePackAccess",
     "quilt.MixinQuiltResourcePacks",
     "quilt.ModNioResourcePackAccess",
+    "FallbackResourceManagerAccess",
     "FilePackResourcesAccess",
     "MixinAbstractPackResources",
     "MixinFallbackResourceManager",
