@@ -63,8 +63,9 @@ final class ForgePlatform implements IPlatform {
 
 	@Override
 	public String getName(PackResources pack) {
-		if (pack instanceof PathPackResources) {
-			final Optional<String> mod = findModNameFromModFile(pack.packId());
+		if (pack.packId().startsWith("mod:")) {
+			final String modId = pack.packId().substring("mod:".length());
+			final Optional<String> mod = findModNameFromModFile(modId);
 			if (mod.isPresent())
 				return "mod/" + mod.get();
 		}
@@ -72,13 +73,9 @@ final class ForgePlatform implements IPlatform {
 		return pack.packId();
 	}
 
-	private static Optional<String> findModNameFromModFile(String modFile) {
-		return ModList.get().getModFiles()
-				.stream()
-				.filter(mfi -> modFile.equals(mfi.getFile().getFileName()))
-				.flatMap(mfi -> mfi.getMods().stream())
-				.map(IModInfo::getDisplayName)
-				.findFirst();
+	private static Optional<String> findModNameFromModFile(String modId) {
+		return ModList.get().getModContainerById(modId)
+				.map(m -> m.getModInfo().getDisplayName());
 	}
 
 	@Override

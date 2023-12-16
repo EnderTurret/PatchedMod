@@ -34,7 +34,7 @@ public interface IPlatform {
 	 * <p>In particular:
 	 * <table border="1">
 	 * <tr><th>Mod loader</th><th>Pack id</th></tr>
-	 * <tr><td>Forge</td><td>"My Mod.jar" (mod file name)</td></tr>
+	 * <tr><td>Forge</td><td>"mod:mymod" (mod id)</td></tr>
 	 * <tr><td>Fabric</td><td>"mymod" (mod id)</td></tr>
 	 * </table></p>
 	 * <p>This method allows for changing this to be more consistent across loaders.
