@@ -17,6 +17,9 @@ issueTrackerURL="https://github.com/EnderTurret/PatchedMod/issues"
     logoFile="icon.png"
     displayTest="IGNORE_ALL_VERSION"
 
+[[mixins]]
+    config = "mixins.patched.json"
+
 [[dependencies.patched]]
     modId="neoforge"
     mandatory=true

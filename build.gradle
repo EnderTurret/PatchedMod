@@ -43,8 +43,7 @@ subprojects {
                 'Specification-Version': '1',
                 'Implementation-Title': 'Patched',
                 'Implementation-Version': "${version}",
-                'Implementation-Vendor' : 'EnderTurret',
-                'MixinConfigs': 'mixins.patched.json'
+                'Implementation-Vendor' : 'EnderTurret'
             ])
         }
     }

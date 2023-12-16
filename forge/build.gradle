@@ -2,17 +2,12 @@ plugins {
     id 'java-library'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'net.neoforged.gradle.userdev' version '7.0.5'
-    id 'net.neoforged.gradle.mixin' version '7.0.5'
     // TODO: See minecraft.mappings
     //id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
 base {
     archivesName = 'Patched-neoforge'
-}
-
-mixin {
-    config 'mixins.patched.json'
 }
 
 dependencies {
@@ -27,8 +22,6 @@ dependencies {
     implementation ("com.github.EnderTurret:Patched:$patchedVersion") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
-
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
 minecraft {
