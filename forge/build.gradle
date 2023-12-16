@@ -47,11 +47,11 @@ runs {
         }
     }
 
-    runPatchedClientNeoForge {}
+    client {}
 
-    runPatchedServerNeoForge {}
+    server {}
 
-    runPatchedDataNeoForge {
+    data {
         programArguments.addAll '--mod', 'patched', '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
     }
 }
