@@ -24,7 +24,6 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforgespi.language.IModInfo;
 
-import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
 final class ForgePlatform implements IPlatform {
@@ -84,17 +83,17 @@ final class ForgePlatform implements IPlatform {
 
 	@Override
 	public boolean isGroup(PackResources pack) {
-		return pack instanceof DelegatingPackResourcesAccess;
+		return false;
 	}
 
 	@Override
 	public Collection<PackResources> getChildren(PackResources pack) {
-		return Objects.requireNonNullElse(pack.getChildren(), List.of());
+		return List.of();
 	}
 
 	@Override
 	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) {
-		return pack instanceof DelegatingPackResourcesAccess dpra ? dpra.callGetCandidatePacks(type, file) : List.of();
+		return List.of();
 	}
 
 	@Override

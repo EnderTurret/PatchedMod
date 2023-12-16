@@ -3,7 +3,6 @@
   "package": "net.enderturret.patchedmod.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "forge.DelegatingPackResourcesAccess",
     "FallbackResourceManagerAccess",
     "FilePackResourcesAccess",
     "MixinAbstractPackResources",
