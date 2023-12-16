@@ -3,6 +3,7 @@ package net.enderturret.patchedmod.forge;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -15,12 +16,12 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.VanillaPackResources;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.resource.PathPackResources;
 import net.neoforged.neoforgespi.language.IModInfo;
 
 import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
@@ -63,16 +64,22 @@ final class ForgePlatform implements IPlatform {
 
 	@Override
 	public String getName(PackResources pack) {
-		return pack instanceof PathPackResources ppp ? "mod/" + findModNameFromModFile(pack.packId()) : pack.packId();
+		if (pack instanceof PathPackResources) {
+			final Optional<String> mod = findModNameFromModFile(pack.packId());
+			if (mod.isPresent())
+				return "mod/" + mod.get();
+		}
+
+		return pack.packId();
 	}
 
-	private static String findModNameFromModFile(String modFile) {
+	private static Optional<String> findModNameFromModFile(String modFile) {
 		return ModList.get().getModFiles()
 				.stream()
 				.filter(mfi -> modFile.equals(mfi.getFile().getFileName()))
 				.flatMap(mfi -> mfi.getMods().stream())
 				.map(IModInfo::getDisplayName)
-				.findFirst().orElse(modFile);
+				.findFirst();
 	}
 
 	@Override
