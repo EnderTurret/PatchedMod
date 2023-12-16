@@ -3,7 +3,7 @@ subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
 
-    version = '4.0.0+1.20.2'
+    version = '4.0.1+1.20.2'
     group = 'net.enderturret'
 
     ext {
