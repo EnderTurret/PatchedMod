@@ -10,6 +10,11 @@ base {
     archivesName = 'Patched-neoforge'
 }
 
+configurations {
+    minecraftLibrary {}
+    implementation.extendsFrom minecraftLibrary
+}
+
 dependencies {
     implementation 'net.neoforged:neoforge:20.2.3-beta'
 
@@ -18,8 +23,7 @@ dependencies {
         exclude group: 'net.minecraft', module: 'joined_aw'
     }
 
-    // TODO: https://github.com/neoforged/NeoGradle/issues/12
-    implementation ("com.github.EnderTurret:Patched:$patchedVersion") {
+    minecraftLibrary ("com.github.EnderTurret:Patched:$patchedVersion") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 }
@@ -34,11 +38,13 @@ runs {
     configureEach {
         workingDirectory project.file('run')
 
-        programArgument '-mixin.config=mixins.patched.json'
-
         modSource sourceSets.main
         // TODO: Supposedly also https://github.com/neoforged/NeoGradle/issues/12
         //modSource project(':PatchedModCommon').sourceSets.main
+
+        dependencies {
+            runtime configuration(project.configurations.minecraftLibrary)
+        }
     }
 
     runPatchedClientNeoForge {}
