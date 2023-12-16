@@ -122,7 +122,7 @@ final class ListCommand {
 			final ClickEvent click = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
 					"/" + command + " list patches " + pack.name);
 			final HoverEvent hover = listAll ? new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-					Component.literal(pack.pack.packId())) : null;
+					Component.literal(pack.pack.packId() + " (" + pack.pack.getClass().getSimpleName() + ")")) : null;
 
 			c.append("\n  ").append(Component.literal(pack.name)
 					.setStyle(Style.EMPTY.withClickEvent(click)
@@ -139,7 +139,7 @@ final class ListCommand {
 			for (Entry pack : notPatching)
 				c.append("\n  ").append(Component.literal(pack.name)
 						.setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-								Component.literal(pack.pack.packId())))));
+								Component.literal(pack.pack.packId() + " (" + pack.pack.getClass().getSimpleName() + ")")))));
 		}
 
 		env.sendSuccess(ctx.getSource(), c, false);
