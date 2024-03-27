@@ -19,7 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
-import net.enderturret.patchedmod.mixin.fabric.GroupResourcePackAccess;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
 final class FabricPlatform implements IPlatform {
@@ -83,17 +82,17 @@ final class FabricPlatform implements IPlatform {
 
 	@Override
 	public boolean isGroup(PackResources pack) {
-		return pack instanceof GroupResourcePackAccess;
+		return false;
 	}
 
 	@Override
 	public Collection<PackResources> getChildren(PackResources pack) {
-		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.getPacks()) : List.of();
+		return List.of();
 	}
 
 	@Override
 	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) {
-		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.getNamespacedPacks().getOrDefault(file.getNamespace(), List.of())) : List.of();
+		return List.of();
 	}
 
 	private static Collection<PackResources> transform(List<ModResourcePack> list) {
