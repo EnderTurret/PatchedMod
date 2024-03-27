@@ -14,7 +14,7 @@ configurations {
 }
 
 dependencies {
-    implementation 'net.neoforged:neoforge:20.4.29-beta'
+    implementation 'net.neoforged:neoforge:20.4.212'
 
     compileOnly (project(':PatchedModCommon')) {
         exclude group: 'org.spongepowered', module: 'mixin'
