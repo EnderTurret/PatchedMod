@@ -222,8 +222,34 @@ public final class PatchUtil {
 		return value.getAsString();
 	}
 
+	/**
+	 * Simplified version of {@link #assertIsString(String, String, JsonElement)}.
+	 * @deprecated Use {@link #assertIsString(String, String, JsonElement) assertIsString(String, "value", JsonElement)} instead.
+	 * @param name Some extra context for the message. Used in {@link PatchedTestConditions} to identify the test condition.
+	 * @param value The given value.
+	 * @return The given value as a {@link String}.
+	 * @throws PatchingException
+	 */
+	@Deprecated(forRemoval = true, since = "1.20.4")
 	public static String assertIsString(String name, JsonElement value) throws PatchingException {
 		return assertIsString(name, "value", value);
+	}
+
+	/**
+	 * If the given value is a valid {@link ResourceLocation}, returns it. Otherwise, throws an exception.
+	 * @param name Some extra context for the message. Used in {@link PatchedTestConditions} to identify the test condition.
+	 * @param field The name that the given value is associated with.
+	 * @param value The given value.
+	 * @return The given value as a {@link ResourceLocation}.
+	 * @throws PatchingException
+	 */
+	public static ResourceLocation assertIsResourceLocation(String name, String field, JsonElement value) throws PatchingException {
+		final String str = assertIsString(name, field, value);
+
+		final ResourceLocation loc = ResourceLocation.tryParse(str);
+		if (loc == null) throw new PatchingException(name + ": " + field + " must be a valid resource location, was \"" + value + "\"");
+
+		return loc;
 	}
 
 	/**

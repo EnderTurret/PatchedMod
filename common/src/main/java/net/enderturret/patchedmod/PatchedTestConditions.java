@@ -10,6 +10,8 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 
 import net.enderturret.patched.ITestEvaluator;
@@ -34,12 +36,30 @@ public final class PatchedTestConditions implements ITestEvaluator {
 		registerSimple(id("mod_loaded"),
 				value -> {
 					if (value instanceof JsonObject obj) {
-						final String modId = PatchUtil.assertIsString("mod_loaded", "mod", obj.get("mod"));
-						final String version = PatchUtil.assertIsString("mod_loaded", "version", obj.get("version"));
+						final String modId = PatchUtil.assertIsString("patched:mod_loaded", "mod", obj.get("mod"));
+						final String version = PatchUtil.assertIsString("patched:mod_loaded", "version", obj.get("version"));
 						return Patched.platform().isModLoaded(modId, version);
 					}
-					return Patched.platform().isModLoaded(PatchUtil.assertIsString("mod_loaded", value));
+
+					return Patched.platform().isModLoaded(PatchUtil.assertIsString("mod_loaded", "value", value));
 				});
+
+		registerSimple(id("registered"),
+				value -> {
+					if (value instanceof JsonObject obj) {
+						final ResourceLocation registry = PatchUtil.assertIsResourceLocation("patched:registered", "registry", obj.get("registry"));
+						final ResourceLocation id = PatchUtil.assertIsResourceLocation("patched:registered", "id", obj.get("id"));
+
+						final Registry<?> reg = BuiltInRegistries.REGISTRY.get(registry);
+						return reg != null && reg.containsKey(id);
+					}
+
+					throw new PatchingException("patched:registered: value must be an object, was \"" + value + "\"");
+				});
+
+		// Simpler version of "registered" specifically for items.
+		registerSimple(id("item_registered"),
+				value -> BuiltInRegistries.ITEM.containsKey(PatchUtil.assertIsResourceLocation("patched:item_registered", "value", value)));
 	}
 
 	/**
