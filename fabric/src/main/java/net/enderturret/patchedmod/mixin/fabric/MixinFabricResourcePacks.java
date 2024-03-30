@@ -1,11 +1,15 @@
 package net.enderturret.patchedmod.mixin.fabric;
 
+import java.util.Objects;
+
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
 import net.fabricmc.fabric.impl.resource.loader.ModNioResourcePack;
 
 import net.enderturret.patchedmod.mixin.MixinAbstractPackResources;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
+import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 /**
  * Identical to {@link MixinAbstractPackResources}.
@@ -14,22 +18,26 @@ import net.enderturret.patchedmod.util.IPatchingPackResources;
 @Mixin({ ModNioResourcePack.class })
 public class MixinFabricResourcePacks implements IPatchingPackResources {
 
-	private Boolean hasPatches = null;
+	@Nullable
+	private PatchedMetadata patched$meta;
 
 	@Override
-	public boolean hasPatches() {
+	public PatchedMetadata patchedMetadata() {
 		checkInitialized();
-		return hasPatches != null && hasPatches;
+		return patched$meta;
+	}
+
+	@Override
+	public void setPatchedMetadata(PatchedMetadata value) {
+		Objects.requireNonNull(value);
+		if (patched$meta == null)
+			patched$meta = value;
+		else
+			throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public boolean initialized() {
-		return hasPatches != null;
-	}
-
-	@Override
-	public void setHasPatches(boolean value) {
-		if (hasPatches == null)
-			hasPatches = value;
+		return patched$meta != null;
 	}
 }

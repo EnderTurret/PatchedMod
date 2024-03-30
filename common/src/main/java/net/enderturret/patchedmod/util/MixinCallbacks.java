@@ -48,6 +48,8 @@ public class MixinCallbacks {
 	@Internal
 	public static final boolean DEBUG = Boolean.getBoolean("patched.debug");
 
+	private static final boolean HASPATCHES_WARNING = true;
+
 	/**
 	 * "Chains" the given {@code IoSupplier}, returning an {@code IoSupplier} that patches the data returned by it.
 	 * @param delegate The delegate {@code IoSupplier}.
@@ -115,7 +117,7 @@ public class MixinCallbacks {
 			if (packEntry.resources() == null) continue;
 			final Entry entry = new Entry(packEntry);
 
-			if (hasPatches(entry))
+			if (hasPatches(entry.resources))
 				for (Entry pack : packsIn(entry, type, patchName)) {
 					final String patchJson;
 
@@ -163,32 +165,39 @@ public class MixinCallbacks {
 	/**
 	 * Determines whether the given pack has patches enabled.
 	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
-	 * @param entry The pack to check.
+	 * @param res The pack to check.
 	 * @return {@code true} if the pack has patches enabled.
 	 */
-	private static boolean hasPatches(Entry entry) {
-		return entry.resources() instanceof IPatchingPackResources ppp && ppp.hasPatches();
+	private static boolean hasPatches(PackResources res) {
+		return res instanceof IPatchingPackResources ppp && ppp.patchedMetadata().patchingEnabled();
 	}
 
 	/**
-	 * Determines whether the given pack has patches enabled.
-	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
-	 * @param entry The pack to check.
-	 * @return {@code true} if the pack has patches enabled.
+	 * Initializes the {@code PatchedMetadata} of the specified pack, if it has not been initialized yet.
+	 * @param resources The pack to initialize.
 	 */
-	@SuppressWarnings("resource")
-	static boolean checkHasPatches(Entry entry) {
+	static void maybeInitialize(PackResources resources) {
+		maybeInitialize(new Entry(resources));
+	}
+
+	/**
+	 * Initializes the {@code PatchedMetadata} of the specified pack, if it has not been initialized yet.
+	 * @param entry The pack to initialize.
+	 */
+	static void maybeInitialize(Entry entry) {
 		if (!(entry.resources() instanceof IPatchingPackResources patching))
-			return false;
+			return;
 
 		if (!patching.initialized())
 			synchronized (patching) {
 				if (!patching.initialized()) {
 					if (Patched.platform().isGroup(entry.resources())) {
 						boolean enabled = false;
+
 						for (PackResources resources : Patched.platform().getChildren(entry.resources()))
-							enabled |= hasPatches(new Entry(resources));
-						patching.setHasPatches(enabled);
+							enabled |= hasPatches(resources);
+
+						patching.setPatchedMetadata(enabled ? PatchedMetadata.CURRENT_VERSION : PatchedMetadata.DISABLED_METADATA);
 					} else {
 						final IoSupplier<InputStream> io = entry.resources().getRootResource("pack.mcmeta");
 						if (io != null)
@@ -196,27 +205,26 @@ public class MixinCallbacks {
 								final String json = PatchUtil.readString(is);
 								final JsonElement elem = JsonParser.parseString(json);
 
-								if (elem instanceof JsonObject o
-										&& o.get("pack") instanceof JsonObject packObj
-										&& packObj.get("patched:has_patches") instanceof JsonPrimitive prim
-										&& prim.isBoolean())
-									patching.setHasPatches(prim.getAsBoolean());
-
-								else patching.setHasPatches(false);
+								patching.setPatchedMetadata(PatchedMetadata.of(elem, entry.name));
 							} catch (Exception e) {
-								Patched.platform().logger().error("Failed to read pack.mcmeta in {}:", entry.name(), e);
-								patching.setHasPatches(false);
+								Patched.platform().logger().warn("Failed to read pack.mcmeta in {}:", entry.name(), e);
+								patching.setPatchedMetadata(PatchedMetadata.DISABLED_METADATA);
 							}
 						else
-							patching.setHasPatches(false);
+							patching.setPatchedMetadata(PatchedMetadata.DISABLED_METADATA);
 					}
 
-					if (patching.hasPatches())
-						Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Enabled patching for {}.", entry.name());
+					if (patching.patchedMetadata().patchingEnabled()) {
+						if (patching.patchedMetadata().formatVersion() == 0) {
+							if (HASPATCHES_WARNING)
+								Patched.platform().logger().warn("Loaded legacy PatchedMetadata from {}. This behavior is deprecated and will be removed in a future release.", entry.name());
+							else
+								Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Loaded legacy PatchedMetadata from {}.", entry.name());
+						} else
+							Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Loaded PatchedMetadata from {} with format version {}.", entry.name(), patching.patchedMetadata().formatVersion());
+					}
 				}
 			}
-
-		return patching.hasPatches();
 	}
 
 	/**
@@ -231,9 +239,9 @@ public class MixinCallbacks {
 		if (Patched.platform().isGroup(entry.resources()))
 			return Iterables.transform(
 					Iterables.filter(Patched.platform().getFilteredChildren(entry.resources(), type, patchName),
-							pack -> hasPatches(new Entry(pack)) && pack.getResource(type, patchName) != null),
+							pack -> hasPatches(pack) && pack.getResource(type, patchName) != null),
 					Entry::new);
-		else if (hasPatches(entry) && entry.resources().getResource(type, patchName) != null)
+		else if (hasPatches(entry.resources) && entry.resources().getResource(type, patchName) != null)
 			return List.of(entry);
 
 		return List.of();
