@@ -16,7 +16,7 @@ import net.enderturret.patchedmod.util.MixinCallbacks;
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
 
-	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;"),
+	@Inject(at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;"),
 			method = { "<init>", "reloadResourcePacks" })
 	private void patched$setupClientPatchTargetManager(List<PackResources> packsByPriority, CallbackInfo ci) {
 		MixinCallbacks.setupTargetManager(PackType.CLIENT_RESOURCES, packsByPriority);

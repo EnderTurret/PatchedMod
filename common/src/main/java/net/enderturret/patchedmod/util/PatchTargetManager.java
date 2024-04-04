@@ -40,7 +40,6 @@ public final class PatchTargetManager {
 
 		for (int i = 0; i < packsByPriority.size(); i++) {
 			final PackResources pack = packsByPriority.get(i);
-			packsByPriority.add(pack);
 
 			priorityByPack.put(pack, i);
 
