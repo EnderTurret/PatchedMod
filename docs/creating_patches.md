@@ -158,6 +158,11 @@ In this case, since the `pack.mcmeta` is shared, Patched might try to apply the 
 The `pack_type` field allows disambiguating this, so that Patched only tries to apply the patch in the intended context.
 Again, this is only important for mods or resource/data packs *packaged as mods* (yes, this is a thing -- in fact, Modrinth can do it automatically, which is actually a problem in this case).
 
+**Note**: In order for these patches to be applied, the pack must include at least one file in the namespace that the patch is applying to.
+If one has no single-file patches (or other files) in that namespace, then one can place some kind of `_dummy.json` file in that namespace so that patches still apply.
+(This is necessary because Minecraft precomputes a list of packs containing a given namespace, which Patched uses to speed up patch discovery.
+Altering this logic to fix this minor issue would complicate it significantly, considering it'd still need to account for pack order.)
+
 Patches specified in patch targets are relative to a special `patches` folder in the root of the pack.
 This leads nicely into the following section:
 
