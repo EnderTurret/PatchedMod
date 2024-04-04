@@ -50,6 +50,8 @@ public class MixinCallbacks {
 
 	private static final boolean HASPATCHES_WARNING = true;
 
+	private static boolean logExceptions = true;
+
 	/**
 	 * "Chains" the given {@code IoSupplier}, returning an {@code IoSupplier} that patches the data returned by it.
 	 * @param delegate The delegate {@code IoSupplier}.
@@ -88,7 +90,10 @@ public class MixinCallbacks {
 		} catch (BailException e) {
 			// Let the future data consumer handle these.
 		} catch (Exception e) {
-			Patched.platform().logger().error("An exception occurred while attempting to patch {}:", name, e);
+			if (logExceptions) {
+				Patched.platform().logger().error("An exception occurred while attempting to patch {}. Further exceptions will not be reported.", name, e);
+				logExceptions = false;
+			}
 		}
 
 		return wrapper.getOrCreateStream();
