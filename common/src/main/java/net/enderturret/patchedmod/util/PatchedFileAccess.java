@@ -13,9 +13,11 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.resources.IoSupplier;
 
 import net.enderturret.patched.IFileAccess;
 import net.enderturret.patched.Patches;
+import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 
 public final class PatchedFileAccess implements IFileAccess {
@@ -36,7 +38,10 @@ public final class PatchedFileAccess implements IFileAccess {
 	@Nullable
 	public JsonPatch readIncludedPatch(String path) {
 		return CACHE.computeIfAbsent(pack, k -> new HashMap<>()).computeIfAbsent(path, k -> {
-			try (InputStream is = pack.getRootResource("patches", path).get();
+			final IoSupplier<InputStream> sup = pack.getRootResource("patches", path + ".json.patch");
+			if (sup == null) throw new PatchingException("Patch patches/" + path + ".json.patch doesn't exist; cannot include it.");
+
+			try (InputStream is = sup.get();
 					InputStreamReader isr = new InputStreamReader(is);
 					BufferedReader br = new BufferedReader(isr)) {
 				return Patches.readPatch(PatchUtil.GSON, br);
