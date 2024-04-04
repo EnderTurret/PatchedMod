@@ -9,13 +9,12 @@ Minecraft is a little different, so we're going to need to do a little more work
 
 Patched supports patching resource packs and data packs, and patching is about the same for both.
 
-First, you need to add `"patched:has_patches": true` to the `pack.mcmeta` file in order to enable patches:
+First, you need to add the following to the `pack.mcmeta` file in order to enable patches:
 
 ```json
 {
-  "pack": {
-    // ...
-    "patched:has_patches": true
+  "patched": {
+    "format_version": 1
   }
 }
 ```
@@ -72,3 +71,124 @@ In practice, it is unlikely that patches will ever clash in a way where ordering
 
 Patched has a few extensions (which you may have seen in its documentation).
 The document [here](extensions.md) describes the extensions the mod has enabled.
+
+### More on `pack.mcmeta`
+
+Let's take a closer look at that `patched` section in the `pack.mcmeta` file. Here it is:
+
+```json
+{
+  "patched": {
+    "format_version": 1
+  }
+}
+```
+
+The only field here is `format_version`, which should be pretty obvious in purpose.
+It only exists to specify the section schema version the pack was made for.
+The current format version is 1.
+
+For the most part, this is as bare-bones as it gets -- and it was plenty enough for older versions of the mod (prior to `5.1.0+1.20.4`).
+Previously, this was all we had:
+
+```json
+{
+  "pack": {
+    // ...
+    "patched:has_patches": true
+  }
+}
+```
+
+Just a simple toggle; nothing more, nothing less.
+But nowadays Patched allows specifying a few other attributes.
+In fact, let's take a look at them.
+
+```json
+{
+  "patched": {
+    "format_version": 1,
+    "patch_targets": []
+  }
+}
+```
+
+What's this? We've gained another field!
+
+#### Patch targets
+
+The `patch_targets` field allows specifying additional files that patches should apply to.
+Its intended purpose is for patching many files at once, like say if one wanted to remove a specific ore from every biome.
+How about we take a look at this example use case.
+
+```json
+{
+  "patched": {
+    // ...
+    "patch_targets": [
+      {
+        "pack_type": "server_data",
+        "patch": "remove_copper_ore",
+        "targets": [
+          {
+            "namespace": "minecraft",
+            "path": {
+              "pattern": "worldgen/biome/.*\\.json"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Here we have a single patch target which specifies that the `remove_copper_ore` patch should be applied to every `.json` file in the `worldgen/biome` folder of the `minecraft` namespace.
+
+Let's examine the format in more detail.
+To begin with, one may have any number of patch targets.
+Additionally, one may have any number of targets in a patch target (these identify files that should be patched).
+Finally, both the `namespace` and `path` may be regular expressions; a string specifies a specific match (which is good for performance)
+and an object containing a `pattern` attribute specifies a regular expression.
+In this example, both of these are in use.
+
+The `pack_type` field may be either `server_data` or `client_resources`.
+It is only necessary for contexts where a data pack and resource pack are merged, such as in mods.
+In this case, since the `pack.mcmeta` is shared, Patched might try to apply the patch in both client and server contexts (which could cause performance problems).
+The `pack_type` field allows disambiguating this, so that Patched only tries to apply the patch in the intended context.
+Again, this is only important for mods or resource/data packs *packaged as mods* (yes, this is a thing -- in fact, Modrinth can do it automatically, which is actually a problem in this case).
+
+Patches specified in patch targets are relative to a special `patches` folder in the root of the pack.
+This leads nicely into the following section:
+
+### Using `include` patches
+
+Include patches are a relatively new patch operation (added in `5.1.0+1.20.4`):
+
+```json
+{
+  "op": "include",
+  "path": "add_diamond_loot_pool"
+}
+```
+
+This operation lets you include the contents of another patch, as if it was copy-pasted into the one including it.
+It's mainly intended to reduce patch duplication, such as when making the same changes to four different loot tables.
+
+The `path` specifies the name of the patch to include.
+These patches are read from the `patches` folder of the pack.
+In this case, that looks like:
+
+```
+More Diamond Drops
+├ data
+│ └ minecraft
+│   └ loot_tables
+│     └ entities
+│       └ allay.json.patch
+├ pack.mcmeta
+└ patches
+  └ add_diamond_loot_pool.json.patch
+```
+
+In other words, for a `path` of "something", the file will be at `patches/something.json.patch`.
