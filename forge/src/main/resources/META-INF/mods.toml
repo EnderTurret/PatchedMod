@@ -18,18 +18,21 @@ issueTrackerURL="https://github.com/EnderTurret/PatchedMod/issues"
     displayTest="IGNORE_ALL_VERSION"
 
 [[mixins]]
-    config = "mixins.patched.json"
+    config="mixins.patched.json"
+
+[[accessTransformers]]
+    file="META-INF/accesstransformer.cfg"
 
 [[dependencies.patched]]
     modId="neoforge"
-    mandatory=true
+    type="required"
     versionRange="[20.2,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.patched]]
     modId="minecraft"
-    mandatory=true
+    type="required"
     versionRange="[1.20.2,1.21)"
     ordering="NONE"
     side="BOTH"
