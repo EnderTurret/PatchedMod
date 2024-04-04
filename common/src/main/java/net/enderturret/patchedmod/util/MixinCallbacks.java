@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.event.Level;
@@ -28,6 +31,7 @@ import net.minecraft.server.packs.resources.FallbackResourceManager.PackEntry;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 
+import net.enderturret.patched.IFileAccess;
 import net.enderturret.patched.JsonDocument;
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.audit.PatchAudit;
@@ -36,6 +40,7 @@ import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.mixin.FallbackResourceManagerAccess;
+import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 /**
  * <p>Handles callbacks from mixins -- what you would expect from the name.</p>
@@ -49,6 +54,8 @@ public class MixinCallbacks {
 	public static final boolean DEBUG = Boolean.getBoolean("patched.debug");
 
 	private static final boolean HASPATCHES_WARNING = true;
+
+	private static final Map<PackType, PatchTargetManager> PATCH_TARGET_MANAGERS = new EnumMap<>(PackType.class);
 
 	private static boolean logExceptions = true;
 
@@ -113,9 +120,12 @@ public class MixinCallbacks {
 	private static boolean patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
 		final ResourceLocation patchName = new ResourceLocation(name.getNamespace(), name.getPath() + ".patch");
 
-		PatchContext context = null;
+		final MutableObject<PatchContext> context = new MutableObject<>();
 
 		from = findTrueSource(from, type, name);
+
+		final PatchTargetManager targetManager = PATCH_TARGET_MANAGERS.get(type);
+		final Map<PackResources, List<String>> targets = targetManager == null ? Map.of() : targetManager.getTargets(name, from);
 
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
 			final PackEntry packEntry = manager.fallbacks.get(i);
@@ -124,39 +134,24 @@ public class MixinCallbacks {
 
 			if (hasPatches(entry.resources))
 				for (Entry pack : packsIn(entry, type, patchName)) {
-					final String patchJson;
+					PatchContext ctx = applyPatch(
+							type, pack.resources().getResource(type, patchName),
+							patchName.toString(), pack, wrapper, audit, context
+							);
 
-					try (InputStream patchStream = pack.resources().getResource(type, patchName).get()) {
-						patchJson = PatchUtil.readString(patchStream);
-					} catch (Exception e) {
-						Patched.platform().logger().warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
-						continue;
-					}
+					IFileAccess access = null;
+					for (String patch : targets.getOrDefault(entry.resources, List.of())) {
+						// We use the IFileAccess instead of grabbing it manually so that it's cached.
+						if (access == null)
+							if (ctx != null)
+								access = ctx.fileAccess();
+							else
+								access = new PatchedFileAccess(pack.resources);
 
-					final JsonPatch patch;
-
-					try {
-						patch = Patches.readPatch(PatchUtil.GSON, patchJson);
-					} catch (Exception e) {
-						Patched.platform().logger().warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
-						continue;
-					}
-
-					try {
-						if (audit != null)
-							audit.setPatchPath(pack.name());
-						if (context == null)
-							context = PatchUtil.CONTEXT.audit(audit);
-
-						Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}.", patchName, pack.name());
-
-						patch.patch(wrapper.get(), context);
-					} catch (BailException e) {
-						throw e;
-					} catch (PatchingException e) {
-						Patched.platform().logger().warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
-					} catch (Exception e) {
-						Patched.platform().logger().warn("Failed to apply patch {} from {}:", patchName, pack.name(), e);
+						applyPatch(
+								type, access.readIncludedPatch(patch),
+								"patches/" + patch + ".json.patch", pack, wrapper, audit, context
+								);
 					}
 
 					if (pack.resources() == from)
@@ -164,7 +159,70 @@ public class MixinCallbacks {
 				}
 		}
 
-		return context != null;
+		return context.getValue() != null;
+	}
+
+	private static PatchContext applyPatch(
+			PackType type,
+			@Nullable IoSupplier<InputStream> patchSupplier,
+			String patchName,
+			Entry pack,
+			LazyPatchingWrapper wrapper,
+			@Nullable PatchAudit audit,
+			MutableObject<PatchContext> context) {
+		if (patchSupplier == null) return null;
+
+		final String patchJson;
+
+		try (InputStream patchStream = patchSupplier.get()) {
+			patchJson = PatchUtil.readString(patchStream);
+		} catch (Exception e) {
+			Patched.platform().logger().warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
+			return null;
+		}
+
+		final JsonPatch patch;
+
+		try {
+			patch = Patches.readPatch(PatchUtil.GSON, patchJson);
+		} catch (Exception e) {
+			Patched.platform().logger().warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
+			return null;
+		}
+
+		return applyPatch(type, patch, patchName, pack, wrapper, audit, context);
+	}
+
+	private static PatchContext applyPatch(
+			PackType type,
+			JsonPatch patch,
+			String patchName,
+			Entry pack,
+			LazyPatchingWrapper wrapper,
+			@Nullable PatchAudit audit,
+			MutableObject<PatchContext> context) {
+		try {
+			if (audit != null)
+				audit.setPatchPath(pack.name());
+			if (context.getValue() == null)
+				context.setValue(PatchUtil.CONTEXT.audit(audit));
+
+			Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}.", patchName, pack.name());
+
+			final PatchContext ctx = context.getValue().fileAccess(new PatchedFileAccess(pack.resources()));
+
+			patch.patch(wrapper.get(), ctx);
+
+			return ctx;
+		} catch (BailException e) {
+			throw e;
+		} catch (PatchingException e) {
+			Patched.platform().logger().warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
+		} catch (Exception e) {
+			Patched.platform().logger().warn("Failed to apply patch {} from {}:", patchName, pack.name(), e);
+		}
+
+		return null;
 	}
 
 	/**
@@ -233,7 +291,7 @@ public class MixinCallbacks {
 	}
 
 	/**
-	 * Returns an {@link Iterable} of packs containing the specified patch within the given pack.
+	 * Returns an {@link Iterable} of packs within the given pack.
 	 * In most cases, this will only be the given pack.
 	 * @param entry The pack.
 	 * @param type The pack type.
@@ -244,9 +302,9 @@ public class MixinCallbacks {
 		if (Patched.platform().isGroup(entry.resources()))
 			return Iterables.transform(
 					Iterables.filter(Patched.platform().getFilteredChildren(entry.resources(), type, patchName),
-							pack -> hasPatches(pack) && pack.getResource(type, patchName) != null),
+							pack -> hasPatches(pack)),
 					Entry::new);
-		else if (hasPatches(entry.resources) && entry.resources().getResource(type, patchName) != null)
+		else if (hasPatches(entry.resources))
 			return List.of(entry);
 
 		return List.of();
@@ -272,6 +330,10 @@ public class MixinCallbacks {
 					return pack;
 
 		return from;
+	}
+
+	public static void setupTargetManager(PackType type, List<PackResources> packsByPriority) {
+		PATCH_TARGET_MANAGERS.put(type, new PatchTargetManager(type, packsByPriority));
 	}
 
 	/**
