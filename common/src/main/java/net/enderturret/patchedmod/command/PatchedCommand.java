@@ -10,8 +10,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
@@ -49,5 +51,11 @@ public final class PatchedCommand {
 	static MutableComponent translate(String key, String text, Object... args) {
 		// Make sure we have a fallback for vanilla clients.
 		return Patched.platform().isPhysicalClient() ? Component.translatable(key, args) : Component.translatableWithFallback(key, text.formatted(args), args);
+	}
+
+	static Style suggestCommand(String command) {
+		return Style.EMPTY
+				.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command))
+				.withUnderlined(true);
 	}
 }

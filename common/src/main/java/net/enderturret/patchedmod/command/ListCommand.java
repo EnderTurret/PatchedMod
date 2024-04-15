@@ -83,10 +83,10 @@ final class ListCommand {
 
 		for (ResourceLocation loc : patches) {
 			final String patch = loc.toString();
+			final String safePackName = StringArgumentType.escapeIfRequired(Patched.platform().getName(pack));
+
 			c.append("\n").append(Component.literal(patch)
-					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-							"/" + command + " dump patch " + StringArgumentType.escapeIfRequired(Patched.platform().getName(pack)) + " " + patch))
-							.withUnderlined(true)));
+					.setStyle(PatchedCommand.suggestCommand("/" + command + " dump patch " + safePackName + " " + patch)));
 		}
 
 		env.sendSuccess(ctx.getSource(), c, false);
@@ -117,15 +117,12 @@ final class ListCommand {
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
 		for (Entry pack : patching) {
-			final ClickEvent click = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-					"/" + command + " list patches " + pack.name);
 			final HoverEvent hover = listAll ? new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 					Component.literal(pack.pack.packId() + " (" + pack.pack.getClass().getSimpleName() + ")")) : null;
 
 			c.append("\n  ").append(Component.literal(pack.name)
-					.setStyle(Style.EMPTY.withClickEvent(click)
-							.withHoverEvent(hover)
-							.withUnderlined(true)));
+					.setStyle(PatchedCommand.suggestCommand("/" + command + " list patches " + pack.name)
+							.withHoverEvent(hover)));
 		}
 
 		final List<Entry> notPatching = packs.stream()
