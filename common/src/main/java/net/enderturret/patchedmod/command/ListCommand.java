@@ -5,6 +5,9 @@ import static net.enderturret.patchedmod.command.PatchedCommand.translate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -22,8 +25,11 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.env.IEnvironment;
+import net.enderturret.patchedmod.util.meta.IPattern;
+import net.enderturret.patchedmod.util.meta.PatchTarget;
 
 /**
  * Defines the '/patched list' subcommand, which handles providing lists of the packs with patches and the patches in those packs.
@@ -67,11 +73,22 @@ final class ListCommand {
 			return 0;
 		}
 
-		final List<ResourceLocation> patches = new ArrayList<>();
+		record Patch(String loc, @Nullable String ns, @Nullable String paths) {}
+
+		final List<Patch> patches = new ArrayList<>();
 
 		for (PackType type : PackType.values())
 			for (String namespace : pack.getNamespaces(type))
-				patches.addAll(PatchUtil.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")));
+				for (ResourceLocation loc : PatchUtil.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")))
+					patches.add(new Patch(loc.toString(), null, null));
+
+		if (pack instanceof IPatchingPackResources ppp)
+			for (PatchTarget patchTarget : ppp.patchedMetadata().patchTargets())
+				for (PatchTarget.Target target : patchTarget.targets()) {
+					final String ns = target.namespace().stream().map(IPattern::toString).collect(Collectors.joining("\", \"", "\"", "\""));
+					final String paths = target.path().stream().map(IPattern::toString).collect(Collectors.joining("\", \"", "\"", "\""));
+					patches.add(new Patch(patchTarget.patch(), ns, paths));
+				}
 
 		final boolean single = patches.size() == 1;
 
@@ -81,12 +98,17 @@ final class ListCommand {
 
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
-		for (ResourceLocation loc : patches) {
-			final String patch = loc.toString();
+		for (Patch patch : patches) {
 			final String safePackName = StringArgumentType.escapeIfRequired(Patched.platform().getName(pack));
+			final boolean dynamic = patch.ns != null;
 
-			c.append("\n").append(Component.literal(patch)
-					.setStyle(PatchedCommand.suggestCommand("/" + command + " dump patch " + safePackName + " " + patch)));
+			c.append("\n").append(Component.literal(patch.loc)
+					.setStyle(PatchedCommand.suggestCommand("/" + command + " dump patch " + safePackName + (dynamic ? " dynamic" : "") + " " + patch.loc)));
+
+			if (dynamic)
+				c.append(translate("command.patched.list.patches.dynamic",
+						" (applying to namespaces %1$s and paths %2$s)",
+						patch.ns, patch.paths));
 		}
 
 		env.sendSuccess(ctx.getSource(), c, false);

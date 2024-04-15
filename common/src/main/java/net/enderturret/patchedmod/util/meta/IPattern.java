@@ -30,6 +30,11 @@ public sealed interface IPattern {
 		public boolean test(String value) {
 			return target.equals(value);
 		}
+
+		@Override
+		public String toString() {
+			return target;
+		}
 	}
 
 	public static record Regex(Pattern pattern) implements IPattern {
@@ -43,6 +48,11 @@ public sealed interface IPattern {
 		@Override
 		public boolean test(String value) {
 			return pattern.matcher(value).matches();
+		}
+
+		@Override
+		public String toString() {
+			return pattern.pattern();
 		}
 	}
 }
