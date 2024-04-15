@@ -13,6 +13,8 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.util.ExtraCodecs;
+
 import net.enderturret.patched.exception.PatchingException;
 
 /**
@@ -49,7 +51,7 @@ public record PatchedMetadata(byte formatVersion, List<PatchTarget> patchTargets
 			// It isn't great, but it works.
 			Codec.intRange(1, 147).xmap(Integer::byteValue, Byte::intValue).fieldOf("format_version").forGetter(PatchedMetadata::formatVersion),
 
-			PatchTarget.CODEC.listOf().optionalFieldOf("patch_targets", List.of()).forGetter(PatchedMetadata::patchTargets)
+			ExtraCodecs.strictOptionalField(PatchTarget.CODEC.listOf(), "patch_targets", List.of()).forGetter(PatchedMetadata::patchTargets)
 			).apply(builder, PatchedMetadata::new));
 
 	/**
