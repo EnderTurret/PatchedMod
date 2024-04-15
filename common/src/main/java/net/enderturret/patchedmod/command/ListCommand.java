@@ -76,9 +76,8 @@ final class ListCommand {
 		final boolean single = patches.size() == 1;
 
 		final MutableComponent c = translate("command.patched.list.patches." + (single ? "single" : "multi"),
-				"There " + (!single ? "are" : "is")
-				+ " " + patches.size() + " patch" + (!single ? "es" : "")
-				+ " in " + Patched.platform().getName(pack) + ":", patches.size(), Patched.platform().getName(pack));
+				single ? "There is 1 patch in %2$s:" : "There are %1$s patches in %2$s:",
+				patches.size(), Patched.platform().getName(pack));
 
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
@@ -112,9 +111,8 @@ final class ListCommand {
 		final boolean single = patching.size() == 1;
 
 		final MutableComponent c = translate("command.patched.list.packs." + (single ? "single" : "multi"),
-				"There " + (!single ? "are" : "is")
-				+ " " + patching.size() + " pack" + (!single ? "s" : "")
-				+ " with patching enabled:", patching.size());
+				single ? "There is 1 pack with patching enabled:" : "There are %1$s packs with patching enabled:",
+				patching.size());
 
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
