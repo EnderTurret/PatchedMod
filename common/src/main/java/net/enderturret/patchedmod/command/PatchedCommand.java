@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.util.MixinCallbacks;
 import net.enderturret.patchedmod.util.env.IEnvironment;
 
 /**
@@ -28,10 +29,12 @@ public final class PatchedCommand {
 
 	@Internal
 	public static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
-		return env.literal("patched" + (env.client() ? "c" : ""))
+		final var ret = env.literal("patched" + (env.client() ? "c" : ""))
 				.requires(src -> env.hasPermission(src, 2))
 				.then(DumpCommand.create(env))
 				.then(ListCommand.create(env));
+
+		return MixinCallbacks.DEBUG ? ret.then(DebugCommand.create(env)) : ret;
 	}
 
 	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, IEnvironment<T> env, boolean quoted) {

@@ -15,6 +15,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 
+import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.util.MixinCallbacks.Entry;
 import net.enderturret.patchedmod.util.meta.IPattern;
 import net.enderturret.patchedmod.util.meta.PatchTarget;
@@ -98,22 +99,53 @@ public final class PatchTargetManager {
 				lastList = null; // Here we avoid creating hundreds of ArrayLists in the event there's no relevant targets.
 			}
 
+			if (MixinCallbacks.DEBUG_TARGETS)
+				Patched.platform().logger().info("Processing {} with last values {}, {}, {}...", target, lastPack, lastIdx, lastList);
+
 			// Don't allow patches from lower packs to affect a replacement from a higher one.
 			final int idx = priorityByPack.get(target.from);
+
+			if (MixinCallbacks.DEBUG_TARGETS)
+				Patched.platform().logger().info("  Priority check: {} < {}?", idx, fromIndex);
+
 			if (idx < fromIndex) break;
 
-			for (IPattern pattern : target.target().path())
+			if (MixinCallbacks.DEBUG_TARGETS)
+				Patched.platform().logger().info("  Trying patterns {} on {}", target.target().path(), loc.getPath());
+
+			for (IPattern pattern : target.target().path()) {
+				if (MixinCallbacks.DEBUG_TARGETS)
+					Patched.platform().logger().info("    Trying pattern {} ({}) on {}", pattern, pattern.getClass().getSimpleName(), loc.getPath());
+
 				if (pattern.test(loc.getPath())) {
 					if (lastList == null)
 						lastList = ret.computeIfAbsent(lastPack, k -> new ArrayList<>(5));
 
 					lastList.add(target.patch);
 
+					if (MixinCallbacks.DEBUG_TARGETS)
+						Patched.platform().logger().info("    Success: added {} to {}", target.patch, lastList);
+
 					continue parent;
 				}
+			}
 		}
 
+		if (MixinCallbacks.DEBUG_TARGETS)
+			Patched.platform().logger().info("Returning {}", ret);
+
 		return ret;
+	}
+
+	@Override
+	public String toString() {
+		return ("PatchTargetManager {"
+				+ "\n    type = %s,"
+				+ "\n    packsByPriority = %s,"
+				+ "\n    priorityByPack = %s,"
+				+ "\n    targets = %s,"
+				+ "\n    targetsByNamespace = %s"
+				+ "\n}").formatted(type, packsByPriority, priorityByPack, targets, targetsByNamespace);
 	}
 
 	static record BakedTarget(Target target, String patch, PackResources from) {}

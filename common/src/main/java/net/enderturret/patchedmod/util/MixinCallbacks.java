@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.event.Level;
 
 import com.google.common.collect.Iterables;
@@ -52,6 +54,9 @@ public class MixinCallbacks {
 
 	@Internal
 	public static final boolean DEBUG = Boolean.getBoolean("patched.debug");
+
+	@Internal
+	static final boolean DEBUG_TARGETS = Boolean.getBoolean("patched.debugTargets");
 
 	private static final boolean HASPATCHES_WARNING = true;
 
@@ -126,6 +131,9 @@ public class MixinCallbacks {
 
 		final PatchTargetManager targetManager = PATCH_TARGET_MANAGERS.get(type);
 		final Map<PackResources, List<String>> targets = targetManager == null ? Map.of() : targetManager.getTargets(name, from);
+
+		if (DEBUG_TARGETS && !targets.isEmpty())
+			Patched.platform().logger().info("Targets for {} (from {}): {}", name, from, targets);
 
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
 			final PackEntry packEntry = manager.fallbacks.get(i);
@@ -334,6 +342,11 @@ public class MixinCallbacks {
 
 	public static void setupTargetManager(PackType type, List<PackResources> packsByPriority) {
 		PATCH_TARGET_MANAGERS.put(type, new PatchTargetManager(type, packsByPriority));
+	}
+
+	@VisibleForTesting
+	public static Map<PackType, PatchTargetManager> getTargetManagers() {
+		return Collections.unmodifiableMap(PATCH_TARGET_MANAGERS);
 	}
 
 	/**
