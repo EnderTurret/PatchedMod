@@ -144,7 +144,8 @@ public class MixinCallbacks {
 				for (Entry pack : packsIn(entry, type, patchName)) {
 					PatchContext ctx = applyPatch(
 							type, pack.resources().getResource(type, patchName),
-							patchName.toString(), pack, wrapper, audit, context
+							patchName.toString(), pack, wrapper, audit, context,
+							null
 							);
 
 					IFileAccess access = null;
@@ -158,7 +159,8 @@ public class MixinCallbacks {
 
 						applyPatch(
 								type, access.readIncludedPatch(patch),
-								"patches/" + patch + ".json.patch", pack, wrapper, audit, context
+								"patches/" + patch + ".json.patch", pack, wrapper, audit, context,
+								name.toString()
 								);
 					}
 
@@ -177,7 +179,8 @@ public class MixinCallbacks {
 			Entry pack,
 			LazyPatchingWrapper wrapper,
 			@Nullable PatchAudit audit,
-			MutableObject<PatchContext> context) {
+			MutableObject<PatchContext> context,
+			String explicitTargetName) {
 		if (patchSupplier == null) return null;
 
 		final String patchJson;
@@ -198,7 +201,7 @@ public class MixinCallbacks {
 			return null;
 		}
 
-		return applyPatch(type, patch, patchName, pack, wrapper, audit, context);
+		return applyPatch(type, patch, patchName, pack, wrapper, audit, context, explicitTargetName);
 	}
 
 	private static PatchContext applyPatch(
@@ -208,14 +211,18 @@ public class MixinCallbacks {
 			Entry pack,
 			LazyPatchingWrapper wrapper,
 			@Nullable PatchAudit audit,
-			MutableObject<PatchContext> context) {
+			MutableObject<PatchContext> context,
+			String explicitTargetName) {
 		try {
 			if (audit != null)
 				audit.setPatchPath(pack.name());
 			if (context.getValue() == null)
 				context.setValue(PatchUtil.CONTEXT.audit(audit));
 
-			Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}.", patchName, pack.name());
+			Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}{}.",
+					patchName,
+					pack.name(),
+					explicitTargetName != null ? " to " + explicitTargetName : "");
 
 			final PatchContext ctx = context.getValue().fileAccess(new PatchedFileAccess(pack.resources()));
 
