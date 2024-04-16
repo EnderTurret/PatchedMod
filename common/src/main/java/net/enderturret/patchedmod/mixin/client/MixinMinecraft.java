@@ -4,8 +4,7 @@ import java.util.List;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackResources;
@@ -16,9 +15,29 @@ import net.enderturret.patchedmod.util.MixinCallbacks;
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
 
-	@Inject(at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;"),
-			method = { "<init>", "reloadResourcePacks" })
-	private void patched$setupClientPatchTargetManager(List<PackResources> packsByPriority, CallbackInfo ci) {
+	@ModifyVariable(
+			at = @At(
+					value = "INVOKE_ASSIGN",
+					target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;"
+					),
+			method = "<init>",
+			ordinal = 0
+	)
+	private List<PackResources> patched$setupClientPatchTargetManagerInitial(List<PackResources> packsByPriority) {
 		MixinCallbacks.setupTargetManager(PackType.CLIENT_RESOURCES, packsByPriority);
+		return packsByPriority;
+	}
+
+	@ModifyVariable(
+			at = @At(
+					value = "INVOKE_ASSIGN",
+					target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;"
+					),
+			method = "reloadResourcePacks(ZLnet/minecraft/client/Minecraft$GameLoadCookie;)Ljava/util/concurrent/CompletableFuture;",
+			ordinal = 0
+	)
+	private List<PackResources> patched$setupClientPatchTargetManagerReload(List<PackResources> packsByPriority) {
+		MixinCallbacks.setupTargetManager(PackType.CLIENT_RESOURCES, packsByPriority);
+		return packsByPriority;
 	}
 }
