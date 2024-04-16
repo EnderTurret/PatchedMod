@@ -131,10 +131,12 @@ How about we take a look at this example use case.
         "patch": "remove_copper_ore",
         "targets": [
           {
-            "namespace": "minecraft",
-            "path": {
-              "pattern": "worldgen/biome/.*\\.json"
-            }
+            "namespace": [ "minecraft" ],
+            "path": [
+              {
+                "pattern": "worldgen/biome/.*\\.json"
+              }
+            ]
           }
         ]
       }
