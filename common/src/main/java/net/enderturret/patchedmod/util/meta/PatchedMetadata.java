@@ -95,6 +95,10 @@ public record PatchedMetadata(byte formatVersion, List<PatchTarget> patchTargets
 	public static PatchedMetadata of(@Nullable JsonElement elem, String source) {
 		if (elem instanceof JsonObject root) {
 			if (root.get("patched") instanceof JsonObject patched) {
+				if (patched.has("format_version") && patched.get("format_version") instanceof JsonPrimitive prim
+						&& prim.isNumber() && prim.getAsInt() > CURRENT_VERSION.formatVersion)
+					throw new PatchingException("Format version " + prim.getAsInt() + " too new! This version of Patched can only load up to version " + CURRENT_VERSION.formatVersion + ".");
+
 				final DataResult<Pair<PatchedMetadata, JsonElement>> pair = CODEC.decode(JsonOps.INSTANCE, patched);
 
 				if (pair.result().isPresent()) {
