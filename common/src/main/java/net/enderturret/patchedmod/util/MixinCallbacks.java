@@ -11,6 +11,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -62,7 +63,7 @@ public class MixinCallbacks {
 
 	private static final Map<PackType, PatchTargetManager> PATCH_TARGET_MANAGERS = new EnumMap<>(PackType.class);
 
-	private static boolean logExceptions = true;
+	private static final AtomicBoolean LOG_EXCEPTIONS = new AtomicBoolean(true);
 
 	/**
 	 * "Chains" the given {@code IoSupplier}, returning an {@code IoSupplier} that patches the data returned by it.
@@ -102,10 +103,8 @@ public class MixinCallbacks {
 		} catch (BailException e) {
 			// Let the future data consumer handle these.
 		} catch (Exception e) {
-			if (logExceptions) {
+			if (LOG_EXCEPTIONS.getAndSet(false))
 				Patched.platform().logger().error("An exception occurred while attempting to patch {}. Further exceptions will not be reported.", name, e);
-				logExceptions = false;
-			}
 		}
 
 		return wrapper.getOrCreateStream();
