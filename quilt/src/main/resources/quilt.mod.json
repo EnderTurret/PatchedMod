@@ -22,11 +22,11 @@
       },
       {
         "id": "minecraft",
-        "versions": "~1.20"
+        "versions": ">=1.20.5"
       },
       {
         "id": "java",
-        "versions": ">=17"
+        "versions": ">=21"
       }
     ],
 

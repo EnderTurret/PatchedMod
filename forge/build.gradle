@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'net.neoforged.gradle.userdev' version '7.0.101'
+    id 'net.neoforged.gradle.userdev' version '7.0.107'
 }
 
 base {
@@ -14,7 +14,7 @@ configurations {
 }
 
 dependencies {
-    implementation 'net.neoforged:neoforge:20.4.212'
+    implementation 'net.neoforged:neoforge:20.5.0-beta'
 
     compileOnly (project(':PatchedModCommon')) {
         exclude group: 'org.spongepowered', module: 'mixin'

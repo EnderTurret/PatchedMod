@@ -1,5 +1,5 @@
 plugins {
-    id 'org.quiltmc.loom' version '1.4.+'
+    id 'org.quiltmc.loom' version '1.4.2'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
@@ -12,14 +12,14 @@ configurations {
 }
 
 dependencies {
-    minecraft 'com.mojang:minecraft:1.20.2'
+    minecraft 'com.mojang:minecraft:1.20.5'
     mappings loom.layered {
-        mappings 'org.quiltmc:quilt-mappings:1.20.2+build.3:intermediary-v2'
+        mappings 'org.quiltmc:quilt-mappings:1.20.5-pre1+build.4:intermediary-v2'
         officialMojangMappings()
     }
 
-    modImplementation 'org.quiltmc:quilt-loader:0.21.2-beta.2'
-    modImplementation 'org.quiltmc:qsl:6.1.2+1.20.1' // TODO
+    modImplementation 'org.quiltmc:quilt-loader:0.25.0'
+    modImplementation 'org.quiltmc:qsl:8.0.0-alpha.13+1.20.4' // TODO
 
     shadow ("com.github.EnderTurret:Patched:$patchedVersion") {
         exclude group: 'com.google.code.gson', module: 'gson'
