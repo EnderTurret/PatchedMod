@@ -9,7 +9,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 
 import net.enderturret.patchedmod.Patched;
@@ -21,7 +21,7 @@ import net.enderturret.patchedmod.util.env.IEnvironment;
  * @author EnderTurret
  */
 @Internal
-@EventBusSubscriber(modid = Patched.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Patched.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public final class ClientEvents {
 
 	@SubscribeEvent

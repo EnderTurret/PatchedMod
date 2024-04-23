@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.api.Version;
-import org.quiltmc.qsl.resource.loader.impl.ModNioResourcePack;
+import org.quiltmc.qsl.resource.loader.impl.ModNioPack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +16,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
-import net.enderturret.patchedmod.mixin.quilt.GroupResourcePackAccess;
 import net.enderturret.patchedmod.mixin.quilt.ModNioResourcePackAccess;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
@@ -74,17 +73,17 @@ final class QuiltPlatform implements IPlatform {
 
 	@Override
 	public boolean isGroup(PackResources pack) {
-		return pack instanceof GroupResourcePackAccess;
+		return false;
 	}
 
 	@Override
 	public Collection<PackResources> getChildren(PackResources pack) {
-		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.getPacks()) : List.of();
+		return List.of();
 	}
 
 	@Override
 	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) {
-		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.getNamespacedPacks().getOrDefault(file.getNamespace(), List.of())) : List.of();
+		return List.of();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -95,7 +94,7 @@ final class QuiltPlatform implements IPlatform {
 	@Override
 	public boolean needsSwapNamespaceAndPath(PackResources pack) {
 		// Fabric implementations surprisingly throw no errors, unlike Minecraft.
-		return !isGroup(pack) && !(pack instanceof ModNioResourcePack);
+		return !isGroup(pack) && !(pack instanceof ModNioPack);
 	}
 
 	@Override

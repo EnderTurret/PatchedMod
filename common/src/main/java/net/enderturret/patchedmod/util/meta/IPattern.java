@@ -11,7 +11,7 @@ import net.minecraft.util.ExtraCodecs;
 
 public sealed interface IPattern {
 
-	public static final Codec<IPattern> CODEC = ExtraCodecs.either(Simple.CODEC, Regex.CODEC)
+	public static final Codec<IPattern> CODEC = Codec.either(Simple.CODEC, Regex.CODEC)
 			.xmap(either -> either.<IPattern>map(Function.identity(), Function.identity()), pattern -> {
 				if (pattern instanceof Simple s)
 					return Either.left(s);

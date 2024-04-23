@@ -51,7 +51,7 @@ public record PatchedMetadata(byte formatVersion, List<PatchTarget> patchTargets
 			// It isn't great, but it works.
 			Codec.intRange(1, 147).xmap(Integer::byteValue, Byte::intValue).fieldOf("format_version").forGetter(PatchedMetadata::formatVersion),
 
-			ExtraCodecs.strictOptionalField(PatchTarget.CODEC.listOf(), "patch_targets", List.of()).forGetter(PatchedMetadata::patchTargets)
+			PatchTarget.CODEC.listOf().optionalFieldOf("patch_targets", List.of()).forGetter(PatchedMetadata::patchTargets)
 			).apply(builder, PatchedMetadata::new));
 
 	/**
