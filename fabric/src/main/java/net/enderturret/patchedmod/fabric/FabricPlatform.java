@@ -1,15 +1,11 @@
 package net.enderturret.patchedmod.fabric;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.fabricmc.api.EnvType;
-import net.fabricmc.fabric.api.resource.ModResourcePack;
-import net.fabricmc.fabric.impl.resource.loader.ModNioResourcePack;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
@@ -18,7 +14,6 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patchedmod.util.env.IPlatform;
 
@@ -62,8 +57,8 @@ final class FabricPlatform implements IPlatform {
 
 	@Override
 	public String getName(PackResources pack) {
-		if (pack instanceof ModResourcePack mod) {
-			final String modId = mod.getFabricModMetadata().getId();
+		if (pack instanceof IFabricModPackResources mod) {
+			final String modId = mod.patched$getFabricModMetadata().getId();
 			final String packId;
 
 			if (!modId.equals(pack.packId()))
@@ -75,7 +70,7 @@ final class FabricPlatform implements IPlatform {
 			else
 				packId = null;
 
-			return "mod/" + mod.getFabricModMetadata().getName() + (packId != null ? "/" + packId : "");
+			return "mod/" + mod.patched$getFabricModMetadata().getName() + (packId != null ? "/" + packId : "");
 		}
 
 		return pack.packId();
@@ -84,7 +79,7 @@ final class FabricPlatform implements IPlatform {
 	@Override
 	public boolean needsSwapNamespaceAndPath(PackResources pack) {
 		// Fabric implementations surprisingly throw no errors, unlike Minecraft.
-		return !isGroup(pack) && !(pack instanceof ModNioResourcePack);
+		return !isGroup(pack) && !(pack instanceof IFabricModPackResources);
 	}
 
 	@Override
