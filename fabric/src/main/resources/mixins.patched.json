@@ -4,6 +4,7 @@
   "refmap": "patched.refmap.json",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "fabric.MixinCommands",
     "fabric.MixinFabricResourcePacks",
     "FallbackResourceManagerAccess",
     "FilePackResourcesAccess",
