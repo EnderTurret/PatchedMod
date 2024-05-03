@@ -26,6 +26,13 @@ dependencies {
     }
 }
 
+subsystems {
+    parchment {
+        minecraftVersion = '1.20.4'
+        mappingsVersion = '2024.04.14'
+    }
+}
+
 minecraft {
     accessTransformers.file rootProject.file('forge/src/main/resources/META-INF/accesstransformer.cfg')
 }
