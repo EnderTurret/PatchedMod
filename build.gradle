@@ -6,7 +6,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'eclipse'
 
-    version = '6.0.0+1.20.5'
+    version = '6.0.0+1.20.6'
     group = 'net.enderturret'
 
     ext {
