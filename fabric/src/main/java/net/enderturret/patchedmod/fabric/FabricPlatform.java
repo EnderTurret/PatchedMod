@@ -81,25 +81,6 @@ final class FabricPlatform implements IPlatform {
 	}
 
 	@Override
-	public boolean isGroup(PackResources pack) {
-		return false;
-	}
-
-	@Override
-	public Collection<PackResources> getChildren(PackResources pack) {
-		return List.of();
-	}
-
-	@Override
-	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) {
-		return List.of();
-	}
-
-	private static Collection<PackResources> transform(List<ModResourcePack> list) {
-		return list.stream().map(mrp -> (PackResources) mrp).toList();
-	}
-
-	@Override
 	public boolean needsSwapNamespaceAndPath(PackResources pack) {
 		// Fabric implementations surprisingly throw no errors, unlike Minecraft.
 		return !isGroup(pack) && !(pack instanceof ModNioResourcePack);

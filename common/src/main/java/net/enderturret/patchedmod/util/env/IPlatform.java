@@ -1,6 +1,7 @@
 package net.enderturret.patchedmod.util.env;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -67,8 +68,8 @@ public interface IPlatform {
 	 */
 	public String getName(PackResources pack);
 
-	public boolean isGroup(PackResources pack);
-	public Collection<PackResources> getChildren(PackResources pack);
+	public default boolean isGroup(PackResources pack) { return false; }
+	public default Collection<PackResources> getChildren(PackResources pack) { return List.of(); }
 
 	/**
 	 * Note: this method doesn't check to see if any of the returned packs <i>actually</i> contain the given file.
@@ -78,7 +79,7 @@ public interface IPlatform {
 	 * @param file The file.
 	 * @return The list of {@link PackResources} that contain the namespace of the given file.
 	 */
-	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file);
+	public default Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) { return List.of(); }
 
 	public boolean needsSwapNamespaceAndPath(PackResources pack);
 	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace);

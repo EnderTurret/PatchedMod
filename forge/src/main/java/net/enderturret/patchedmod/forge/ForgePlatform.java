@@ -79,21 +79,6 @@ final class ForgePlatform implements IPlatform {
 	}
 
 	@Override
-	public boolean isGroup(PackResources pack) {
-		return false;
-	}
-
-	@Override
-	public Collection<PackResources> getChildren(PackResources pack) {
-		return List.of();
-	}
-
-	@Override
-	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) {
-		return List.of();
-	}
-
-	@Override
 	public boolean needsSwapNamespaceAndPath(PackResources pack) {
 		return true;
 	}
