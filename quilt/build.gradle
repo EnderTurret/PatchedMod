@@ -11,14 +11,15 @@ configurations {
     implementation.extendsFrom shadow
 }
 
+// https://quiltmc.org/en/usage/latest-versions
 dependencies {
     minecraft 'com.mojang:minecraft:1.20.6'
     mappings loom.layered {
-        mappings 'org.quiltmc:quilt-mappings:1.20.5-pre1+build.4:intermediary-v2'
+        mappings 'org.quiltmc:quilt-mappings:1.20.6+build.6:intermediary-v2'
         officialMojangMappings()
     }
 
-    modImplementation 'org.quiltmc:quilt-loader:0.26.0-beta.1'
+    modImplementation 'org.quiltmc:quilt-loader:0.26.0'
     modImplementation 'org.quiltmc:qsl:8.0.0-alpha.13+1.20.4' // TODO
 
     shadow ("com.github.EnderTurret:Patched:$patchedVersion") {
