@@ -3,7 +3,7 @@
   "package": "net.enderturret.patchedmod.mixin",
   "refmap": "patched.refmap.json",
   "compatibilityLevel": "JAVA_21",
-  "plugin": "net.enderturret.patchedmod.mixin.PatchedMixinPlugin",
+  "plugin": "net.enderturret.patchedmod.mixin.fabric.PatchedMixinPlugin",
   "mixins": [
     "fabric.api.MixinModNioResourcePack",
     "fabric.api.MixinModResourcePack",
