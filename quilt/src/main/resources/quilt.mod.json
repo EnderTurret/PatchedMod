@@ -22,7 +22,7 @@
       },
       {
         "id": "minecraft",
-        "versions": ">=1.20.5"
+        "versions": ">=1.21-beta.1"
       },
       {
         "id": "java",
