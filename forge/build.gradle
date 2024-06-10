@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'net.neoforged.gradle.userdev' version '7.0.139'
+    id 'net.neoforged.gradle.userdev' version '7.0.142'
 }
 
 base {
@@ -13,8 +13,19 @@ configurations {
     implementation.extendsFrom minecraftLibrary
 }
 
+repositories {
+    maven {
+        name 'Maven for PR #1076' // https://github.com/neoforged/NeoForge/pull/1076
+        url 'https://prmaven.neoforged.net/NeoForge/pr1076'
+        content {
+            includeModule('net.neoforged', 'testframework')
+            includeModule('net.neoforged', 'neoforge')
+        }
+    }
+}
+
 dependencies {
-    implementation 'net.neoforged:neoforge:20.6.109-beta'
+    implementation 'net.neoforged:neoforge:21.0.0-alpha.1.21-pre4.20240609.204207'
 
     compileOnly (project(':PatchedModCommon')) {
         exclude group: 'org.spongepowered', module: 'mixin'
