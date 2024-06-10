@@ -122,7 +122,7 @@ public class MixinCallbacks {
 	 */
 	@SuppressWarnings("resource")
 	private static boolean patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
-		final ResourceLocation patchName = new ResourceLocation(name.getNamespace(), name.getPath() + ".patch");
+		final ResourceLocation patchName = name.withPath(name.getPath() + ".patch");
 
 		final MutableObject<PatchContext> context = new MutableObject<>();
 

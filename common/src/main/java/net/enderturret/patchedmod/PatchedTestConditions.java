@@ -82,7 +82,7 @@ public final class PatchedTestConditions implements ITestEvaluator {
 	}
 
 	private static ResourceLocation id(String path) {
-		return new ResourceLocation(Patched.MOD_ID, path);
+		return ResourceLocation.fromNamespaceAndPath(Patched.MOD_ID, path);
 	}
 
 	@Override
