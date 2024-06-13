@@ -26,13 +26,13 @@ issueTrackerURL="https://github.com/EnderTurret/PatchedMod/issues"
 [[dependencies.patched]]
     modId="neoforge"
     type="required"
-    versionRange="[21.0.0-alpha,)"
+    versionRange="[21.0.0-beta,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.patched]]
     modId="minecraft"
     type="required"
-    versionRange="[1.21-pre1,1.22)"
+    versionRange="[1.21,1.22)"
     ordering="NONE"
     side="BOTH"

@@ -13,19 +13,8 @@ configurations {
     implementation.extendsFrom minecraftLibrary
 }
 
-repositories {
-    maven {
-        name 'Maven for PR #1076' // https://github.com/neoforged/NeoForge/pull/1076
-        url 'https://prmaven.neoforged.net/NeoForge/pr1076'
-        content {
-            includeModule('net.neoforged', 'testframework')
-            includeModule('net.neoforged', 'neoforge')
-        }
-    }
-}
-
 dependencies {
-    implementation 'net.neoforged:neoforge:21.0.0-alpha.1.21-pre4.20240609.204207'
+    implementation 'net.neoforged:neoforge:21.0.0-beta'
 
     compileOnly (project(':PatchedModCommon')) {
         exclude group: 'org.spongepowered', module: 'mixin'
