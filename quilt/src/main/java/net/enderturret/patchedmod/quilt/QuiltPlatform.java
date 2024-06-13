@@ -104,6 +104,6 @@ final class QuiltPlatform implements IPlatform {
 		// PathPackResources:      :minecraft/something → minecraft:something
 		// FilePackResources is handled separately.
 		// VanillaPackResources:  .:minecraft/something → minecraft:something
-		return rl -> new ResourceLocation(namespace, rl.getPath().substring(namespace.length() + 1));
+		return rl -> ResourceLocation.fromNamespaceAndPath(namespace, rl.getPath().substring(namespace.length() + 1));
 	}
 }
