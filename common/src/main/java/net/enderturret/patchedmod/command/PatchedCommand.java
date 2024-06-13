@@ -53,7 +53,7 @@ public final class PatchedCommand {
 
 	static MutableComponent translate(String key, String text, Object... args) {
 		// Make sure we have a fallback for vanilla clients.
-		return Patched.platform().isPhysicalClient() ? Component.translatable(key, args) : Component.translatableWithFallback(key, text.formatted(args), args);
+		return Component.translatableWithFallback(key, text.formatted(args), args);
 	}
 
 	static Style suggestCommand(String command) {
