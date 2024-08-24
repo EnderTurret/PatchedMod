@@ -17,7 +17,11 @@ import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingOutputStream;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.stream.JsonWriter;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 
 import net.minecraft.Util;
 import net.minecraft.data.CachedOutput;
@@ -28,6 +32,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
 import net.enderturret.patched.ITestEvaluator;
+import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.CompoundPatch;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchUtil;
@@ -61,6 +66,24 @@ public abstract class PatchProvider implements DataProvider {
 	 * Use this method to create and register your patches for data generation.
 	 */
 	public abstract void registerPatches();
+
+	/**
+	 * <p>
+	 * Serializes the specified {@code Object}.
+	 * </p>
+	 * <p>
+	 * This method is used by the {@link OperationBuilder} methods, and allows configuring how objects are serialized to json.
+	 * For example, one could set up a custom {@link Gson} instance with serializers registered for custom objects and use that here,
+	 * which would remove the need to turn them into {@code JsonElement}s before calling these methods.
+	 * </p>
+	 * @implNote By default this uses a built-in internal {@code Gson} instance.
+	 * This {@code Gson} is <i>not</i> configured for Minecraft's many {@code Object}s, so changing it out for a different one is not a bad idea.
+	 * @param obj The object to serialize.
+	 * @return The serialized representation of the object.
+	 */
+	protected JsonElement serialize(@Nullable Object obj) {
+		return GSON.toJsonTree(obj);
+	}
 
 	/**
 	 * Conveniently constructs a {@link ResourceLocation} using the given arguments.
@@ -165,6 +188,14 @@ public abstract class PatchProvider implements DataProvider {
 
 		// Simple path/value patches
 
+		private static <T> JsonElement serializeUnchecked(@Nullable T value, Codec<T> codec) {
+			if (value == null) return JsonNull.INSTANCE;
+
+			final DataResult<JsonElement> result = codec.encodeStart(JsonOps.INSTANCE, value);
+
+			return result.getOrThrow(PatchingException::new);
+		}
+
 		/**
 		 * Creates and adds a new {@code add} patch.
 		 * @param path The location the element will be placed.
@@ -172,7 +203,18 @@ public abstract class PatchProvider implements DataProvider {
 		 * @return {@code this}.
 		 */
 		public OperationBuilder add(String path, Object value) {
-			return save(PatchUtil.add(path, GSON.toJsonTree(value)));
+			return save(PatchUtil.add(path, PatchProvider.this.serialize(value)));
+		}
+
+		/**
+		 * Creates and adds a new {@code add} patch.
+		 * @param path The location the element will be placed.
+		 * @param value The element that will be added.
+		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
+		 * @return {@code this}.
+		 */
+		public <T> OperationBuilder add(String path, T value, Codec<T> valueCodec) {
+			return save(PatchUtil.add(path, serializeUnchecked(value, valueCodec)));
 		}
 
 		/**
@@ -182,7 +224,18 @@ public abstract class PatchProvider implements DataProvider {
 		 * @return {@code this}.
 		 */
 		public OperationBuilder replace(String path, Object value) {
-			return save(PatchUtil.replace(path, GSON.toJsonTree(value)));
+			return save(PatchUtil.replace(path, PatchProvider.this.serialize(value)));
+		}
+
+		/**
+		 * Creates and adds a new {@code replace} patch.
+		 * @param path The path to the element to replace.
+		 * @param value The value to replace the element with.
+		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
+		 * @return {@code this}.
+		 */
+		public <T> OperationBuilder replace(String path, T value, Codec<T> valueCodec) {
+			return save(PatchUtil.replace(path, serializeUnchecked(value, valueCodec)));
 		}
 
 		/**
@@ -236,7 +289,7 @@ public abstract class PatchProvider implements DataProvider {
 		 * @return {@code this}.
 		 */
 		public OperationBuilder test(String type, @Nullable String path, @Nullable Object value, boolean inverse) {
-			return save(PatchUtil.test(type, path, GSON.toJsonTree(value), inverse));
+			return save(PatchUtil.test(type, path, PatchProvider.this.serialize(value), inverse));
 		}
 
 		/**
@@ -257,7 +310,45 @@ public abstract class PatchProvider implements DataProvider {
 		 * @return {@code this}.
 		 */
 		public OperationBuilder test(String path, @Nullable Object value, boolean inverse) {
-			return save(PatchUtil.test(path, GSON.toJsonTree(value), inverse));
+			return save(PatchUtil.test(path, PatchProvider.this.serialize(value), inverse));
+		}
+
+		// Test (Codecs)
+
+		/**
+		 * Creates and adds a new {@code test} patch.
+		 * @param type A custom type for {@link ITestEvaluator}.
+		 * @param path The path to the element to test. May be {@code null}.
+		 * @param value The test element. May be {@code null}.
+		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
+		 * @param inverse Whether the check is inverted, i.e checking to see if something doesn't exist.
+		 * @return {@code this}.
+		 */
+		public <T> OperationBuilder test(String type, @Nullable String path, @Nullable T value, Codec<T> valueCodec, boolean inverse) {
+			return save(PatchUtil.test(type, path, serializeUnchecked(value, valueCodec), inverse));
+		}
+
+		/**
+		 * Creates and adds a new {@code test} patch.
+		 * @param type A custom type for {@link ITestEvaluator}.
+		 * @param value The test element.
+		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
+		 * @return {@code this}.
+		 */
+		public <T> OperationBuilder test(String type, T value, Codec<T> valueCodec) {
+			return test(type, null, value, valueCodec, false);
+		}
+
+		/**
+		 * Creates and adds a new {@code test} patch.
+		 * @param path The path to the element to test.
+		 * @param value The test element. May be {@code null}.
+		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
+		 * @param inverse Whether the check is inverted, i.e checking to see if something doesn't exist.
+		 * @return {@code this}.
+		 */
+		public <T> OperationBuilder test(String path, @Nullable T value, Codec<T> valueCodec, boolean inverse) {
+			return save(PatchUtil.test(path, serializeUnchecked(value, valueCodec), inverse));
 		}
 
 		// Snowflakes
