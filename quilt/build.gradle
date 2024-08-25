@@ -17,7 +17,8 @@ dependencies {
     mappings loom.officialMojangMappings()
 
     modImplementation 'org.quiltmc:quilt-loader:0.26.4-beta.3'
-    modImplementation 'org.quiltmc.quilted-fabric-api:quilted-fabric-api:11.0.0-alpha.3+0.102.0-1.21' // TODO
+    modImplementation 'org.quiltmc:qsl:10.0.0-alpha.3+1.21.1'
+    modImplementation 'org.quiltmc.quilted-fabric-api:quilted-fabric-api:11.0.0-alpha.3+0.102.0-1.21'
 
     shadow ("com.github.EnderTurret:Patched:$patchedVersion") {
         exclude group: 'com.google.code.gson', module: 'gson'
