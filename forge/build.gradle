@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'net.neoforged.gradle.userdev' version '7.0.142'
+    id 'net.neoforged.gradle.userdev' version '7.0.161'
 }
 
 base {
@@ -14,7 +14,7 @@ configurations {
 }
 
 dependencies {
-    implementation 'net.neoforged:neoforge:21.0.0-beta'
+    implementation 'net.neoforged:neoforge:21.1.23'
 
     compileOnly (project(':PatchedModCommon')) {
         exclude group: 'org.spongepowered', module: 'mixin'
@@ -28,8 +28,8 @@ dependencies {
 
 subsystems {
     parchment {
-        minecraftVersion = '1.20.6'
-        mappingsVersion = '2024.06.02'
+        minecraftVersion = '1.21'
+        mappingsVersion = '2024.07.28'
     }
 }
 
@@ -41,8 +41,10 @@ runs {
     configureEach {
         workingDirectory project.file('run/1.21')
 
-        modSource sourceSets.main
-        modSource project(':PatchedModCommon').sourceSets.main
+        modSources {
+            //add sourceSets.main
+            local project(':PatchedModCommon').sourceSets.main
+        }
 
         dependencies {
             runtime project.configurations.minecraftLibrary
