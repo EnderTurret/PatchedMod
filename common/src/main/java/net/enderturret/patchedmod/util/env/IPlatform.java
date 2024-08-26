@@ -17,16 +17,45 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 
+/**
+ * An abstraction over the different loaders Patched supports.
+ * @author EnderTurret
+ */
 @Internal
 public interface IPlatform {
 
+	/**
+	 * Returns Patched's {@code Logger} instance.
+	 * @return Patched's {@code Logger} instance.
+	 */
 	public Logger logger();
 
+	/**
+	 * Returns whether or not Patched is running on the (physical) client.
+	 * @return {@code true} if Patched is running on the client.
+	 */
 	public boolean isPhysicalClient();
 
+	/**
+	 * Returns whether or not a mod with the specified mod ID is loaded.
+	 * @param modId The mod ID to check.
+	 * @return {@code true} if the mod is loaded.
+	 */
 	public boolean isModLoaded(String modId);
+
+	/**
+	 * Returns whether or not a mod with the specified mod ID is loaded <i>and</i> is at least the specified version.
+	 * @param modId The mod ID to check.
+	 * @param version The minimum version of the mod to require.
+	 * @return {@code true} if the mod is loaded and is <i>at least</i> the specified version.
+	 */
 	public boolean isModLoaded(String modId, String version);
 
+	/**
+	 * Returns the {@link PackOutput} of the given {@link DataGenerator}.
+	 * @param generator The {@code DataGenerator} to fetch the {@code PackOutput} from.
+	 * @return The {@code PackOutput}.
+	 */
 	public PackOutput getPackOutput(DataGenerator generator);
 
 	/**
@@ -40,7 +69,7 @@ public interface IPlatform {
 	 * <table border="1">
 	 * <tr><th>Mod loader</th><th>Pack id</th></tr>
 	 * <tr><td>Forge</td><td>"mod:mymod"</td></tr>
-	 * <tr><td>NeoForge</td><td>"mod:mymod"<sup> [now]</sup> "mod/mymod"<sup> [proposed — #735]</sup></td></tr>
+	 * <tr><td>NeoForge</td><td>"mod:mymod"<sup> [previously]</sup> "mod/mymod"<sup> [since 20.6]</sup></td></tr>
 	 * <tr><td>Fabric</td><td>"mymod"</td></tr>
 	 * <tr><td>Quilt</td><td>"mymod"</td></tr>
 	 * </table>
@@ -68,12 +97,34 @@ public interface IPlatform {
 	 */
 	public String getName(PackResources pack);
 
+	/**
+	 * <p>
+	 * Returns whether or not the specified pack is actually a group of packs.
+	 * </p>
+	 * <p>
+	 * Nowadays, no loader has 'group' packs, but in the past they used to be quite prevalent.
+	 * This method is used to ensure they get unpacked correctly.
+	 * </p>
+	 * @param pack The pack to check.
+	 * @return {@code true} if the pack is a group pack.
+	 */
 	public default boolean isGroup(PackResources pack) { return false; }
+
+	/**
+	 * If the pack is a group, returns the children of the pack.
+	 * @param pack The pack to unpack.
+	 * @return The pack's children.
+	 */
 	public default Collection<PackResources> getChildren(PackResources pack) { return List.of(); }
 
 	/**
-	 * Note: this method doesn't check to see if any of the returned packs <i>actually</i> contain the given file.
+	 * <p>
+	 * If the pack is a group, returns the children of the pack that contain the namespace of the specified file.
+	 * </p>
+	 * <p>
+	 * <b>Note</b>: this method doesn't check to see if any of the returned packs <i>actually</i> contain the given file.
 	 * It only makes sure the returned packs contain the <i>namespace</i> of the given file.
+	 * </p>
 	 * @param pack The pack in question.
 	 * @param type The pack type.
 	 * @param file The file.
