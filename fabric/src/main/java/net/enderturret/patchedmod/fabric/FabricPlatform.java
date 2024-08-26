@@ -85,7 +85,7 @@ final class FabricPlatform implements IPlatform {
 	@Override
 	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace) {
 		// GroupResourcePack and ModNioResourcePack
-		if (!needsSwapNamespaceAndPath(pack)) return rl -> rl;
+		if (!needsSwapNamespaceAndPath(pack)) return Function.identity();
 		// PathPackResources:      :minecraft/something → minecraft:something
 		// FilePackResources is handled separately.
 		// VanillaPackResources:  .:minecraft/something → minecraft:something
