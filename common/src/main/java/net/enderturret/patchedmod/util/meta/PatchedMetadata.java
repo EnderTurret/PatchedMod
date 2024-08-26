@@ -14,8 +14,6 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.util.ExtraCodecs;
-
 import net.enderturret.patched.exception.PatchingException;
 
 /**

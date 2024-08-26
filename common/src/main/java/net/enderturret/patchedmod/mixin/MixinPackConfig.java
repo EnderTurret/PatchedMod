@@ -1,16 +1,13 @@
 package net.enderturret.patchedmod.mixin;
 
-import java.util.List;
-
-import com.mojang.datafixers.util.Pair;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.mojang.datafixers.util.Pair;
+
 import net.minecraft.server.WorldLoader;
-import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 

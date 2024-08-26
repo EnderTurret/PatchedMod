@@ -28,11 +28,9 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.PatchingInputStream;
 import net.enderturret.patchedmod.util.env.IEnvironment;
-import net.enderturret.patchedmod.util.meta.PatchTarget;
 
 /**
  * Defines the '/patched dump' subcommand, which handles viewing patches and patched files.

@@ -7,8 +7,6 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.util.ExtraCodecs;
-
 public sealed interface IPattern {
 
 	public static final Codec<IPattern> CODEC = Codec.either(Simple.CODEC, Regex.CODEC)
