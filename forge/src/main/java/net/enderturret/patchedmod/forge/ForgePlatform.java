@@ -1,8 +1,5 @@
 package net.enderturret.patchedmod.forge;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -15,14 +12,12 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.VanillaPackResources;
 
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforgespi.language.IModInfo;
 
 import net.enderturret.patchedmod.util.env.IPlatform;
 
@@ -63,19 +58,21 @@ final class ForgePlatform implements IPlatform {
 
 	@Override
 	public String getName(PackResources pack) {
-		if (pack.packId().startsWith("mod:")) {
-			final String modId = pack.packId().substring("mod:".length());
-			final Optional<String> mod = findModNameFromModFile(modId);
-			if (mod.isPresent())
-				return "mod/" + mod.get();
-		}
+		final Optional<? extends ModContainer> mod = findModNameFromModFile(pack);
+
+		if (mod.isPresent())
+			return "mod/" + mod.get().getModInfo().getDisplayName();
 
 		return pack.packId();
 	}
 
-	private static Optional<String> findModNameFromModFile(String modId) {
-		return ModList.get().getModContainerById(modId)
-				.map(m -> m.getModInfo().getDisplayName());
+	private static Optional<? extends ModContainer> findModNameFromModFile(PackResources pack) {
+		if (pack.packId().startsWith("mod/")) {
+			final String modId = pack.packId().substring("mod/".length());
+			return ModList.get().getModContainerById(modId);
+		}
+
+		return Optional.empty();
 	}
 
 	@Override

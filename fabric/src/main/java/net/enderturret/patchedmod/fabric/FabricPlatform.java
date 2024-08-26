@@ -2,6 +2,7 @@ package net.enderturret.patchedmod.fabric;
 
 import java.util.function.Function;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -57,8 +59,9 @@ final class FabricPlatform implements IPlatform {
 
 	@Override
 	public String getName(PackResources pack) {
-		if (pack instanceof IFabricModPackResources mod) {
-			final String modId = mod.patched$getFabricModMetadata().getId();
+		final ModMetadata mod = getModMetadataFromPack(pack);
+		if (mod != null) {
+			final String modId = mod.getId();
 			final String packId;
 
 			if (!modId.equals(pack.packId()))
@@ -70,10 +73,18 @@ final class FabricPlatform implements IPlatform {
 			else
 				packId = null;
 
-			return "mod/" + mod.patched$getFabricModMetadata().getName() + (packId != null ? "/" + packId : "");
+			return "mod/" + mod.getName() + (packId != null ? "/" + packId : "");
 		}
 
 		return pack.packId();
+	}
+
+	@Nullable
+	private static ModMetadata getModMetadataFromPack(PackResources pack) {
+		if (pack instanceof IFabricModPackResources mod)
+			return mod.patched$getFabricModMetadata();
+
+		return null;
 	}
 
 	@Override
