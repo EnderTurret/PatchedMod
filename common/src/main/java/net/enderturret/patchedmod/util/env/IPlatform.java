@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import net.minecraft.data.DataGenerator;
@@ -16,6 +17,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.util.IPatchingPackResources;
+import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 /**
  * An abstraction over the different loaders Patched supports.
@@ -96,6 +98,17 @@ public interface IPlatform {
 	 * @return The "name" of the pack.
 	 */
 	public String getName(PackResources pack);
+
+	/**
+	 * If the specified pack belongs to a mod, and no {@code pack.mcmeta} exists for it,
+	 * this method tries to derive a {@link PatchedMetadata} from the mod's {@code mods.toml} / {@code neoforge.mods.toml} / {@code fabric.mods.json} / {@code quilt.mods.json}.
+	 * @param pack The pack in question.
+	 * @return A derived {@link PatchedMetadata}, or {@code null} if one could not be derived.
+	 */
+	@Nullable
+	public default PatchedMetadata deriveMetadataFromMod(PackResources pack) {
+		return null;
+	}
 
 	/**
 	 * <p>

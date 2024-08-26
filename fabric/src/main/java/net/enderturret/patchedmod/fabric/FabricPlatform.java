@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
+import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 
 import net.minecraft.data.DataGenerator;
@@ -18,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 
 import net.enderturret.patchedmod.util.env.IPlatform;
+import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 final class FabricPlatform implements IPlatform {
 
@@ -85,6 +87,18 @@ final class FabricPlatform implements IPlatform {
 			return mod.patched$getFabricModMetadata();
 
 		return null;
+	}
+
+	@Override
+	@Nullable
+	public PatchedMetadata deriveMetadataFromMod(PackResources pack) {
+		final ModMetadata mod = getModMetadataFromPack(pack);
+		if (mod == null) return null;
+
+		final CustomValue cv = mod.getCustomValue("patched");
+		if (cv == null) return null;
+
+		return PatchedMetadata.of(cv, CustomValueOps.INSTANCE, mod.getName() + " (" + mod.getId() + ")");
 	}
 
 	@Override

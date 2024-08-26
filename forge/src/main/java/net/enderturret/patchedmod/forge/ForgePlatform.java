@@ -5,8 +5,11 @@ import java.util.function.Function;
 
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.electronwill.nightconfig.core.UnmodifiableConfig;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -20,6 +23,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 
 import net.enderturret.patchedmod.util.env.IPlatform;
+import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 final class ForgePlatform implements IPlatform {
 
@@ -73,6 +77,23 @@ final class ForgePlatform implements IPlatform {
 		}
 
 		return Optional.empty();
+	}
+
+	@Override
+	@Nullable
+	public PatchedMetadata deriveMetadataFromMod(PackResources pack) {
+		final Optional<? extends ModContainer> owningMod = findModNameFromModFile(pack);
+		if (owningMod.isPresent()) {
+			final ModContainer mod = owningMod.get();
+			final Object obj = mod.getModInfo().getModProperties().get("patched");
+			if (obj instanceof UnmodifiableConfig cfg)
+				return PatchedMetadata.of(
+						cfg,
+						NightConfigOps.INSTANCE,
+						mod.getModInfo().getDisplayName() + " (" + mod.getModInfo().getModId() + ")");
+		}
+
+		return null;
 	}
 
 	@Override

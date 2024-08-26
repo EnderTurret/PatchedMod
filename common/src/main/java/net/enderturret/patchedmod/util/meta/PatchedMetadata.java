@@ -10,6 +10,7 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -99,15 +100,7 @@ public record PatchedMetadata(byte formatVersion, List<PatchTarget> patchTargets
 						&& prim.isNumber() && prim.getAsInt() > CURRENT_VERSION.formatVersion)
 					throw new PatchingException("Format version " + prim.getAsInt() + " too new! This version of Patched can only load up to version " + CURRENT_VERSION.formatVersion + ".");
 
-				final DataResult<Pair<PatchedMetadata, JsonElement>> pair = CODEC.decode(JsonOps.INSTANCE, patched);
-
-				if (pair.result().isPresent()) {
-					final PatchedMetadata ret = pair.result().get().getFirst();
-					// Use the cached version when possible; I don't necessarily trust the JVM to do that record optimization (too many people abuse them -- me included).
-					return CURRENT_VERSION.equals(ret) ? CURRENT_VERSION : ret;
-				}
-
-				throw new PatchingException("Could not parse Patched metadata for " + source + ": " + pair.error().get().message());
+				return of(patched, JsonOps.INSTANCE, source);
 			}
 			else if (root.get("pack") instanceof JsonObject pack
 					&& pack.get("patched:has_patches") instanceof JsonPrimitive hasPatches
@@ -116,5 +109,17 @@ public record PatchedMetadata(byte formatVersion, List<PatchTarget> patchTargets
 		}
 
 		return DISABLED_METADATA;
+	}
+
+	public static <T> PatchedMetadata of(T data, DynamicOps<T> ops, String source) {
+		final DataResult<Pair<PatchedMetadata, T>> pair = CODEC.decode(ops, data);
+
+		if (pair.result().isPresent()) {
+			final PatchedMetadata ret = pair.result().get().getFirst();
+			// Use the cached version when possible; I don't necessarily trust the JVM to do that record optimization (too many people abuse them -- me included).
+			return CURRENT_VERSION.equals(ret) ? CURRENT_VERSION : ret;
+		}
+
+		throw new PatchingException("Could not parse Patched metadata for " + source + ": " + pair.error().get().message());
 	}
 }

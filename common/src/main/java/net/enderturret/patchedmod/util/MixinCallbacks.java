@@ -277,18 +277,27 @@ public class MixinCallbacks {
 						patching.setPatchedMetadata(enabled ? PatchedMetadata.CURRENT_VERSION : PatchedMetadata.DISABLED_METADATA);
 					} else {
 						final IoSupplier<InputStream> io = entry.resources().getRootResource("pack.mcmeta");
+						PatchedMetadata meta;
+
 						if (io != null)
 							try (InputStream is = io.get()) {
 								final String json = PatchUtil.readString(is);
 								final JsonElement elem = JsonParser.parseString(json);
 
-								patching.setPatchedMetadata(PatchedMetadata.of(elem, entry.name));
+								meta = PatchedMetadata.of(elem, entry.name);
 							} catch (Exception e) {
 								Patched.platform().logger().warn("Failed to read pack.mcmeta in {}:", entry.name(), e);
-								patching.setPatchedMetadata(PatchedMetadata.DISABLED_METADATA);
+								meta = PatchedMetadata.DISABLED_METADATA;
 							}
 						else
-							patching.setPatchedMetadata(PatchedMetadata.DISABLED_METADATA);
+							meta = PatchedMetadata.DISABLED_METADATA;
+
+						if (!meta.patchingEnabled())
+							meta = Objects.requireNonNullElse(
+									Patched.platform().deriveMetadataFromMod(entry.resources()),
+									meta);
+
+						patching.setPatchedMetadata(meta);
 					}
 
 					if (patching.patchedMetadata().patchingEnabled()) {
