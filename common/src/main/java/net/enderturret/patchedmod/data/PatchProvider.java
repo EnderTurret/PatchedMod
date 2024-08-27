@@ -21,13 +21,16 @@ import com.google.gson.JsonNull;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 
 import net.minecraft.Util;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
@@ -188,10 +191,14 @@ public abstract class PatchProvider implements DataProvider {
 
 		// Simple path/value patches
 
-		private static <T> JsonElement serializeUnchecked(@Nullable T value, Codec<T> codec) {
+		private static <T> JsonElement serializeUnchecked(@Nullable T value, Codec<T> codec, @Nullable HolderLookup.Provider provider) {
 			if (value == null) return JsonNull.INSTANCE;
 
-			final DataResult<JsonElement> result = codec.encodeStart(JsonOps.INSTANCE, value);
+			DynamicOps<JsonElement> ops = JsonOps.INSTANCE;
+			if (provider != null)
+				ops = provider.createSerializationContext(JsonOps.INSTANCE);
+
+			final DataResult<JsonElement> result = codec.encodeStart(ops, value);
 
 			return result.getOrThrow(PatchingException::new);
 		}
@@ -212,9 +219,23 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param value The element that will be added.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
 		 * @return {@code this}.
+		 * @deprecated Use {@link #add(String, Object, Codec, net.minecraft.core.HolderLookup.Provider)} instead.
 		 */
+		@Deprecated(forRemoval = true, since = "7.1.1+1.21.1")
 		public <T> OperationBuilder add(String path, T value, Codec<T> valueCodec) {
-			return save(PatchUtil.add(path, serializeUnchecked(value, valueCodec)));
+			return add(path, value, valueCodec, null);
+		}
+
+		/**
+		 * Creates and adds a new {@code add} patch.
+		 * @param path The location the element will be placed.
+		 * @param value The element that will be added.
+		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
+		 * @param provider Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
+		 * @return {@code this}.
+		 */
+		public <T> OperationBuilder add(String path, T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider) {
+			return save(PatchUtil.add(path, serializeUnchecked(value, valueCodec, provider)));
 		}
 
 		/**
@@ -233,9 +254,23 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param value The value to replace the element with.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
 		 * @return {@code this}.
+		 * @deprecated Use {@link #replace(String, Object, Codec, net.minecraft.core.HolderLookup.Provider)} instead.
 		 */
+		@Deprecated(forRemoval = true, since = "7.1.1+1.21.1")
 		public <T> OperationBuilder replace(String path, T value, Codec<T> valueCodec) {
-			return save(PatchUtil.replace(path, serializeUnchecked(value, valueCodec)));
+			return replace(path, value, valueCodec, null);
+		}
+
+		/**
+		 * Creates and adds a new {@code replace} patch.
+		 * @param path The path to the element to replace.
+		 * @param value The value to replace the element with.
+		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
+		 * @param provider Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
+		 * @return {@code this}.
+		 */
+		public <T> OperationBuilder replace(String path, T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider) {
+			return save(PatchUtil.replace(path, serializeUnchecked(value, valueCodec, provider)));
 		}
 
 		/**
@@ -323,9 +358,11 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
 		 * @param inverse Whether the check is inverted, i.e checking to see if something doesn't exist.
 		 * @return {@code this}.
+		 * @deprecated Use {@link #test(String, String, Object, Codec, net.minecraft.core.HolderLookup.Provider, boolean)} instead.
 		 */
+		@Deprecated(forRemoval = true, since = "7.1.1+1.21.1")
 		public <T> OperationBuilder test(String type, @Nullable String path, @Nullable T value, Codec<T> valueCodec, boolean inverse) {
-			return save(PatchUtil.test(type, path, serializeUnchecked(value, valueCodec), inverse));
+			return test(type, path, value, valueCodec, null, inverse);
 		}
 
 		/**
@@ -334,9 +371,11 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param value The test element.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
 		 * @return {@code this}.
+		 * @deprecated Use {@link #test(String, Object, Codec, net.minecraft.core.HolderLookup.Provider)} instead.
 		 */
+		@Deprecated(forRemoval = true, since = "7.1.1+1.21.1")
 		public <T> OperationBuilder test(String type, T value, Codec<T> valueCodec) {
-			return test(type, null, value, valueCodec, false);
+			return test(type, value, valueCodec, null);
 		}
 
 		/**
@@ -346,9 +385,50 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
 		 * @param inverse Whether the check is inverted, i.e checking to see if something doesn't exist.
 		 * @return {@code this}.
+		 * @deprecated Use {@link #test(String, Object, Codec, net.minecraft.core.HolderLookup.Provider, boolean)} instead.
 		 */
+		@Deprecated(forRemoval = true, since = "7.1.1+1.21.1")
 		public <T> OperationBuilder test(String path, @Nullable T value, Codec<T> valueCodec, boolean inverse) {
-			return save(PatchUtil.test(path, serializeUnchecked(value, valueCodec), inverse));
+			return test(path, value, valueCodec, null, inverse);
+		}
+
+		/**
+		 * Creates and adds a new {@code test} patch.
+		 * @param type A custom type for {@link ITestEvaluator}.
+		 * @param path The path to the element to test. May be {@code null}.
+		 * @param value The test element. May be {@code null}.
+		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
+		 * @param provider Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
+		 * @param inverse Whether the check is inverted, i.e checking to see if something doesn't exist.
+		 * @return {@code this}.
+		 */
+		public <T> OperationBuilder test(String type, @Nullable String path, @Nullable T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider, boolean inverse) {
+			return save(PatchUtil.test(type, path, serializeUnchecked(value, valueCodec, provider), inverse));
+		}
+
+		/**
+		 * Creates and adds a new {@code test} patch.
+		 * @param type A custom type for {@link ITestEvaluator}.
+		 * @param value The test element.
+		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
+		 * @param provider Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
+		 * @return {@code this}.
+		 */
+		public <T> OperationBuilder test(String type, T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider) {
+			return test(type, null, value, valueCodec, provider, false);
+		}
+
+		/**
+		 * Creates and adds a new {@code test} patch.
+		 * @param path The path to the element to test.
+		 * @param value The test element. May be {@code null}.
+		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
+		 * @param provider Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
+		 * @param inverse Whether the check is inverted, i.e checking to see if something doesn't exist.
+		 * @return {@code this}.
+		 */
+		public <T> OperationBuilder test(String path, @Nullable T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider, boolean inverse) {
+			return save(PatchUtil.test(path, serializeUnchecked(value, valueCodec, provider), inverse));
 		}
 
 		// Snowflakes
