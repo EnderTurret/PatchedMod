@@ -1,8 +1,8 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'net.minecraftforge.gradle' version '[6.0, 6.2)'
-    id 'org.spongepowered.mixin' version '0.7.33'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'com.gradleup.shadow' version '8.3.0'
+    id 'net.minecraftforge.gradle' version '6.0.29'
+    id 'org.spongepowered.mixin' version '0.7.38'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.2.0'
 }
 
 base {
@@ -14,7 +14,7 @@ mixin {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.1-47.1.0'
+    minecraft 'net.minecraftforge:forge:1.20.1-47.3.11'
 
     compileOnly (project(':PatchedModCommon')) {
         exclude group: 'org.spongepowered', module: 'mixin'
@@ -29,8 +29,8 @@ dependencies {
 }
 
 minecraft {
-    mappings channel: 'parchment', version: '2023.07.09-1.20.1'
-	accessTransformer = file("$rootDir/forge/src/main/resources/META-INF/accesstransformer.cfg")
+    mappings channel: 'parchment', version: '2023.09.03-1.20.1'
+    accessTransformer = file("$rootDir/forge/src/main/resources/META-INF/accesstransformer.cfg")
 
     runs {
         configureEach {
@@ -99,4 +99,4 @@ jar.enabled = false
 shadowJar.finalizedBy('reobfShadowJar')
 
 // Fix mixingradle.
-eclipseJdtApt.dependsOn createMcpToSrg
+//eclipseJdtApt.dependsOn createMcpToSrg

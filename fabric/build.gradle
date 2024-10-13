@@ -1,6 +1,7 @@
 plugins {
-    id 'fabric-loom' version '1.3-SNAPSHOT'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.gradleup.shadow' version '8.3.0'
+    // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
+    id 'fabric-loom' version '1.7.4'
 }
 
 base {
@@ -11,11 +12,13 @@ configurations {
     implementation.extendsFrom shadow
 }
 
+// https://fabricmc.net/develop/
 dependencies {
     minecraft 'com.mojang:minecraft:1.20.1'
     mappings loom.officialMojangMappings()
-    modImplementation 'net.fabricmc:fabric-loader:0.14.23'
-    modImplementation 'net.fabricmc.fabric-api:fabric-api:0.90.0+1.20.1'
+
+    modImplementation 'net.fabricmc:fabric-loader:0.16.7'
+    modImplementation 'net.fabricmc.fabric-api:fabric-api:0.92.2+1.20.1'
 
     shadow ("com.github.EnderTurret:Patched:$patchedVersion") {
         exclude group: 'com.google.code.gson', module: 'gson'
