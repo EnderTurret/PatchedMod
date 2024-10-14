@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.mixin.fabric;
+package net.enderturret.patchedmod.mixin.fabric.api;
 
 import java.util.List;
 import java.util.Map;

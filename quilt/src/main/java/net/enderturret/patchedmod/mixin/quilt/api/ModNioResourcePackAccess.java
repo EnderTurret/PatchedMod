@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.mixin.quilt;
+package net.enderturret.patchedmod.mixin.quilt.api;
 
 import org.quiltmc.loader.api.ModMetadata;
 import org.quiltmc.qsl.resource.loader.impl.ModNioResourcePack;

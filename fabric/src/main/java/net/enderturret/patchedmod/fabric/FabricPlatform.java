@@ -20,7 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
-import net.enderturret.patchedmod.mixin.fabric.GroupResourcePackAccess;
+import net.enderturret.patchedmod.mixin.fabric.api.GroupResourcePackAccess;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
 final class FabricPlatform implements IPlatform {

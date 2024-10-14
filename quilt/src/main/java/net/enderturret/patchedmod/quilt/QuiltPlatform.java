@@ -19,8 +19,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
-import net.enderturret.patchedmod.mixin.quilt.GroupResourcePackAccess;
-import net.enderturret.patchedmod.mixin.quilt.ModNioResourcePackAccess;
+import net.enderturret.patchedmod.mixin.quilt.api.GroupResourcePackAccess;
+import net.enderturret.patchedmod.mixin.quilt.api.ModNioResourcePackAccess;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
 final class QuiltPlatform implements IPlatform {

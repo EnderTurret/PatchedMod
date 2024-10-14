@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.mixin.fabric;
+package net.enderturret.patchedmod.mixin.fabric.api;
 
 import org.spongepowered.asm.mixin.Mixin;
 

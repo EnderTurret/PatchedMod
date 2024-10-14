@@ -4,7 +4,7 @@
 
 The mod can be obtained on either [Modrinth](https://modrinth.com/mod/patched) or [CurseForge](https://www.curseforge.com/minecraft/mc-mods/patched).
 Just drop it in the `mods` folder and things should just work.
-On Fabric and Quilt you will also need the corresponding API installed.
+On Fabric and Quilt you will also need the corresponding API installed, although on newer versions Patched can run without them in a sort of degraded functionality mode.
 
 ## For modders
 
