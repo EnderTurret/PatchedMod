@@ -6,6 +6,7 @@
   "mixins": [
     "fabric.GroupResourcePackAccess",
     "fabric.MixinFabricResourcePacks",
+    "FallbackResourceManagerAccess",
     "FilePackResourcesAccess",
     "MixinAbstractPackResources",
     "MixinFallbackResourceManager"

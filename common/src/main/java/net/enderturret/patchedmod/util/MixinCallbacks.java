@@ -8,6 +8,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -36,6 +37,7 @@ import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.mixin.FallbackResourceManagerAccess;
 
 /**
  * <p>Handles callbacks from mixins -- what you would expect from the name.</p>
@@ -48,6 +50,8 @@ public class MixinCallbacks {
 	@Internal
 	public static final boolean DEBUG = Boolean.getBoolean("patched.debug");
 
+	private static final AtomicBoolean LOG_EXCEPTIONS = new AtomicBoolean(true);
+
 	/**
 	 * "Chains" the given {@code IoSupplier}, returning an {@code IoSupplier} that patches the data returned by it.
 	 * @param delegate The delegate {@code IoSupplier}.
@@ -58,7 +62,12 @@ public class MixinCallbacks {
 	 */
 	@Internal
 	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, ResourceLocation name, PackResources origin) {
-		return () -> new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, manager.type, name, stream, audit));
+		return () -> new PatchingInputStream(delegate, (stream, audit) -> {
+			if (!(manager instanceof FallbackResourceManagerAccess access))
+				return stream; // Don't attempt patching if our mixin hasn't applied for some reason.
+
+			return patch(manager, origin, access.getType(), name, stream, audit);
+		});
 	}
 
 	/**
@@ -81,7 +90,8 @@ public class MixinCallbacks {
 		} catch (BailException e) {
 			// Let the future data consumer handle these.
 		} catch (Exception e) {
-			Patched.platform().logger().error("An exception occurred while attempting to patch {}:", name, e);
+			if (LOG_EXCEPTIONS.getAndSet(false))
+				Patched.platform().logger().error("An exception occurred while attempting to patch {}. Further exceptions will not be reported.", name, e);
 		}
 
 		return wrapper.getOrCreateStream();
