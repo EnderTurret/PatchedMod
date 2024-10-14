@@ -194,6 +194,15 @@ public abstract class PatchProvider implements DataProvider {
 			return save(PatchUtil.remove(path));
 		}
 
+		/**
+		 * Creates and adds a new {@code include} patch.
+		 * @param path The path to the patch file to include.
+		 * @return {@code this}.
+		 */
+		public OperationBuilder include(String path) {
+			return save(PatchUtil.include(path));
+		}
+
 		// Path + from patches
 
 		/**

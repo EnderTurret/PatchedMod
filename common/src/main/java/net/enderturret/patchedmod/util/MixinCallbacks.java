@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.event.Level;
@@ -98,9 +99,9 @@ public class MixinCallbacks {
 	 */
 	@SuppressWarnings("resource")
 	private static boolean patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
-		final ResourceLocation patchName = new ResourceLocation(name.getNamespace(), name.getPath() + ".patch");
+		final ResourceLocation patchName = name.withPath(name.getPath() + ".patch");
 
-		PatchContext context = null;
+		final MutableObject<PatchContext> context = new MutableObject<>();
 
 		from = findTrueSource(from, type, name);
 
@@ -132,12 +133,16 @@ public class MixinCallbacks {
 					try {
 						if (audit != null)
 							audit.setPatchPath(pack.name());
-						if (context == null)
-							context = PatchUtil.CONTEXT.audit(audit);
+						if (context.getValue() == null)
+							context.setValue(PatchUtil.CONTEXT.audit(audit));
 
-						Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}.", patchName, pack.name());
+						Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}.",
+								patchName,
+								pack.name());
 
-						patch.patch(wrapper.get(), context);
+						final PatchContext ctx = context.getValue().fileAccess(new PatchedFileAccess(pack.resources()));
+
+						patch.patch(wrapper.get(), ctx);
 					} catch (BailException e) {
 						throw e;
 					} catch (PatchingException e) {
@@ -151,7 +156,7 @@ public class MixinCallbacks {
 				}
 		}
 
-		return context != null;
+		return context.getValue() != null;
 	}
 
 	/**

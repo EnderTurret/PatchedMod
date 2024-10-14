@@ -72,3 +72,35 @@ In practice, it is unlikely that patches will ever clash in a way where ordering
 
 Patched has a few extensions (which you may have seen in its documentation).
 The document [here](extensions.md) describes the extensions the mod has enabled.
+
+### Using `include` patches
+
+Include patches are a relatively new patch operation (added in `5.1.0+1.20.4` and `3.3.0+1.20.1`):
+
+```json
+{
+  "op": "include",
+  "path": "add_diamond_loot_pool"
+}
+```
+
+This operation lets you include the contents of another patch, as if it was copy-pasted into the one including it.
+It's mainly intended to reduce patch duplication, such as when making the same changes to four different loot tables.
+
+The `path` specifies the name of the patch to include.
+These patches are read from the `patches` folder of the pack.
+In this case, that looks like:
+
+```
+More Diamond Drops
+├ data
+│ └ minecraft
+│   └ loot_tables
+│     └ entities
+│       └ allay.json.patch
+├ pack.mcmeta
+└ patches
+  └ add_diamond_loot_pool.json.patch
+```
+
+In other words, for a `path` of "something", the file will be at `patches/something.json.patch`.
