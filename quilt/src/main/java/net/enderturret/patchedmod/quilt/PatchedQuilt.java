@@ -13,10 +13,6 @@ import net.enderturret.patchedmod.util.env.IEnvironment;
 @Internal
 public final class PatchedQuilt implements ModInitializer {
 
-	// I'm not sure if Fabric provides a less inconvenient way to get the physical side, so here's this.
-	@Internal
-	public static boolean physicalClient = false;
-
 	@Override
 	public void onInitialize(ModContainer mod) {
 		CommandRegistrationCallback.EVENT.register((dispatcher, context, dedicated) -> {

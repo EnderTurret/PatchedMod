@@ -23,7 +23,6 @@ public final class ClientEvents implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		PatchedFabric.physicalClient = true;
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> {
 			dispatcher.register(PatchedCommand.create(new ClientEnvironment()));
 		});

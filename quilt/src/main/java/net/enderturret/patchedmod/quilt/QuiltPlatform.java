@@ -6,9 +6,12 @@ import java.util.function.Function;
 
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.api.Version;
+import org.quiltmc.loader.api.minecraft.MinecraftQuiltLoader;
 import org.quiltmc.qsl.resource.loader.impl.ModNioResourcePack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.fabricmc.api.EnvType;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -31,7 +34,7 @@ final class QuiltPlatform implements IPlatform {
 
 	@Override
 	public boolean isPhysicalClient() {
-		return PatchedQuilt.physicalClient;
+		return MinecraftQuiltLoader.getEnvironmentType() == EnvType.CLIENT;
 	}
 
 	@Override

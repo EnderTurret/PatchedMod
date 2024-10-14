@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import net.enderturret.patchedmod.util.MixinCallbacks;
 import net.enderturret.patchedmod.util.PatchUtil;
+import net.enderturret.patchedmod.util.env.DummyPlatform;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
 /**
@@ -25,6 +26,12 @@ public final class Patched {
 
 	@Internal
 	public static IPlatform platform() {
+		if (platform == null) {
+			platform = new DummyPlatform();
+			platform.logger().error("Constructed dummy platform instance! If you're reading this, Patched was not loaded correctly!");
+			// Or someone called this method way too early, but no one would do that, right?
+		}
+
 		return platform;
 	}
 

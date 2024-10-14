@@ -7,6 +7,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.resource.ModResourcePack;
 import net.fabricmc.fabric.impl.resource.loader.ModNioResourcePack;
 import net.fabricmc.loader.api.FabricLoader;
@@ -33,7 +34,7 @@ final class FabricPlatform implements IPlatform {
 
 	@Override
 	public boolean isPhysicalClient() {
-		return PatchedFabric.physicalClient;
+		return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
 	}
 
 	@Override
@@ -109,7 +110,7 @@ final class FabricPlatform implements IPlatform {
 	@Override
 	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace) {
 		// GroupResourcePack and ModNioResourcePack
-		if (!needsSwapNamespaceAndPath(pack)) return rl -> rl;
+		if (!needsSwapNamespaceAndPath(pack)) return Function.identity();
 		// PathPackResources:      :minecraft/something → minecraft:something
 		// FilePackResources is handled separately.
 		// VanillaPackResources:  .:minecraft/something → minecraft:something

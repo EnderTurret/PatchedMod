@@ -144,7 +144,7 @@ public abstract class PatchProvider implements DataProvider {
 	 * or a child of another {@code CompoundPatch}.
 	 * @author EnderTurret
 	 */
-	public abstract class OperationBuilder {
+	public sealed abstract class OperationBuilder permits RootOperationBuilder, ChildOperationBuilder {
 
 		OperationBuilder() {}
 
