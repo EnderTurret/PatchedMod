@@ -38,7 +38,7 @@ import net.enderturret.patchedmod.Patched;
 
 /**
  * <p>Handles callbacks from mixins -- what you would expect from the name.</p>
- * <p>Specifically, this handles actually patching things.</p>
+ * <p>Specifically, this handles the overall management of patching files and setting up packs for patching.</p>
  * @author EnderTurret
  */
 @Internal

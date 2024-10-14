@@ -9,25 +9,12 @@ import net.minecraft.server.packs.PackResources;
 public interface IPatchingPackResources {
 
 	/**
-	 * Whether the pack has any patches.
-	 * This is an optimization for situations with a lot of mods and hardly any patches (if any).
-	 * If necessary, the pack metadata may be {@linkplain #initialized() initialized} first.
-	 * @return {@code true} if this resource/data pack has patches.
-	 */
-	public default boolean hasPatches() {
-		checkInitialized();
-		return false;
-	}
-
-	/**
 	 * Checks if this pack has had its metadata initialized yet, and if not tries to initialize it.
 	 * @return {@code true}.
 	 */
 	public default boolean checkInitialized() {
-		if (!initialized()) {
-			final PackResources res = (PackResources) this;
-			MixinCallbacks.checkHasPatches(new MixinCallbacks.Entry(res));
-		}
+		if (!initialized())
+			MixinCallbacks.checkHasPatches(new MixinCallbacks.Entry((PackResources) this));
 
 		return true;
 	}
@@ -37,6 +24,17 @@ public interface IPatchingPackResources {
 	 */
 	public default boolean initialized() {
 		return true;
+	}
+
+	/**
+	 * Whether the pack has any patches.
+	 * This is an optimization for situations with a lot of mods and hardly any patches (if any).
+	 * If necessary, the pack metadata may be {@linkplain #initialized() initialized} first.
+	 * @return {@code true} if this resource/data pack has patches.
+	 */
+	public default boolean hasPatches() {
+		checkInitialized();
+		return false;
 	}
 
 	/**

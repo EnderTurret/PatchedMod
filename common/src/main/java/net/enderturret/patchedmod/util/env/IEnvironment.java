@@ -10,6 +10,15 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
 
+/**
+ * An abstraction over the client and server command APIs.
+ * While Forge and NeoForge have nice {@link CommandSourceStack} abstractions,
+ * Fabric and Quilt do not, so we must implement them ourself.
+ *
+ * @author EnderTurret
+ *
+ * @param <T> The command source type. This will be {@link CommandSourceStack} on servers, and some other abomination on clients.
+ */
 @Internal
 public interface IEnvironment<T> {
 

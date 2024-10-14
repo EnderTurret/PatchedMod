@@ -9,7 +9,7 @@ Minecraft is a little different, so we're going to need to do a little more work
 
 Patched supports patching resource packs and data packs, and patching is about the same for both.
 
-First, you need to add `"patched:has_patches": true` to the `pack.mcmeta` file in order to enable patches:
+First, you need to add the following to the `pack.mcmeta` file in order to enable patches:
 
 ```json
 {

@@ -28,6 +28,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
 import net.enderturret.patched.ITestEvaluator;
+import net.enderturret.patched.patch.CompoundPatch;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchUtil;
 import net.enderturret.patched.patch.TestPatch;
@@ -137,15 +138,27 @@ public abstract class PatchProvider implements DataProvider {
 		return new RootOperationBuilder(location);
 	}
 
+	/**
+	 * Represents a builder for a {@link CompoundPatch}.
+	 * The patch in question may be either the root {@code CompoundPatch} of a json patch file,
+	 * or a child of another {@code CompoundPatch}.
+	 * @author EnderTurret
+	 */
 	public abstract class OperationBuilder {
 
 		OperationBuilder() {}
 
+		/**
+		 * Adds the specified patch to the {@link CompoundPatch}'s children.
+		 * @param patch The patch to add.
+		 * @return {@code this}.
+		 */
 		protected abstract OperationBuilder save(JsonPatch patch);
 
 		/**
 		 * Indicates the end of this patch.
 		 * This may be used to terminate {@linkplain #compound() compound patches}.
+		 * Calling this on the root builder does nothing.
 		 * @return The parent builder.
 		 */
 		public abstract OperationBuilder end();
@@ -155,7 +168,7 @@ public abstract class PatchProvider implements DataProvider {
 		/**
 		 * Creates and adds a new {@code add} patch.
 		 * @param path The location the element will be placed.
-		 * @param value The element that will be added.
+		 * @param value The element that will be added. It must be either a {@link JsonElement} of some kind, or an {@code Object} that the {@code PatchProvider} can serialize.
 		 * @return {@code this}.
 		 */
 		public OperationBuilder add(String path, Object value) {
@@ -165,7 +178,7 @@ public abstract class PatchProvider implements DataProvider {
 		/**
 		 * Creates and adds a new {@code replace} patch.
 		 * @param path The path to the element to replace.
-		 * @param value The value to replace the element with.
+		 * @param value The value to replace the element with. It must be either a {@link JsonElement} of some kind, or an {@code Object} that the {@code PatchProvider} can serialize.
 		 * @return {@code this}.
 		 */
 		public OperationBuilder replace(String path, Object value) {
@@ -209,7 +222,7 @@ public abstract class PatchProvider implements DataProvider {
 		 * Creates and adds a new {@code test} patch.
 		 * @param type A custom type for {@link ITestEvaluator}.
 		 * @param path The path to the element to test. May be {@code null}.
-		 * @param value The test element. May be {@code null}.
+		 * @param value The test element. May be {@code null}. If non-{@code null}, it must be either a {@link JsonElement} of some kind, or an {@code Object} that the {@code PatchProvider} can serialize.
 		 * @param inverse Whether the check is inverted, i.e checking to see if something doesn't exist.
 		 * @return {@code this}.
 		 */
@@ -220,7 +233,7 @@ public abstract class PatchProvider implements DataProvider {
 		/**
 		 * Creates and adds a new {@code test} patch.
 		 * @param type A custom type for {@link ITestEvaluator}.
-		 * @param value The test element.
+		 * @param value The test element. It must be either a {@link JsonElement} of some kind, or an {@code Object} that the {@code PatchProvider} can serialize.
 		 * @return {@code this}.
 		 */
 		public OperationBuilder test(String type, Object value) {
@@ -230,7 +243,7 @@ public abstract class PatchProvider implements DataProvider {
 		/**
 		 * Creates and adds a new {@code test} patch.
 		 * @param path The path to the element to test.
-		 * @param value The test element. May be {@code null}.
+		 * @param value The test element. May be {@code null}. If non-{@code null}, it must be either a {@link JsonElement} of some kind, or an {@code Object} that the {@code PatchProvider} can serialize.
 		 * @param inverse Whether the check is inverted, i.e checking to see if something doesn't exist.
 		 * @return {@code this}.
 		 */
@@ -251,8 +264,8 @@ public abstract class PatchProvider implements DataProvider {
 		/**
 		 * Creates and adds a new {@code find} patch.
 		 * @param path The path to the element to find things in.
-		 * @param tests A list of tests that an element must pass to have {@code then} applied to it.
-		 * @param then A patch to apply to elements passing the tests.
+		 * @param tests A list of tests that an element must pass to have {@code then} applied to it. A {@code TestPatch} instance can be obtained using {@link PatchUtil#test(String, JsonElement, boolean)} or {@link PatchUtil#test(String, String, JsonElement, boolean)}.
+		 * @param then A patch to apply to elements passing the tests. See {@link PatchUtil} for methods to obtain a {@code JsonPatch} instance.
 		 * @param multi Whether to continue searching for matching elements after the first one is found.
 		 * @return {@code this}.
 		 */

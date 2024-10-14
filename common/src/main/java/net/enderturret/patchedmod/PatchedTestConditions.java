@@ -34,11 +34,11 @@ public final class PatchedTestConditions implements ITestEvaluator {
 		registerSimple(id("mod_loaded"),
 				value -> {
 					if (value instanceof JsonObject obj) {
-						final String modId = PatchUtil.assertIsString("mod_loaded", "mod", obj.get("mod"));
-						final String version = PatchUtil.assertIsString("mod_loaded", "version", obj.get("version"));
+						final String modId = PatchUtil.assertIsString("patched:mod_loaded", "mod", obj.get("mod"));
+						final String version = PatchUtil.assertIsString("patched:mod_loaded", "version", obj.get("version"));
 						return Patched.platform().isModLoaded(modId, version);
 					}
-					return Patched.platform().isModLoaded(PatchUtil.assertIsString("mod_loaded", value));
+					return Patched.platform().isModLoaded(PatchUtil.assertIsString("patched:mod_loaded", "value", value));
 				});
 	}
 

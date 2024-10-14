@@ -1,10 +1,12 @@
 # Installation
 
-### For users
+## For users and data/resource pack developers
 
-For users, the mod can be obtained on either [Modrinth](https://modrinth.com/mod/patched) or [CurseForge](https://www.curseforge.com/minecraft/mc-mods/patched).
+The mod can be obtained on either [Modrinth](https://modrinth.com/mod/patched) or [CurseForge](https://www.curseforge.com/minecraft/mc-mods/patched).
+Just drop it in the `mods` folder and things should just work.
+On Fabric and Quilt you will also need the corresponding API installed.
 
-### For modders
+## For modders
 
 For modders, Patched can be added to your dev environment using Modrinth's maven.
 (Technically one could also use CurseForge instead via CurseMaven, but then you have to deal with file/project ids and it all gets kind of messy.)
@@ -21,10 +23,16 @@ maven {
 
 Next, you can add Patched as a dependency:
 
-#### On Forge
+#### On Forge (≤1.20.1)
 
 ```gradle
 implementation fg.deobf('maven.modrinth:patched:forge-<latest version here>+<minecraft version>')
+```
+
+#### On NeoForge (>1.20.1)
+
+```gradle
+implementation 'maven.modrinth:patched:neoforge-<latest version here>+<minecraft version>'
 ```
 
 #### On Fabric / Quilt

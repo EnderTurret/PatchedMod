@@ -1,9 +1,9 @@
 # API Documentation
 
 From an API standpoint, there's not much that the mod itself provides.
-The main things are [custom test condition registration](#custom-test-registration) and [rudimentary data generation support](#rudimentary-datagen).
+The main things are [custom test condition registration](#custom-test-registration) and [data generation support for patches](#patch-datagen).
 
-### Custom Test Registration
+### Custom test registration
 
 Patched provides `PatchedTestConditions`, which can be used to register or evaluate custom test conditions.
 
@@ -14,7 +14,7 @@ A similar version is `registerSimple(ResourceLocation, ISimpleTestEvaluator)`, w
 
 There also exist the builtin test conditions which can serve as examples.
 
-### Rudimentary Datagen
+### Patch datagen
 
 Patched provides a patch `DataProvider` called `PatchProvider` which can be used to generate patch files.
 

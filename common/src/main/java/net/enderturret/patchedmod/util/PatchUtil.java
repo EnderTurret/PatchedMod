@@ -221,6 +221,13 @@ public final class PatchUtil {
 		return value.getAsString();
 	}
 
+	/**
+	 * Simplified version of {@link #assertIsString(String, String, JsonElement)}.
+	 * @param name Some extra context for the message. Used in {@link PatchedTestConditions} to identify the test condition.
+	 * @param value The given value.
+	 * @return The given value as a {@link String}.
+	 * @throws PatchingException
+	 */
 	public static String assertIsString(String name, JsonElement value) throws PatchingException {
 		return assertIsString(name, "value", value);
 	}
