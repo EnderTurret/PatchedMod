@@ -8,7 +8,7 @@ Additionally, it adds a few extra things.
 
 The library's documentation does not go into huge detail about these, since the library only provides the framework for declaring them.
 
-Patched (the mod) provides one custom test type currently.
+Patched (the mod) provides three custom test types currently.
 
 ### `patched:mod_loaded`
 
@@ -75,3 +75,49 @@ Lastly, this might prove useful in the future:
 ```
 
 This could allow someone to use features Patched introduces later without causing errors or warnings to be printed in the logs when using older versions of Patched.
+
+### `patched:registered`
+
+This condition was added in `5.1.0+1.20.4` (and backported to `3.3.0+1.20.1`). It allows checking if something exists in a given registry:
+
+```json
+{
+  "op": "test",
+  "type": "patched:registered",
+  "value": {
+    "registry": "minecraft:entity_type",
+    "id": "minecraft:breeze"
+  }
+}
+```
+
+Here the `registry` is the ID of a registry (in this case the entity type registry), and `id` is the ID of the thing to lookup in the registry.
+The test succeeds if and only if the registry *and* thing are both registered (yes, registries are registered -- it's a long story).
+If either of these aren't present (say, if you're trying to check for an origin but Origins isn't installed), the test fails.
+
+The example test here checks if [the Breeze](https://minecraft.wiki/w/Breeze) is registered in the entity type registry.
+
+Some caveats apply:
+* `patched:registered` doesn't work on dynamic (or "data pack") registries, that is, ones like the biome registry.
+	This is because those are not available during most client resource (re)loads, and not necessarily available during data-pack (re)loads either (e.g., checking for existence of a biome from the POV of another biome).
+* The condition may also not play nicely with Minecraft's feature flags (what "[experiments](https://minecraft.wiki/w/Experiments)" are called internally).
+	There's a chance that something that shouldn't be available is still "registered", or vice versa.
+	This hasn't been tested at all, so tread carefully here.
+
+### `patched:item_registered`
+
+This is a simplified version of `patched:registered`, which only checks the item registry.
+For example:
+
+```json
+{
+  "op": "test",
+  "type": "patched:item_registered",
+  "value": "quark:crafter"
+}
+```
+
+This tests if Quark's Crafter is present.
+(Note: this doesn't guarantee that the crafter module is *enabled* -- see caveat #2.
+Many mods that do "conditional" registration still register everything, and simply hide them from creative tabs and item lists.
+This is usually so that opening saves or connecting to servers with different configs doesn't cause missing items.)

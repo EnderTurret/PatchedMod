@@ -12,6 +12,8 @@ Here is a list of all the pages in this documentation:
 	* [Using `include` patches](creating_patches.md#using-include-patches)
 * [Extensions](extensions.md)
 	* [`patched:mod_loaded`](extensions.md#patchedmod_loaded)
+	* [`patched:registered`](extensions.md#patchedregistered)
+	* [`patched:item_registered`](extensions.md#patcheditem_registered)
 * [Commands](commands.md)
 	* [The `list` subcommand](commands.md#the-list-subcommand)
 	* [The `dump` subcommand](commands.md#the-dump-subcommand)
