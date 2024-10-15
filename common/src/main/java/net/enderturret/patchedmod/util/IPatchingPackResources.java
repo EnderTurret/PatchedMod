@@ -14,7 +14,7 @@ public interface IPatchingPackResources {
 	 */
 	public default boolean checkInitialized() {
 		if (!initialized())
-			MixinCallbacks.checkHasPatches(new MixinCallbacks.Entry((PackResources) this));
+			MixinCallbacks.maybeInitialize((PackResources) this);
 
 		return true;
 	}
@@ -23,7 +23,7 @@ public interface IPatchingPackResources {
 	 * @return {@code true} if the Patched metadata has been initialized for this pack.
 	 */
 	public default boolean initialized() {
-		return true;
+		throw new UnsupportedOperationException("Method was not implemented");
 	}
 
 	/**

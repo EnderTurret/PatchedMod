@@ -120,46 +120,13 @@ public class MixinCallbacks {
 			if (packEntry.resources() == null) continue;
 			final Entry entry = new Entry(packEntry);
 
-			if (hasPatches(entry))
+			if (hasPatches(entry.resources))
 				for (Entry pack : packsIn(entry, type, patchName)) {
-					final String patchJson;
-
-					try (InputStream patchStream = pack.resources().getResource(type, patchName).get()) {
-						patchJson = PatchUtil.readString(patchStream);
-					} catch (Exception e) {
-						Patched.platform().logger().warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
-						continue;
-					}
-
-					final JsonPatch patch;
-
-					try {
-						patch = Patches.readPatch(PatchUtil.GSON, patchJson);
-					} catch (Exception e) {
-						Patched.platform().logger().warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
-						continue;
-					}
-
-					try {
-						if (audit != null)
-							audit.setPatchPath(pack.name());
-						if (context.getValue() == null)
-							context.setValue(PatchUtil.CONTEXT.audit(audit));
-
-						Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}.",
-								patchName,
-								pack.name());
-
-						final PatchContext ctx = context.getValue().fileAccess(new PatchedFileAccess(pack.resources()));
-
-						patch.patch(wrapper.get(), ctx);
-					} catch (BailException e) {
-						throw e;
-					} catch (PatchingException e) {
-						Patched.platform().logger().warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
-					} catch (Exception e) {
-						Patched.platform().logger().warn("Failed to apply patch {} from {}:", patchName, pack.name(), e);
-					}
+					applyPatch(
+							type, pack.resources().getResource(type, patchName),
+							patchName.toString(), pack, wrapper, audit, context,
+							null
+							);
 
 					if (pack.resources() == from)
 						break;
@@ -169,34 +136,110 @@ public class MixinCallbacks {
 		return context.getValue() != null;
 	}
 
-	/**
-	 * Determines whether the given pack has patches enabled.
-	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
-	 * @param entry The pack to check.
-	 * @return {@code true} if the pack has patches enabled.
-	 */
-	private static boolean hasPatches(Entry entry) {
-		return entry.resources() instanceof IPatchingPackResources ppp && ppp.hasPatches();
+	private static PatchContext applyPatch(
+			PackType type,
+			@Nullable IoSupplier<InputStream> patchSupplier,
+			String patchName,
+			Entry pack,
+			LazyPatchingWrapper wrapper,
+			@Nullable PatchAudit audit,
+			MutableObject<PatchContext> context,
+			String explicitTargetName) {
+		if (patchSupplier == null) return null;
+
+		final String patchJson;
+
+		try (InputStream patchStream = patchSupplier.get()) {
+			patchJson = PatchUtil.readString(patchStream);
+		} catch (Exception e) {
+			Patched.platform().logger().warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
+			return null;
+		}
+
+		final JsonPatch patch;
+
+		try {
+			patch = Patches.readPatch(PatchUtil.GSON, patchJson);
+		} catch (Exception e) {
+			Patched.platform().logger().warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
+			return null;
+		}
+
+		return applyPatch(type, patch, patchName, pack, wrapper, audit, context, explicitTargetName);
+	}
+
+	private static PatchContext applyPatch(
+			PackType type,
+			JsonPatch patch,
+			String patchName,
+			Entry pack,
+			LazyPatchingWrapper wrapper,
+			@Nullable PatchAudit audit,
+			MutableObject<PatchContext> context,
+			String explicitTargetName) {
+		try {
+			if (audit != null)
+				audit.setPatchPath(pack.name());
+			if (context.getValue() == null)
+				context.setValue(PatchUtil.CONTEXT.audit(audit));
+
+			Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}.",
+					patchName,
+					pack.name());
+
+			final PatchContext ctx = context.getValue().fileAccess(new PatchedFileAccess(pack.resources()));
+
+			patch.patch(wrapper.get(), ctx);
+
+			return ctx;
+		} catch (BailException e) {
+			throw e;
+		} catch (PatchingException e) {
+			Patched.platform().logger().warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
+		} catch (Exception e) {
+			Patched.platform().logger().warn("Failed to apply patch {} from {}:", patchName, pack.name(), e);
+		}
+
+		return null;
 	}
 
 	/**
 	 * Determines whether the given pack has patches enabled.
 	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
-	 * @param entry The pack to check.
+	 * @param res The pack to check.
 	 * @return {@code true} if the pack has patches enabled.
 	 */
-	@SuppressWarnings("resource")
-	static boolean checkHasPatches(Entry entry) {
+	private static boolean hasPatches(PackResources res) {
+		return res instanceof IPatchingPackResources ppp && ppp.hasPatches();
+	}
+
+	/**
+	 * Determines whether the given pack has patches enabled.
+	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
+	 * @param resources The pack to initialize.
+	 */
+	static void maybeInitialize(PackResources resources) {
+		maybeInitialize(new Entry(resources));
+	}
+
+	/**
+	 * Determines whether the given pack has patches enabled.
+	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
+	 * @param entry The pack to initialize.
+	 */
+	static void maybeInitialize(Entry entry) {
 		if (!(entry.resources() instanceof IPatchingPackResources patching))
-			return false;
+			return;
 
 		if (!patching.initialized())
 			synchronized (patching) {
 				if (!patching.initialized()) {
 					if (Patched.platform().isGroup(entry.resources())) {
 						boolean enabled = false;
+
 						for (PackResources resources : Patched.platform().getChildren(entry.resources()))
-							enabled |= hasPatches(new Entry(resources));
+							enabled |= hasPatches(resources);
+
 						patching.setHasPatches(enabled);
 					} else {
 						final IoSupplier<InputStream> io = entry.resources().getRootResource("pack.mcmeta");
@@ -224,8 +267,6 @@ public class MixinCallbacks {
 						Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Enabled patching for {}.", entry.name());
 				}
 			}
-
-		return patching.hasPatches();
 	}
 
 	/**
@@ -240,9 +281,9 @@ public class MixinCallbacks {
 		if (Patched.platform().isGroup(entry.resources()))
 			return Iterables.transform(
 					Iterables.filter(Patched.platform().getFilteredChildren(entry.resources(), type, patchName),
-							pack -> hasPatches(new Entry(pack)) && pack.getResource(type, patchName) != null),
+							pack -> hasPatches(pack) && pack.getResource(type, patchName) != null),
 					Entry::new);
-		else if (hasPatches(entry) && entry.resources().getResource(type, patchName) != null)
+		else if (hasPatches(entry.resources()) && entry.resources().getResource(type, patchName) != null)
 			return List.of(entry);
 
 		return List.of();
