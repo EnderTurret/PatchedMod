@@ -17,10 +17,7 @@ import org.slf4j.event.Level;
 
 import com.google.common.collect.Iterables;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
@@ -38,6 +35,7 @@ import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.mixin.FallbackResourceManagerAccess;
+import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 /**
  * <p>Handles callbacks from mixins -- what you would expect from the name.</p>
@@ -49,6 +47,8 @@ public class MixinCallbacks {
 
 	@Internal
 	public static final boolean DEBUG = Boolean.getBoolean("patched.debug");
+
+	private static final boolean HASPATCHES_WARNING = false;
 
 	private static final AtomicBoolean LOG_EXCEPTIONS = new AtomicBoolean(true);
 
@@ -210,12 +210,11 @@ public class MixinCallbacks {
 	 * @return {@code true} if the pack has patches enabled.
 	 */
 	private static boolean hasPatches(PackResources res) {
-		return res instanceof IPatchingPackResources ppp && ppp.hasPatches();
+		return res instanceof IPatchingPackResources ppp && ppp.patchedMetadata().patchingEnabled();
 	}
 
 	/**
-	 * Determines whether the given pack has patches enabled.
-	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
+	 * Initializes the {@code PatchedMetadata} of the specified pack, if it has not been initialized yet.
 	 * @param resources The pack to initialize.
 	 */
 	static void maybeInitialize(PackResources resources) {
@@ -223,8 +222,7 @@ public class MixinCallbacks {
 	}
 
 	/**
-	 * Determines whether the given pack has patches enabled.
-	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
+	 * Initializes the {@code PatchedMetadata} of the specified pack, if it has not been initialized yet.
 	 * @param entry The pack to initialize.
 	 */
 	static void maybeInitialize(Entry entry) {
@@ -240,31 +238,36 @@ public class MixinCallbacks {
 						for (PackResources resources : Patched.platform().getChildren(entry.resources()))
 							enabled |= hasPatches(resources);
 
-						patching.setHasPatches(enabled);
+						patching.setPatchedMetadata(enabled ? PatchedMetadata.CURRENT_VERSION : PatchedMetadata.DISABLED_METADATA);
 					} else {
 						final IoSupplier<InputStream> io = entry.resources().getRootResource("pack.mcmeta");
+						PatchedMetadata meta;
+
 						if (io != null)
 							try (InputStream is = io.get()) {
 								final String json = PatchUtil.readString(is);
 								final JsonElement elem = JsonParser.parseString(json);
 
-								if (elem instanceof JsonObject o
-										&& o.get("pack") instanceof JsonObject packObj
-										&& packObj.get("patched:has_patches") instanceof JsonPrimitive prim
-										&& prim.isBoolean())
-									patching.setHasPatches(prim.getAsBoolean());
-
-								else patching.setHasPatches(false);
+								meta = PatchedMetadata.of(elem, entry.name);
 							} catch (Exception e) {
-								Patched.platform().logger().error("Failed to read pack.mcmeta in {}:", entry.name(), e);
-								patching.setHasPatches(false);
+								Patched.platform().logger().warn("Failed to read pack.mcmeta in {}:", entry.name(), e);
+								meta = PatchedMetadata.DISABLED_METADATA;
 							}
 						else
-							patching.setHasPatches(false);
+							meta = PatchedMetadata.DISABLED_METADATA;
+
+						patching.setPatchedMetadata(meta);
 					}
 
-					if (patching.hasPatches())
-						Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Enabled patching for {}.", entry.name());
+					if (patching.patchedMetadata().patchingEnabled()) {
+						if (patching.patchedMetadata().formatVersion() == 0) {
+							if (HASPATCHES_WARNING)
+								Patched.platform().logger().warn("Loaded legacy PatchedMetadata from {}. This behavior is deprecated and will be removed in a future release.", entry.name());
+							else
+								Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Loaded legacy PatchedMetadata from {}.", entry.name());
+						} else
+							Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Loaded PatchedMetadata from {} with format version {}.", entry.name(), patching.patchedMetadata().formatVersion());
+					}
 				}
 			}
 	}

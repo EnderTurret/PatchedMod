@@ -145,6 +145,6 @@ public interface IPlatform {
 	}
 
 	public default boolean hasPatches(PackResources pack) {
-		return pack instanceof IPatchingPackResources ppp && ppp.hasPatches();
+		return pack instanceof IPatchingPackResources ppp && ppp.patchedMetadata().patchingEnabled();
 	}
 }
