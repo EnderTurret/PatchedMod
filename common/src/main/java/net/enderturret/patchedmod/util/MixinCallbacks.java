@@ -39,7 +39,6 @@ import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.mixin.FallbackResourceManagerAccess;
 import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 /**
@@ -66,18 +65,16 @@ public class MixinCallbacks {
 	 * "Chains" the given {@code IoSupplier}, returning an {@code IoSupplier} that patches the data returned by it.
 	 * @param delegate The delegate {@code IoSupplier}.
 	 * @param manager The resource manager that the data is from.
+	 * @param type The type of pack this data is from.
 	 * @param name The location of the data.
 	 * @param origin The resource or data pack that the data originated from.
 	 * @return The new {@code IoSupplier}.
 	 */
 	@Internal
-	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, ResourceLocation name, PackResources origin) {
-		return () -> new PatchingInputStream(delegate, (stream, audit) -> {
-			if (!(manager instanceof FallbackResourceManagerAccess access))
-				return stream; // Don't attempt patching if our mixin hasn't applied for some reason.
+	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, PackType type, ResourceLocation name, PackResources origin) {
+		if (!PatchUtil.isPatchable(name)) return delegate;
 
-			return patch(manager, origin, access.getType(), name, stream, audit);
-		});
+		return () -> new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, type, name, stream, audit));
 	}
 
 	/**
