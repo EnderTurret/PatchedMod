@@ -117,7 +117,7 @@ final class ForgePlatform implements IPlatform {
 
 	@Override
 	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) {
-		return pack instanceof DelegatingPackResourcesAccess dpra ? dpra.callGetCandidatePacks(type, file) : List.of();
+		return pack instanceof DelegatingPackResourcesAccess dpra ? dpra.patched$callGetCandidatePacks(type, file) : List.of();
 	}
 
 	@Override

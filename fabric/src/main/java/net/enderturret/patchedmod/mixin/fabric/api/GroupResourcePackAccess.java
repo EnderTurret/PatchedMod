@@ -12,9 +12,9 @@ import net.fabricmc.fabric.impl.resource.loader.GroupResourcePack;
 @Mixin(GroupResourcePack.class)
 public interface GroupResourcePackAccess {
 
-	@Accessor(remap = false)
-	public List<ModResourcePack> getPacks();
+	@Accessor(value = "packs", remap = false)
+	public List<ModResourcePack> patched$getPacks();
 
-	@Accessor(remap = false)
-	public Map<String, List<ModResourcePack>> getNamespacedPacks();
+	@Accessor(value = "namespacedPacks", remap = false)
+	public Map<String, List<ModResourcePack>> patched$getNamespacedPacks();
 }

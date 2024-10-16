@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ModNioResourcePack.class)
 public interface ModNioResourcePackAccess {
 
-	@Accessor(remap = false)
-	public ModMetadata getModInfo();
+	@Accessor(value = "modInfo", remap = false)
+	public ModMetadata patched$getModInfo();
 }

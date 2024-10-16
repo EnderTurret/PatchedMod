@@ -16,7 +16,7 @@ import net.enderturret.patchedmod.util.meta.PatchedMetadata;
  * @author EnderTurret
  */
 @Mixin({ GroupResourcePack.class, ModNioResourcePack.class })
-public class MixinQuiltResourcePacks implements IPatchingPackResources {
+public abstract class MixinQuiltResourcePacks implements IPatchingPackResources {
 
 	@Nullable
 	private PatchedMetadata patched$meta;

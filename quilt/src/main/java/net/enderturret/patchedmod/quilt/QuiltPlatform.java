@@ -84,7 +84,7 @@ final class QuiltPlatform implements IPlatform {
 	@Nullable
 	private static ModMetadata getModMetadataFromPack(PackResources pack) {
 		if (pack instanceof ModNioResourcePackAccess mod)
-			return mod.getModInfo();
+			return mod.patched$getModInfo();
 
 		return null;
 	}
@@ -108,12 +108,12 @@ final class QuiltPlatform implements IPlatform {
 
 	@Override
 	public Collection<PackResources> getChildren(PackResources pack) {
-		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.getPacks()) : List.of();
+		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.patched$getPacks()) : List.of();
 	}
 
 	@Override
 	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) {
-		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.getNamespacedPacks().getOrDefault(file.getNamespace(), List.of())) : List.of();
+		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.patched$getNamespacedPacks().getOrDefault(file.getNamespace(), List.of())) : List.of();
 	}
 
 	@SuppressWarnings("unchecked")

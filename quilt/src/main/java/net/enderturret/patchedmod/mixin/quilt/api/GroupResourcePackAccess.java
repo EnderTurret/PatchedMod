@@ -12,9 +12,9 @@ import net.minecraft.server.packs.PackResources;
 @Mixin(GroupResourcePack.class)
 public interface GroupResourcePackAccess {
 
-	@Accessor(remap = false)
-	public List<? extends PackResources> getPacks();
+	@Accessor(value = "packs", remap = false)
+	public List<? extends PackResources> patched$getPacks();
 
-	@Accessor(remap = false)
-	public Map<String, List<PackResources>> getNamespacedPacks();
+	@Accessor(value = "namespacedPacks", remap = false)
+	public Map<String, List<PackResources>> patched$getNamespacedPacks();
 }

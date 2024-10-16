@@ -109,7 +109,7 @@ public final class PatchUtil {
 
 		final ZipFile zip;
 		try {
-			zip = ((FilePackResourcesAccess) pack).callGetOrCreateZipFile();
+			zip = ((FilePackResourcesAccess) pack).patched$callGetOrCreateZipFile();
 		} catch (Throwable e) {
 			Patched.platform().logger().error("Accessing FilePackResources ZipFile threw an exception! Listing FilePackResources contents is now disabled. Informational commands for zip packs may not work correctly!", e);
 			fileResourcesHookWorks = false;

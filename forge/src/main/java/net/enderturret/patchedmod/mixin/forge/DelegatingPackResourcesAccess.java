@@ -19,9 +19,6 @@ import net.minecraftforge.resource.DelegatingPackResources;
 @Mixin(DelegatingPackResources.class)
 public interface DelegatingPackResourcesAccess {
 
-	@Accessor(remap = false)
-	public List<PackResources> getDelegates();
-
-	@Invoker(remap = false)
-	public List<PackResources> callGetCandidatePacks(PackType type, ResourceLocation location);
+	@Invoker(value = "getCandidatePacks", remap = false)
+	public List<PackResources> patched$callGetCandidatePacks(PackType type, ResourceLocation location);
 }
