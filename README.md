@@ -34,7 +34,7 @@ This of course results in the same problem: only one data pack's biome definitio
 
 With Patched, the two data packs can modify the different parts of the biome separately, allowing both of their changes to persist.
 
-Lastly, Patched also makes it possible for packs to "post-process" or patch their own files.
+Patched also makes it possible for packs to "post-process" or patch their own files.
 With Patched's [`mod_loaded` test condition](docs/extensions.md#patchedmod_loaded), packs can add their own integration with mods.
 
 For example, Terralith could patch their own biomes to add Biomes o' Plenty (or BYG) foliage when that mod is installed.
@@ -42,6 +42,9 @@ It could also add blocks from other mods to spruce up its biomes more than vanil
 
 Another example might be a mod that adds configuration support for data/resource packs.
 This could be exposed through [a test condition](docs/api.md#custom-test-registration) that these packs could use to enable/disable features.
+
+Lastly, Patched (as of `5.1.0+1.20.4` and `3.3.0+1.20.1`) allows packs to apply the same patch to *any number of files*, via the 'dynamic patching' feature.
+This means that data pack developers do not need to make use of undocumented bespoke mod loader features to add their custom ores to every biome (or certain ones).
 
 > [!IMPORTANT]
 > Patched is *not* a magic solution to data/resource pack incompatibility; installing it will not automatically make things compatible with each other.
@@ -84,20 +87,13 @@ Once one has been defined, it can be used like so:
 ]
 ```
 
-### Obligatory caveat
-
-One thing that should be mentioned is that one major use-case of the modification APIs is blanket-modifying a bunch of things based on a condition.
-For example, modifying every forest biome to add a feature of some kind.
-As of the current moment, Patched provides no way to do this, so the only alternative approach is to copy-paste the same patch for every single thing that needs to be modified -- which is not really a solution.
-It is for this reason that Patched does not and cannot "replace" these modification APIs.
-
 ## Why use Patched over any of the other json patching mods?
 
 While there are other mods that allow a person to patch json files (it's not exactly a *new* concept),
 Patched tries very hard to make sure that errors are handled gracefully (your game shouldn't crash if a patch fails) and that the changes that are made can be easily viewed.
 And while I'm not saying other mods don't have decent error handling, I haven't seen another json patching mod that allows viewing the patched json data or any of the other informational features that Patched provides.
 
-In addition, Patched is a small dependency (only ~120 kB) and doesn't pull in any dependencies itself (such as a language provider) except for its backing library (which is shaded in -- you won't even notice it's there).
+In addition, Patched is a small dependency (only ~180 kB) and doesn't pull in any dependencies itself (such as a language provider) except for its backing library (which is shaded in -- you won't even notice it's there).
 It also takes a more future-proof approach to things by keeping the actual json-patching algorithm Minecraft-unaware, which prevents that part from breaking if Mojang changes resource loading or something again for the fifteenth time this update.
 
 However, I would say the main appeal of Patched is the user-friendliness of being able to list/dump patches, dump files in patched/unpatched forms, and error messages that tell you what went wrong where (and that don't crash the game when they happen).

@@ -9,6 +9,7 @@ Here is a list of all the pages in this documentation:
 * [Creating patches](creating_patches.md)
 	* [Patch structure](creating_patches.md#patch-structure)
 	* [Ordering](creating_patches.md#ordering)
+	* [Patch targets](creating_patches.md#patch-targets)
 	* [Using `include` patches](creating_patches.md#using-include-patches)
 * [Extensions](extensions.md)
 	* [`patched:mod_loaded`](extensions.md#patchedmod_loaded)
