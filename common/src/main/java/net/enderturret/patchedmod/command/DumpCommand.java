@@ -46,7 +46,10 @@ final class DumpCommand {
 								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env, true))
 								.then(env.argument("location", ResourceLocationArgument.id())
 										.suggests((ctx, builder) -> suggestPatch(ctx, "pack", builder, env))
-										.executes(ctx -> dumpPatch(ctx, type, env)))))
+										.executes(ctx -> dumpPatch(ctx, type, env)))
+								.then(env.literal("dynamic")
+										.then(env.argument("patch", StringArgumentType.string())
+												.executes(ctx -> dumpLocalPatch(ctx, type, env))))))
 				.then(env.literal("file")
 						.then(env.argument("location", ResourceLocationArgument.id())
 								.suggests((ctx, builder) -> suggestResource(ctx, type, builder, env))
@@ -169,6 +172,55 @@ final class DumpCommand {
 			env.sendSuccess(ctx.getSource(), Component.literal(src), false);
 		} catch (IOException e) {
 			Patched.platform().logger().warn("Failed to read resource '{}' from {}:", location, packName, e);
+			return 0;
+		}
+
+		return Command.SINGLE_SUCCESS;
+	}
+
+	@SuppressWarnings("resource")
+	private static <T> int dumpLocalPatch(CommandContext<T> ctx, PackType type, IEnvironment<T> env) {
+		final String packName = StringArgumentType.getString(ctx, "pack");
+		final String patchName = ctx.getArgument("patch", String.class);
+		final ResourceManager man = env.getResourceManager(ctx.getSource());
+
+		final List<PackResources> packs = Patched.platform().getExpandedPacks(man)
+				.filter(p -> packName.equals(Patched.platform().getName(p)))
+				.toList();
+
+		if (packs.isEmpty()) {
+			env.sendFailure(ctx.getSource(), translate("command.patched.dump.pack_not_found", "That pack doesn't exist."));
+			return 0;
+		}
+
+		if (packs.size() > 1) {
+			env.sendFailure(ctx.getSource(), translate("command.patched.list.too_many_packs", "There is more than one pack with that name."));
+			return 0;
+		}
+
+		final PackResources pack = packs.get(0);
+
+		if (!Patched.platform().hasPatches(pack)) {
+			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
+			return 0;
+		}
+
+		final IoSupplier<InputStream> io = pack.getRootResource("patches", patchName + ".json.patch");
+
+		if (io == null) {
+			env.sendFailure(ctx.getSource(), translate("command.patched.dump.patch_not_found", "That patch could not be found."));
+			return 0;
+		}
+
+		try (InputStream is = io.get()) {
+			final String src = PatchUtil.readPrettyJson(is, patchName + " (in " + packName + ")", true, true);
+			if (src == null) {
+				env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));
+				return 0;
+			}
+			env.sendSuccess(ctx.getSource(), Component.literal(src), false);
+		} catch (IOException e) {
+			Patched.platform().logger().warn("Failed to read resource '{}' from {}:", patchName, packName, e);
 			return 0;
 		}
 

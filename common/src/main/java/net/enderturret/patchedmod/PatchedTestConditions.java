@@ -1,6 +1,5 @@
 package net.enderturret.patchedmod;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +39,7 @@ public final class PatchedTestConditions implements ITestEvaluator {
 						final String version = PatchUtil.assertIsString("patched:mod_loaded", "version", obj.get("version"));
 						return Patched.platform().isModLoaded(modId, version);
 					}
+
 					return Patched.platform().isModLoaded(PatchUtil.assertIsString("patched:mod_loaded", "value", value));
 				});
 

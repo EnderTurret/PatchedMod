@@ -10,11 +10,14 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.util.MixinCallbacks;
 import net.enderturret.patchedmod.util.env.IEnvironment;
 
 /**
@@ -26,10 +29,12 @@ public final class PatchedCommand {
 
 	@Internal
 	public static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
-		return env.literal("patched" + (env.client() ? "c" : ""))
+		final var ret = env.literal("patched" + (env.client() ? "c" : ""))
 				.requires(src -> env.hasPermission(src, 2))
 				.then(DumpCommand.create(env))
 				.then(ListCommand.create(env));
+
+		return MixinCallbacks.DEBUG ? ret.then(DebugCommand.create(env)) : ret;
 	}
 
 	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, IEnvironment<T> env, boolean quoted) {
@@ -47,7 +52,13 @@ public final class PatchedCommand {
 	}
 
 	static MutableComponent translate(String key, String text, Object... args) {
-		// Prefer the translation when running commands on the client.
-		return Patched.platform().isPhysicalClient() ? Component.translatable(key, args) : Component.literal(text);
+		// Make sure we have a fallback for vanilla clients.
+		return Component.translatableWithFallback(key, text.formatted(args), args);
+	}
+
+	static Style suggestCommand(String command) {
+		return Style.EMPTY
+				.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command))
+				.withUnderlined(true);
 	}
 }

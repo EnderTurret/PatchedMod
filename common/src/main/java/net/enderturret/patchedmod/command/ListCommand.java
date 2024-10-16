@@ -5,13 +5,15 @@ import static net.enderturret.patchedmod.command.PatchedCommand.translate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
@@ -22,8 +24,11 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.env.IEnvironment;
+import net.enderturret.patchedmod.util.meta.IPattern;
+import net.enderturret.patchedmod.util.meta.PatchTarget;
 
 /**
  * Defines the '/patched list' subcommand, which handles providing lists of the packs with patches and the patches in those packs.
@@ -67,27 +72,42 @@ final class ListCommand {
 			return 0;
 		}
 
-		final List<ResourceLocation> patches = new ArrayList<>();
+		record Patch(String loc, @Nullable String ns, @Nullable String paths) {}
+
+		final List<Patch> patches = new ArrayList<>();
 
 		for (PackType type : PackType.values())
 			for (String namespace : pack.getNamespaces(type))
-				patches.addAll(PatchUtil.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")));
+				for (ResourceLocation loc : PatchUtil.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")))
+					patches.add(new Patch(loc.toString(), null, null));
+
+		if (pack instanceof IPatchingPackResources ppp)
+			for (PatchTarget patchTarget : ppp.patchedMetadata().patchTargets())
+				for (PatchTarget.Target target : patchTarget.targets()) {
+					final String ns = target.namespace().stream().map(IPattern::toString).collect(Collectors.joining("\", \"", "\"", "\""));
+					final String paths = target.path().stream().map(IPattern::toString).collect(Collectors.joining("\", \"", "\"", "\""));
+					patches.add(new Patch(patchTarget.patch(), ns, paths));
+				}
 
 		final boolean single = patches.size() == 1;
 
 		final MutableComponent c = translate("command.patched.list.patches." + (single ? "single" : "multi"),
-				"There " + (!single ? "are" : "is")
-				+ " " + patches.size() + " patch" + (!single ? "es" : "")
-				+ " in " + Patched.platform().getName(pack) + ":", patches.size(), Patched.platform().getName(pack));
+				single ? "There is 1 patch in %2$s:" : "There are %1$s patches in %2$s:",
+				patches.size(), Patched.platform().getName(pack));
 
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
-		for (ResourceLocation loc : patches) {
-			final String patch = loc.toString();
-			c.append("\n").append(Component.literal(patch)
-					.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-							"/" + command + " dump patch " + StringArgumentType.escapeIfRequired(Patched.platform().getName(pack)) + " " + patch))
-							.withUnderlined(true)));
+		for (Patch patch : patches) {
+			final String safePackName = StringArgumentType.escapeIfRequired(Patched.platform().getName(pack));
+			final boolean dynamic = patch.ns != null;
+
+			c.append("\n").append(Component.literal(patch.loc)
+					.setStyle(PatchedCommand.suggestCommand("/" + command + " dump patch " + safePackName + (dynamic ? " dynamic" : "") + " " + patch.loc)));
+
+			if (dynamic)
+				c.append(translate("command.patched.list.patches.dynamic",
+						" (applying to namespaces %1$s and paths %2$s)",
+						patch.ns, patch.paths));
 		}
 
 		env.sendSuccess(ctx.getSource(), c, false);
@@ -112,22 +132,18 @@ final class ListCommand {
 		final boolean single = patching.size() == 1;
 
 		final MutableComponent c = translate("command.patched.list.packs." + (single ? "single" : "multi"),
-				"There " + (!single ? "are" : "is")
-				+ " " + patching.size() + " pack" + (!single ? "s" : "")
-				+ " with patching enabled:", patching.size());
+				single ? "There is 1 pack with patching enabled:" : "There are %1$s packs with patching enabled:",
+				patching.size());
 
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
 		for (Entry pack : patching) {
-			final ClickEvent click = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-					"/" + command + " list patches " + pack.name);
 			final HoverEvent hover = listAll ? new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-					Component.literal(pack.pack.packId())) : null;
+					Component.literal(pack.pack.packId() + " (" + pack.pack.getClass().getSimpleName() + ")")) : null;
 
 			c.append("\n  ").append(Component.literal(pack.name)
-					.setStyle(Style.EMPTY.withClickEvent(click)
-							.withHoverEvent(hover)
-							.withUnderlined(true)));
+					.setStyle(PatchedCommand.suggestCommand("/" + command + " list patches " + pack.name)
+							.withHoverEvent(hover)));
 		}
 
 		final List<Entry> notPatching = packs.stream()
@@ -139,7 +155,7 @@ final class ListCommand {
 			for (Entry pack : notPatching)
 				c.append("\n  ").append(Component.literal(pack.name)
 						.setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-								Component.literal(pack.pack.packId())))));
+								Component.literal(pack.pack.packId() + " (" + pack.pack.getClass().getSimpleName() + ")")))));
 		}
 
 		env.sendSuccess(ctx.getSource(), c, false);

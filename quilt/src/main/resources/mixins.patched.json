@@ -5,14 +5,17 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "net.enderturret.patchedmod.mixin.quilt.PatchedMixinPlugin",
   "mixins": [
-    "quilt.GroupResourcePackAccess",
+    "quilt.api.GroupResourcePackAccess",
+    "quilt.api.MixinQuiltResourcePacks",
+    "quilt.api.ModNioResourcePackAccess",
     "quilt.MixinCommands",
-    "quilt.MixinQuiltResourcePacks",
-    "quilt.ModNioResourcePackAccess",
     "FallbackResourceManagerAccess",
     "FilePackResourcesAccess",
     "MixinAbstractPackResources",
-    "MixinFallbackResourceManager"
+    "MixinFallbackResourceManager",
+    "MixinPackConfig"
   ],
-  "client": []
+  "client": [
+    "client.MixinMinecraft"
+  ]
 }

@@ -4,6 +4,7 @@
   "command.patched.list.patching_disabled": "That pack doesn't have patches enabled.",
   "command.patched.list.patches.single": "There is 1 patch in %2$s:",
   "command.patched.list.patches.multi": "There are %1$s patches in %2$s:",
+  "command.patched.list.patches.dynamic": " (applying to namespaces %1$s and paths %2$s)",
   "command.patched.list.packs.single": "There is 1 pack with patching enabled:",
   "command.patched.list.packs.multi": "There are %1$s packs with patching enabled:",
   "command.patched.list.packs.verbose": "Additionally, the following packs do not have patching enabled:",
