@@ -289,6 +289,11 @@ public class MixinCallbacks {
 						else
 							meta = PatchedMetadata.DISABLED_METADATA;
 
+						if (!meta.patchingEnabled())
+							meta = Objects.requireNonNullElse(
+									Patched.platform().deriveMetadataFromMod(entry.resources()),
+									meta);
+
 						patching.setPatchedMetadata(meta);
 					}
 

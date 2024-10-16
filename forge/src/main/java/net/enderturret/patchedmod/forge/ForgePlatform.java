@@ -3,12 +3,16 @@ package net.enderturret.patchedmod.forge;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.electronwill.nightconfig.core.UnmodifiableConfig;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -18,13 +22,16 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.VanillaPackResources;
 
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.forgespi.language.IModFileInfo;
 import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.resource.PathPackResources;
 
 import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
 import net.enderturret.patchedmod.util.env.IPlatform;
+import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 final class ForgePlatform implements IPlatform {
 
@@ -63,16 +70,39 @@ final class ForgePlatform implements IPlatform {
 
 	@Override
 	public String getName(PackResources pack) {
-		return pack instanceof PathPackResources ppp ? "mod/" + findModNameFromModFile(pack.packId()) : pack.packId();
+		final Optional<? extends ModContainer> mod = findModNameFromModFile(pack);
+
+		if (mod.isPresent())
+			return "mod/" + mod.get().getModInfo().getDisplayName();
+
+		return pack.packId();
 	}
 
-	private static String findModNameFromModFile(String modFile) {
-		return ModList.get().getModFiles()
-				.stream()
-				.filter(mfi -> modFile.equals(mfi.getFile().getFileName()))
-				.flatMap(mfi -> mfi.getMods().stream())
-				.map(IModInfo::getDisplayName)
-				.findFirst().orElse(modFile);
+	private static Optional<? extends ModContainer> findModNameFromModFile(PackResources pack) {
+		if (!(pack instanceof PathPackResources)) return Optional.empty();
+
+		for (IModFileInfo modInfo : ModList.get().getModFiles())
+			if (pack.packId().equals(modInfo.getFile().getFileName()))
+				return ModList.get().getModContainerById(modInfo.getMods().get(0).getModId());
+
+		return Optional.empty();
+	}
+
+	@Override
+	@Nullable
+	public PatchedMetadata deriveMetadataFromMod(PackResources pack) {
+		final Optional<? extends ModContainer> owningMod = findModNameFromModFile(pack);
+		if (owningMod.isPresent()) {
+			final ModContainer mod = owningMod.get();
+			final Object obj = mod.getModInfo().getModProperties().get("patched");
+			if (obj instanceof UnmodifiableConfig cfg)
+				return PatchedMetadata.of(
+						cfg,
+						NightConfigOps.INSTANCE,
+						mod.getModInfo().getDisplayName() + " (" + mod.getModInfo().getModId() + ")");
+		}
+
+		return null;
 	}
 
 	@Override

@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.Nullable;
+import org.quiltmc.loader.api.LoaderValue;
+import org.quiltmc.loader.api.ModMetadata;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.api.Version;
 import org.quiltmc.loader.api.minecraft.MinecraftQuiltLoader;
@@ -22,6 +25,7 @@ import net.minecraft.server.packs.PackType;
 import net.enderturret.patchedmod.mixin.quilt.api.GroupResourcePackAccess;
 import net.enderturret.patchedmod.mixin.quilt.api.ModNioResourcePackAccess;
 import net.enderturret.patchedmod.util.env.IPlatform;
+import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 final class QuiltPlatform implements IPlatform {
 
@@ -56,8 +60,10 @@ final class QuiltPlatform implements IPlatform {
 
 	@Override
 	public String getName(PackResources pack) {
-		if (pack instanceof ModNioResourcePackAccess mod) {
-			final String modName = mod.getModInfo().name();
+		final ModMetadata mod = getModMetadataFromPack(pack);
+
+		if (mod != null) {
+			final String modName = mod.name();
 			final String packId;
 
 			if (!modName.equals(pack.packId()))
@@ -73,6 +79,26 @@ final class QuiltPlatform implements IPlatform {
 		}
 
 		return pack.packId();
+	}
+
+	@Nullable
+	private static ModMetadata getModMetadataFromPack(PackResources pack) {
+		if (pack instanceof ModNioResourcePackAccess mod)
+			return mod.getModInfo();
+
+		return null;
+	}
+
+	@Override
+	@Nullable
+	public PatchedMetadata deriveMetadataFromMod(PackResources pack) {
+		final ModMetadata mod = getModMetadataFromPack(pack);
+		if (mod == null) return null;
+
+		final LoaderValue lv = mod.value("patched");
+		if (lv == null) return null;
+
+		return PatchedMetadata.of(lv, LoaderValueOps.INSTANCE, mod.name() + " (" + mod.id() + ")");
 	}
 
 	@Override

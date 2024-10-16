@@ -41,15 +41,91 @@ implementation 'maven.modrinth:patched:neoforge-<latest version here>+<minecraft
 modImplementation 'maven.modrinth:patched:<platform>-<latest version here>+<minecraft version>'
 ```
 
-Something to note is that you still need a `pack.mcmeta` even when modding using Fabric/Quilt; if you want to have patches, you need to add one.
-Normally you don't need one when using the Textile Loaders,
-but it's really hard for Patched to decide whether you provide any patches if you don't have one for it to read.
-If you're completely against the concept of a `pack.mcmeta`, you might be able to get away with this extremely barebones one:
+### Patched metadata in the mod metadata
+
+As of `7.1.0+1.21.1` (and backported to `3.3.0+1.20.1`), mods can optionally place the `patched` block that would normally be in the `pack.mcmeta` in their loader-specific metadata instead.
+What this looks like for each loader is described below.
+Regardless, the overall structure is identical to that of the `patched` `pack.mcmeta` block.
+
+**Note**: if you have multiple packs in your mod, this metadata *may or may not* apply to all of them.
+
+#### On (Neo)Forge
+
+The Patched metadata can be placed in your (`neoforge.`)`mods.toml` like so:
+
+```toml
+[modproperties.<mod id>.patched]
+    format_version = 1 # This tells Patched we want to patch things.
+
+# Declares a "dynamic patch", i.e. a patch applying to more than one file.
+# Few mods will need this functionality, but it's shown here for better understanding of how the declaration translates into TOML.
+# This example applies a patch to every biome file.
+[[modproperties.<mod id>.patched.patch_targets]]
+    pack_type = "server_data"
+    patch = "remove_all_biome_features"
+    targets = [
+        { namespace = ["minecraft"], path = [{ pattern = "worldgen/biome/.*\\.json" }] }
+    ]
+```
+
+#### On Fabric
+
+The Patched metadata can be placed in your `fabric.mod.json` like so:
 
 ```json
 {
-  "pack": {
-    "patched:has_patches": true
+  // alongside the rest of your mod metadata:
+  "custom": {
+    "patched": {
+      "format_version": 1,
+      "patch_targets": [
+        {
+          "pack_type": "server_data",
+          "patch": "remove_all_biome_features",
+          "targets": [
+            {
+              "namespace": ["minecraft"],
+              "path": [
+                {
+                  "pattern": "worldgen/biome/.*\\.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   }
 }
 ```
+
+#### On Quilt
+
+The Patched metadata can be placed in your `quilt.mod.json` like so:
+
+```json
+{
+  // alongside the rest of your mod metadata:
+  "patched": {
+    "format_version": 1,
+    "patch_targets": [
+      {
+        "pack_type": "server_data",
+        "patch": "remove_all_biome_features",
+        "targets": [
+          {
+            "namespace": ["minecraft"],
+            "path": [
+              {
+                "pattern": "worldgen/biome/.*\\.json"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+This is similar to the Fabric version, but with the important detail that there's no `custom` block.

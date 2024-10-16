@@ -6,6 +6,7 @@ Here is a list of all the pages in this documentation:
 * [Installation](installation.md)
 	* [For users and data/resource pack developers](installation.md#for-users-and-data-resource-pack-developers)
 	* [For modders](installation.md#for-modders)
+		* [Patched metadata in the mod metadata](installation.md#patched-metadata-in-the-mod-metadata)
 * [Creating patches](creating_patches.md)
 	* [Patch structure](creating_patches.md#patch-structure)
 	* [Ordering](creating_patches.md#ordering)

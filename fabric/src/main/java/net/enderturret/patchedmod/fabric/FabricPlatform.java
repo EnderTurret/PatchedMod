@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,8 @@ import net.fabricmc.fabric.impl.resource.loader.ModNioResourcePack;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
+import net.fabricmc.loader.api.metadata.CustomValue;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -22,6 +25,7 @@ import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patchedmod.mixin.fabric.api.GroupResourcePackAccess;
 import net.enderturret.patchedmod.util.env.IPlatform;
+import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 final class FabricPlatform implements IPlatform {
 
@@ -63,8 +67,9 @@ final class FabricPlatform implements IPlatform {
 
 	@Override
 	public String getName(PackResources pack) {
-		if (pack instanceof ModResourcePack mod) {
-			final String modId = mod.getFabricModMetadata().getId();
+		final ModMetadata mod = getModMetadataFromPack(pack);
+		if (mod != null) {
+			final String modId = mod.getId();
 			final String packId;
 
 			if (!modId.equals(pack.packId()))
@@ -76,10 +81,30 @@ final class FabricPlatform implements IPlatform {
 			else
 				packId = null;
 
-			return "mod/" + mod.getFabricModMetadata().getName() + (packId != null ? "/" + packId : "");
+			return "mod/" + mod.getName() + (packId != null ? "/" + packId : "");
 		}
 
 		return pack.packId();
+	}
+
+	@Nullable
+	private static ModMetadata getModMetadataFromPack(PackResources pack) {
+		if (pack instanceof ModResourcePack mod)
+			return mod.getFabricModMetadata();
+
+		return null;
+	}
+
+	@Override
+	@Nullable
+	public PatchedMetadata deriveMetadataFromMod(PackResources pack) {
+		final ModMetadata mod = getModMetadataFromPack(pack);
+		if (mod == null) return null;
+
+		final CustomValue cv = mod.getCustomValue("patched");
+		if (cv == null) return null;
+
+		return PatchedMetadata.of(cv, CustomValueOps.INSTANCE, mod.getName() + " (" + mod.getId() + ")");
 	}
 
 	@Override
