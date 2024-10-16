@@ -70,8 +70,8 @@ public interface IPlatform {
 	 * In particular (where "mymod" is a mod id):
 	 * <table border="1">
 	 * <tr><th>Mod loader</th><th>Pack id</th></tr>
-	 * <tr><td>Forge</td><td>"My Mod.jar"</td></tr>
-	 * <tr><td>NeoForge</td><td>"mod:mymod"<sup> [previously]</sup> "mod/mymod"<sup> [since 20.6]</sup></td></tr>
+	 * <tr><td>Forge</td><td>"My Mod.jar"<sup> [before 20.6]</sup> "mod:mymod"<sup> [since 20.6]</sup></td></tr>
+	 * <tr><td>NeoForge</td><td>"mod:mymod"<sup> [before 20.6]</sup> "mod/mymod"<sup> [since 20.6]</sup></td></tr>
 	 * <tr><td>Fabric</td><td>"mymod"</td></tr>
 	 * <tr><td>Quilt</td><td>"mymod"</td></tr>
 	 * </table>
