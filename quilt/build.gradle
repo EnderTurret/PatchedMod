@@ -53,6 +53,19 @@ loom {
     }
 }
 
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+            'Specification-Title': 'Patched',
+            'Specification-Vendor': 'EnderTurret',
+            'Specification-Version': '1',
+            'Implementation-Title': 'Patched',
+            'Implementation-Version': "${version}",
+            'Implementation-Vendor': 'EnderTurret'
+        ])
+    }
+}
+
 shadowJar {
     configurations = [project.configurations.shadow]
 }

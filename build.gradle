@@ -34,20 +34,6 @@ subprojects {
         reproducibleFileOrder = true
     }
 
-    tasks.named('jar', Jar).configure {
-        manifest {
-            attributes([
-                'Specification-Title': 'Patched',
-                'Specification-Vendor': 'EnderTurret',
-                'Specification-Version': '1',
-                'Implementation-Title': 'Patched',
-                'Implementation-Version': "${version}",
-                'Implementation-Vendor': 'EnderTurret',
-                'MixinConfigs': 'mixins.patched.json'
-            ])
-        }
-    }
-
     tasks.named('processResources', ProcessResources).configure {
         doLast {
             fileTree(dir: outputs.files.asPath, include: '**/*.json').each {
