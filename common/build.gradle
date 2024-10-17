@@ -9,11 +9,16 @@ minecraft {
 
 dependencies {
     compileOnly 'org.spongepowered:mixin:0.8.5'
+
     compileOnly ("com.github.EnderTurret:Patched:$patchedVersion") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
+
+    compileOnly(annotationProcessor('io.github.llamalad7:mixinextras-common:0.4.1'))
 }
 
 genEclipseRuns.dependsOn eclipseClasspath
 genEclipseRuns.dependsOn eclipseProject
 genEclipseRuns.dependsOn eclipseJdt
+genEclipseRuns.dependsOn eclipseFactorypath
+genEclipseRuns.dependsOn eclipseJdtApt
