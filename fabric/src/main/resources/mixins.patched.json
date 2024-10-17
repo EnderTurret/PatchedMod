@@ -8,7 +8,6 @@
     "fabric.api.GroupResourcePackAccess",
     "fabric.api.MixinFabricResourcePacks",
     "fabric.MixinCommands",
-    "FallbackResourceManagerAccess",
     "FilePackResourcesAccess",
     "MixinAbstractPackResources",
     "MixinFallbackResourceManager",
