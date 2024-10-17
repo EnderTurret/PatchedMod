@@ -1,5 +1,4 @@
 plugins {
-    id 'com.gradleup.shadow' version '8.3.0'
     id 'org.quiltmc.loom' version '1.7.4'
 }
 
@@ -53,38 +52,11 @@ loom {
     }
 }
 
-tasks.named('jar', Jar).configure {
-    manifest {
-        attributes([
-            'Specification-Title': 'Patched',
-            'Specification-Vendor': 'EnderTurret',
-            'Specification-Version': '1',
-            'Implementation-Title': 'Patched',
-            'Implementation-Version': "${version}",
-            'Implementation-Vendor': 'EnderTurret'
-        ])
-    }
-}
-
 tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
     configurations = [project.configurations.shadow]
 }
 
-tasks.named('compileJava', JavaCompile).configure {
-    source project(':PatchedModCommon').sourceSets.main.allSource
-}
-
-tasks.named('sourcesJar', Jar).configure {
-    from project(':PatchedModCommon').sourceSets.main.allJava
-}
-
-tasks.named('processResources', ProcessResources).configure {
-    from project(':PatchedModCommon').sourceSets.main.resources
-}
-
-import net.fabricmc.loom.task.RemapJarTask
-
-tasks.register('remappedShadowJar', RemapJarTask) {
+tasks.register('remappedShadowJar', net.fabricmc.loom.task.RemapJarTask) {
     archiveClassifier = ''
     input = tasks.shadowJar.archiveFile
     dependsOn shadowJar
@@ -95,7 +67,7 @@ artifacts {
     shadow shadowJar
 }
 
-processResources {
+tasks.named('processResources', ProcessResources).configure {
     inputs.property 'version', project.version
 
     filesMatching('quilt.mod.json') {
