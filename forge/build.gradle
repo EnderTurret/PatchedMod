@@ -34,20 +34,6 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
-tasks.named('jar', Jar).configure {
-    manifest {
-        attributes([
-            'Specification-Title': 'Patched',
-            'Specification-Vendor': 'EnderTurret',
-            'Specification-Version': '1',
-            'Implementation-Title': 'Patched',
-            'Implementation-Version': "${version}",
-            'Implementation-Vendor': 'EnderTurret',
-            'MixinConfigs': 'mixins.patched.json'
-        ])
-    }
-}
-
 minecraft {
     mappings channel: 'parchment', version: '2023.09.03-1.20.1'
     accessTransformer = file("$rootDir/forge/src/main/resources/META-INF/accesstransformer.cfg")
@@ -85,16 +71,31 @@ minecraft {
     }
 }
 
-compileJava {
+tasks.named('compileJava', JavaCompile).configure {
     source project(':PatchedModCommon').sourceSets.main.allSource
 }
 
-sourcesJar {
+tasks.named('sourcesJar', Jar).configure {
     from project(':PatchedModCommon').sourceSets.main.allJava
 }
 
-processResources {
+tasks.named('processResources', ProcessResources).configure {
     from project(':PatchedModCommon').sourceSets.main.resources
+}
+
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+            'Specification-Title': 'Patched',
+            'Specification-Vendor': 'EnderTurret',
+            'Specification-Version': '1',
+            'Implementation-Title': 'Patched',
+            'Implementation-Version': "${version}",
+            'Implementation-Vendor': 'EnderTurret',
+            'MixinConfigs': 'mixins.patched.json'
+        ])
+    }
+    enabled = false
 }
 
 reobf {
@@ -106,15 +107,13 @@ reobf {
     }
 }
 
-shadowJar {
+tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
     archiveClassifier = 'deobf-shadow-delete-me'
 
     dependencies {
         include(dependency("com.github.EnderTurret:Patched:$patchedVersion"))
     }
 }
-
-jar.enabled = false
 
 // Alright, so this is kind of terrible, but it's the only way
 // I can see to get jarJar to use the output of shadowJar.

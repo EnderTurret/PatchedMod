@@ -66,27 +66,28 @@ tasks.named('jar', Jar).configure {
     }
 }
 
-shadowJar {
+tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
     configurations = [project.configurations.shadow]
 }
 
-compileJava {
+tasks.named('compileJava', JavaCompile).configure {
     source project(':PatchedModCommon').sourceSets.main.allSource
 }
 
-sourcesJar {
+tasks.named('sourcesJar', Jar).configure {
     from project(':PatchedModCommon').sourceSets.main.allJava
 }
 
-processResources {
+tasks.named('processResources', ProcessResources).configure {
     from project(':PatchedModCommon').sourceSets.main.resources
 }
 
 import net.fabricmc.loom.task.RemapJarTask
 
-task remappedShadowJar(type: RemapJarTask, dependsOn: shadowJar) {
-    input = tasks.shadowJar.archiveFile
+tasks.register('remappedShadowJar', RemapJarTask) {
     archiveClassifier = ''
+    input = tasks.shadowJar.archiveFile
+    dependsOn shadowJar
 }
 
 artifacts {
