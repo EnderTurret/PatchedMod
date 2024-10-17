@@ -72,6 +72,10 @@ subprojects {
         from {
             configurations.sourceShadow.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
         }
+
+        from (rootDir) {
+            include 'LICENSE.txt'
+        }
     }
 
     if (it != project(':PatchedModCommon')) {

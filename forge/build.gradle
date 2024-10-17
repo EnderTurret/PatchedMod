@@ -104,6 +104,9 @@ tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.Shadow
 tasks.named('jarJar', net.minecraftforge.gradle.userdev.tasks.JarJar).configure {
     archiveClassifier = ''
     from zipTree(shadowJar.archiveFile)
+    from (rootDir) {
+        include 'LICENSE.txt'
+    }
 }
 
 // Fix mixingradle.

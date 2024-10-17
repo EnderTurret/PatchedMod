@@ -63,6 +63,9 @@ tasks.register('remappedShadowJar', net.fabricmc.loom.task.RemapJarTask) {
     archiveClassifier = ''
     input = tasks.shadowJar.archiveFile
     dependsOn shadowJar
+    from (rootDir) {
+        include 'LICENSE.txt'
+    }
 }
 
 artifacts {
