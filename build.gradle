@@ -28,6 +28,10 @@ subprojects {
         }
     }
 
+    configurations {
+        sourceShadow
+    }
+
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
     }
@@ -59,6 +63,14 @@ subprojects {
                 'Implementation-Version': "${version}",
                 'Implementation-Vendor': 'EnderTurret'
             ])
+        }
+    }
+
+    tasks.named('sourcesJar', Jar).configure {
+        // Add the Patched library sources to the built jars' sources.
+        dependsOn configurations.sourceShadow
+        from {
+            configurations.sourceShadow.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
         }
     }
 

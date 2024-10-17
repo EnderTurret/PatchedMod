@@ -24,6 +24,9 @@ dependencies {
     minecraftLibrary ("com.github.EnderTurret:Patched:$patchedVersion") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
+    sourceShadow ("com.github.EnderTurret:Patched:$patchedVersion:sources") {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
 
     compileOnly(annotationProcessor('io.github.llamalad7:mixinextras-common:0.4.1'))
     implementation(jarJar('io.github.llamalad7:mixinextras-forge:0.4.1')) {
