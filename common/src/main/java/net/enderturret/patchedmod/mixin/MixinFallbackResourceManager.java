@@ -1,47 +1,95 @@
 package net.enderturret.patchedmod.mixin;
 
 import java.io.InputStream;
-import java.util.Objects;
+import java.util.Map;
+import java.util.TreeMap;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.Coerce;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
 import net.minecraft.server.packs.resources.IoSupplier;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceMetadata;
 
+import net.enderturret.patchedmod.internal.FallbackResourceManagerHidingTreeMap;
 import net.enderturret.patchedmod.internal.MixinCallbacks;
 
 /**
  * <p>This mixin implements the functionality for actually patching resources.</p>
  * <p>This is done by wrapping the {@link IoSupplier}
  * returned by {@link FallbackResourceManager#wrapForDebug(ResourceLocation, PackResources, IoSupplier)} with
- * {@link MixinCallbacks#chain(IoSupplier, FallbackResourceManager, ResourceLocation, PackResources) MixinCallbacks.chain(IoSupplier, FallbackResourceManager, ResourceLocation, PackResources)}.</p>
+ * {@link MixinCallbacks#chain(IoSupplier, FallbackResourceManager, PackType, ResourceLocation, PackResources) MixinCallbacks.chain(IoSupplier, FallbackResourceManager, PackType, ResourceLocation, PackResources)}.</p>
  * @author EnderTurret
  */
 @Mixin(FallbackResourceManager.class)
 public abstract class MixinFallbackResourceManager {
 
-	private static final ThreadLocal<FallbackResourceManager> THIS = new ThreadLocal<>();
+	@Shadow
+	@Final
+	private PackType type;
 
-	@Inject(at = @At(value = "HEAD"), method = { "getResource", "listResourceStacks", "listResources" })
-	private void patched$captureThis(CallbackInfoReturnable<?> cir) {
+	@WrapOperation(
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/FallbackResourceManager;createResource("
+					+ "Lnet/minecraft/server/packs/PackResources;"
+					+ "Lnet/minecraft/resources/ResourceLocation;"
+					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
+					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
+					+ ")Lnet/minecraft/server/packs/resources/Resource;"),
+			method = { "getResource", "listResourceStacks" })
+	private Resource patched$replaceResource(PackResources pack, ResourceLocation location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier, Operation<Resource> downstream) {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
-		THIS.set(self);
+		final IoSupplier<InputStream> sup = MixinCallbacks.chain(streamSupplier, self, type, location, pack);
+		return downstream.call(pack, location, sup, metadataSupplier);
 	}
 
-	@Inject(at = @At(value = "RETURN"), method = { "getResource", "listResourceStacks", "listResources" })
-	private void patched$releaseThis(CallbackInfoReturnable<?> cir) {
-		THIS.set(null);
+	/**
+	 * The purpose of this redirect is to hide {@code this} in the {@code TreeMap} that
+	 * is later captured by a static lambda, where we need access to {@code this} in.
+	 */
+	@Redirect(
+			at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Maps;newTreeMap()Ljava/util/TreeMap;", remap = false),
+			method = "listResources",
+			require = 1) // We'll crash and burn later if this fails, so may as well explode earlier.
+	private TreeMap<?, ?> patched$hideThisInTreeMap() {
+		return new FallbackResourceManagerHidingTreeMap<>((FallbackResourceManager) (Object) this, type);
 	}
 
-	@Inject(at = @At(value = "RETURN"), method = "wrapForDebug", cancellable = true)
-	private static void patched$replaceResource(ResourceLocation location, PackResources pack, IoSupplier<InputStream> old, CallbackInfoReturnable<IoSupplier<InputStream>> cir) {
-		final var sup = cir.getReturnValue();
-		final FallbackResourceManager self = Objects.requireNonNull(THIS.get(), "Captured this shouldn't be null! Did a mixin fail?");
-		cir.setReturnValue(MixinCallbacks.chain(sup, self, location, pack));
+	@WrapOperation(
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/FallbackResourceManager;createResource("
+					+ "Lnet/minecraft/server/packs/PackResources;"
+					+ "Lnet/minecraft/resources/ResourceLocation;"
+					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
+					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
+					+ ")Lnet/minecraft/server/packs/resources/Resource;"),
+			method = { "lambda$listResources$3", "method_45293" },
+			require = 1,
+			remap = false)
+	private static Resource patched$intricateReplaceResource(
+			PackResources pack, ResourceLocation location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
+			Operation<Resource> downstream, Map map1, Map map2, ResourceLocation key, @Coerce Object value) {
+		final FallbackResourceManagerHidingTreeMap hidden;
+		// Check map2 first since that's more likely to be the TreeMap.
+		if (map2 instanceof FallbackResourceManagerHidingTreeMap m)
+			hidden = m;
+		// Check this one too just in case parameters were shuffled.
+		else if (map1 instanceof FallbackResourceManagerHidingTreeMap m)
+			hidden = m;
+		else
+			throw new IllegalStateException("Neither map is the expected type; did a mixin fail?");
+
+		final IoSupplier<InputStream> sup = MixinCallbacks.chain(streamSupplier, hidden.manager, hidden.type, location, pack);
+
+		return downstream.call(pack, location, sup, metadataSupplier);
 	}
 }

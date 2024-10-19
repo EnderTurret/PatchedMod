@@ -8,7 +8,6 @@
     "quilt.api.MixinModNioResourcePack",
     "quilt.api.MixinModResourcePack",
     "quilt.MixinCommands",
-    "FallbackResourceManagerAccess",
     "FilePackResourcesAccess",
     "MixinAbstractPackResources",
     "MixinFallbackResourceManager",
