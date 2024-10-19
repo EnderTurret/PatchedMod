@@ -1,6 +1,6 @@
-package net.enderturret.patchedmod.command;
+package net.enderturret.patchedmod.internal.command;
 
-import static net.enderturret.patchedmod.command.PatchedCommand.translate;
+import static net.enderturret.patchedmod.internal.command.PatchedCommand.translate;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,9 +28,9 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.internal.env.IEnvironment;
 import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.PatchingInputStream;
-import net.enderturret.patchedmod.util.env.IEnvironment;
 
 /**
  * Defines the '/patched dump' subcommand, which handles viewing patches and patched files.

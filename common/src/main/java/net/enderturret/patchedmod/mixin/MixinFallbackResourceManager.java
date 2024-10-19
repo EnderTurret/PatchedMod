@@ -13,7 +13,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
 import net.minecraft.server.packs.resources.IoSupplier;
 
-import net.enderturret.patchedmod.util.MixinCallbacks;
+import net.enderturret.patchedmod.internal.MixinCallbacks;
 
 /**
  * <p>This mixin implements the functionality for actually patching resources.</p>

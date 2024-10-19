@@ -11,7 +11,7 @@ import net.minecraft.server.WorldLoader;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 
-import net.enderturret.patchedmod.util.MixinCallbacks;
+import net.enderturret.patchedmod.internal.MixinCallbacks;
 
 @Mixin(WorldLoader.PackConfig.class)
 public abstract class MixinPackConfig {

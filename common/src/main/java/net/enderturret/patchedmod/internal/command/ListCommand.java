@@ -1,6 +1,6 @@
-package net.enderturret.patchedmod.command;
+package net.enderturret.patchedmod.internal.command;
 
-import static net.enderturret.patchedmod.command.PatchedCommand.translate;
+import static net.enderturret.patchedmod.internal.command.PatchedCommand.translate;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -24,9 +24,9 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.internal.env.IEnvironment;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.PatchUtil;
-import net.enderturret.patchedmod.util.env.IEnvironment;
 import net.enderturret.patchedmod.util.meta.IPattern;
 import net.enderturret.patchedmod.util.meta.PatchTarget;
 

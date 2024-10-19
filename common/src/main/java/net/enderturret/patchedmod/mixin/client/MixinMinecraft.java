@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
-import net.enderturret.patchedmod.util.MixinCallbacks;
+import net.enderturret.patchedmod.internal.MixinCallbacks;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
