@@ -6,9 +6,11 @@ import java.util.function.Function;
 
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.api.Version;
-import org.quiltmc.qsl.resource.loader.impl.ModNioPack;
+import org.quiltmc.loader.api.minecraft.MinecraftQuiltLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.fabricmc.api.EnvType;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -16,7 +18,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
-import net.enderturret.patchedmod.mixin.quilt.ModNioResourcePackAccess;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
 final class QuiltPlatform implements IPlatform {
@@ -30,7 +31,7 @@ final class QuiltPlatform implements IPlatform {
 
 	@Override
 	public boolean isPhysicalClient() {
-		return PatchedQuilt.physicalClient;
+		return MinecraftQuiltLoader.getEnvironmentType() == EnvType.CLIENT;
 	}
 
 	@Override
@@ -52,8 +53,9 @@ final class QuiltPlatform implements IPlatform {
 
 	@Override
 	public String getName(PackResources pack) {
-		if (pack instanceof ModNioResourcePackAccess mod) {
-			final String modName = mod.getModInfo().name();
+		if (pack instanceof IQuiltedFabricModPackResources mod) {
+			@SuppressWarnings("deprecation")
+			final String modName = mod.patched$getFabricModMetadata().getName();
 			final String packId;
 
 			if (!modName.equals(pack.packId()))
@@ -72,29 +74,9 @@ final class QuiltPlatform implements IPlatform {
 	}
 
 	@Override
-	public boolean isGroup(PackResources pack) {
-		return false;
-	}
-
-	@Override
-	public Collection<PackResources> getChildren(PackResources pack) {
-		return List.of();
-	}
-
-	@Override
-	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) {
-		return List.of();
-	}
-
-	@SuppressWarnings("unchecked")
-	private static Collection<PackResources> transform(List<? extends PackResources> list) {
-		return (List<PackResources>) list;
-	}
-
-	@Override
 	public boolean needsSwapNamespaceAndPath(PackResources pack) {
 		// Fabric implementations surprisingly throw no errors, unlike Minecraft.
-		return !isGroup(pack) && !(pack instanceof ModNioPack);
+		return !isGroup(pack) && !(pack instanceof IQuiltedFabricModPackResources);
 	}
 
 	@Override

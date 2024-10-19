@@ -3,8 +3,11 @@
   "package": "net.enderturret.patchedmod.mixin",
   "refmap": "patched.refmap.json",
   "compatibilityLevel": "JAVA_21",
+  "plugin": "net.enderturret.patchedmod.mixin.quilt.PatchedMixinPlugin",
   "mixins": [
-    "quilt.ModNioResourcePackAccess",
+    "quilt.api.MixinModNioResourcePack",
+    "quilt.api.MixinModResourcePack",
+    "quilt.MixinCommands",
     "FallbackResourceManagerAccess",
     "FilePackResourcesAccess",
     "MixinAbstractPackResources",
