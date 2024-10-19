@@ -22,8 +22,8 @@ import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceMetadata;
 
-import net.enderturret.patchedmod.util.FallbackResourceManagerHidingTreeMap;
-import net.enderturret.patchedmod.util.MixinCallbacks;
+import net.enderturret.patchedmod.internal.FallbackResourceManagerHidingTreeMap;
+import net.enderturret.patchedmod.internal.MixinCallbacks;
 
 /**
  * <p>This mixin implements the functionality for actually patching resources.</p>

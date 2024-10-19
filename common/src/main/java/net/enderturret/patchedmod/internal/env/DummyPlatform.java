@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.util.env;
+package net.enderturret.patchedmod.internal.env;
 
 import java.util.function.Function;
 
@@ -10,6 +10,8 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
+
+import net.enderturret.patchedmod.util.env.IPlatform;
 
 /**
  * <p>

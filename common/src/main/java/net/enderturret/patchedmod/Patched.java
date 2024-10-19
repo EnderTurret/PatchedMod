@@ -6,9 +6,9 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.resources.ResourceLocation;
 
-import net.enderturret.patchedmod.util.MixinCallbacks;
+import net.enderturret.patchedmod.internal.MixinCallbacks;
+import net.enderturret.patchedmod.internal.env.DummyPlatform;
 import net.enderturret.patchedmod.util.PatchUtil;
-import net.enderturret.patchedmod.util.env.DummyPlatform;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
 /**

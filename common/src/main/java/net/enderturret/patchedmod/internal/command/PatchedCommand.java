@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.command;
+package net.enderturret.patchedmod.internal.command;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -17,8 +17,8 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.util.MixinCallbacks;
-import net.enderturret.patchedmod.util.env.IEnvironment;
+import net.enderturret.patchedmod.internal.MixinCallbacks;
+import net.enderturret.patchedmod.internal.env.IEnvironment;
 
 /**
  * Defines the root '/patched' command and provides a few utility methods for the subcommands to use.

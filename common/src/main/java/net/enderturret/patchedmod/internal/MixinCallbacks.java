@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.util;
+package net.enderturret.patchedmod.internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,6 +40,10 @@ import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.PatchedTestConditions;
+import net.enderturret.patchedmod.util.IPatchingPackResources;
+import net.enderturret.patchedmod.util.PatchUtil;
+import net.enderturret.patchedmod.util.PatchedFileAccess;
+import net.enderturret.patchedmod.util.PatchingInputStream;
 import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 /**
@@ -248,7 +252,7 @@ public class MixinCallbacks {
 	 * Initializes the {@code PatchedMetadata} of the specified pack, if it has not been initialized yet.
 	 * @param resources The pack to initialize.
 	 */
-	static void maybeInitialize(PackResources resources) {
+	public static void maybeInitialize(PackResources resources) {
 		maybeInitialize(new Entry(resources));
 	}
 

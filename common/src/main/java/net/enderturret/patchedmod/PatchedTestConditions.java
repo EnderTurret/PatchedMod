@@ -18,7 +18,7 @@ import net.minecraft.server.packs.PackType;
 import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
-import net.enderturret.patchedmod.util.MixinCallbacks;
+import net.enderturret.patchedmod.internal.MixinCallbacks;
 import net.enderturret.patchedmod.util.PatchUtil;
 
 /**

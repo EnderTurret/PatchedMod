@@ -2,6 +2,7 @@ package net.enderturret.patchedmod.util;
 
 import net.minecraft.server.packs.PackResources;
 
+import net.enderturret.patchedmod.internal.MixinCallbacks;
 import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 /**

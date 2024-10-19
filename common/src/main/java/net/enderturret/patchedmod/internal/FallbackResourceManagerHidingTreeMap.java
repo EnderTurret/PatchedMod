@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.util;
+package net.enderturret.patchedmod.internal;
 
 import java.util.TreeMap;
 

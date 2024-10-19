@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.util;
+package net.enderturret.patchedmod.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +16,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.meta.IPattern;
 import net.enderturret.patchedmod.util.meta.PatchTarget;
 import net.enderturret.patchedmod.util.meta.PatchTarget.Target;

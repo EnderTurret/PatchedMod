@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.command;
+package net.enderturret.patchedmod.internal.command;
 
 import java.util.Map;
 
@@ -9,9 +9,9 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
 
-import net.enderturret.patchedmod.util.MixinCallbacks;
-import net.enderturret.patchedmod.util.PatchTargetManager;
-import net.enderturret.patchedmod.util.env.IEnvironment;
+import net.enderturret.patchedmod.internal.MixinCallbacks;
+import net.enderturret.patchedmod.internal.PatchTargetManager;
+import net.enderturret.patchedmod.internal.env.IEnvironment;
 
 final class DebugCommand {
 
