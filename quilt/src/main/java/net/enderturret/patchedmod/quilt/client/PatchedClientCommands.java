@@ -7,8 +7,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-import net.enderturret.patchedmod.command.PatchedCommand;
-import net.enderturret.patchedmod.util.env.IEnvironment;
+import net.enderturret.patchedmod.internal.command.PatchedCommand;
+import net.enderturret.patchedmod.internal.env.IEnvironment;
 
 /**
  * Manages the registration of Patched's client commands on Quilt.

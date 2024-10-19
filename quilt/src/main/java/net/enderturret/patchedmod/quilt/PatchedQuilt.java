@@ -6,7 +6,6 @@ import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.PatchedTestConditions;
-import net.enderturret.patchedmod.command.PatchedCommand;
 
 @Internal
 public final class PatchedQuilt implements ModInitializer {

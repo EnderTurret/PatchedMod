@@ -40,7 +40,7 @@ public final class PatchedTestConditions implements ITestEvaluator {
 						return Patched.platform().isModLoaded(modId, version);
 					}
 
-					return Patched.platform().isModLoaded(PatchUtil.assertIsString("mod_loaded", "value", value));
+					return Patched.platform().isModLoaded(PatchUtil.assertIsString("patched:mod_loaded", "value", value));
 				});
 
 		registerSimple(id("registered"),

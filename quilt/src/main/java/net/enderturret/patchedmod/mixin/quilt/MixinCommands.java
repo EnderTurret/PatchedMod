@@ -12,8 +12,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
-import net.enderturret.patchedmod.command.PatchedCommand;
-import net.enderturret.patchedmod.util.env.IEnvironment;
+import net.enderturret.patchedmod.internal.command.PatchedCommand;
+import net.enderturret.patchedmod.internal.env.IEnvironment;
 
 @Mixin(Commands.class)
 public abstract class MixinCommands {

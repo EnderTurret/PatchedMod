@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.Nullable;
+import org.quiltmc.loader.api.LoaderValue;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.api.Version;
 import org.quiltmc.loader.api.minecraft.MinecraftQuiltLoader;
@@ -11,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -19,6 +22,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patchedmod.util.env.IPlatform;
+import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 final class QuiltPlatform implements IPlatform {
 
@@ -52,10 +56,12 @@ final class QuiltPlatform implements IPlatform {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public String getName(PackResources pack) {
-		if (pack instanceof IQuiltedFabricModPackResources mod) {
-			@SuppressWarnings("deprecation")
-			final String modName = mod.patched$getFabricModMetadata().getName();
+		final ModMetadata mod = getModMetadataFromPack(pack);
+
+		if (mod != null) {
+			final String modName = mod.getName();
 			final String packId;
 
 			if (!modName.equals(pack.packId()))
@@ -72,6 +78,30 @@ final class QuiltPlatform implements IPlatform {
 
 		return pack.packId();
 	}
+
+	@Nullable
+	@SuppressWarnings("deprecation")
+	private static ModMetadata getModMetadataFromPack(PackResources pack) {
+		if (pack instanceof IQuiltedFabricModPackResources mod)
+			return mod.patched$getFabricModMetadata();
+
+		return null;
+	}
+
+	/* TODO Restore when QSL exists again.
+	@Override
+	@Nullable
+	@SuppressWarnings("deprecation")
+	public PatchedMetadata deriveMetadataFromMod(PackResources pack) {
+		final ModMetadata mod = getModMetadataFromPack(pack);
+		if (mod == null) return null;
+
+		final LoaderValue lv = mod.value("patched");
+		if (lv == null) return null;
+
+		return PatchedMetadata.of(lv, LoaderValueOps.INSTANCE, mod.name() + " (" + mod.id() + ")");
+	}
+	*/
 
 	@Override
 	public boolean needsSwapNamespaceAndPath(PackResources pack) {

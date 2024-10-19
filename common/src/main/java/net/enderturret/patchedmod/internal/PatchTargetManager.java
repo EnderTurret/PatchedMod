@@ -38,6 +38,10 @@ public final class PatchTargetManager {
 	PatchTargetManager(PackType type, List<PackResources> packsByPriority) {
 		this.type = type;
 
+		packsByPriority = packsByPriority.stream()
+				.flatMap(pack -> (Patched.platform().isGroup(pack) ? Patched.platform().getChildren(pack) : List.of(pack)).stream())
+				.toList();
+
 		final Map<String, Integer> priorityByPack = new IdentityHashMap<>();
 		final List<BakedTarget> targets = new ArrayList<>();
 
