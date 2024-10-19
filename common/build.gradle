@@ -4,7 +4,7 @@ plugins {
 
 minecraft {
     version '1.21.1'
-    accessWideners "$rootDir/common/src/main/resources/patched_common.accesswidener"
+    accessWideners "$rootDir/common/patched_common.accesswidener"
 }
 
 dependencies {
@@ -12,6 +12,8 @@ dependencies {
     compileOnly ("com.github.EnderTurret:Patched:$patchedVersion") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
+
+    compileOnly(annotationProcessor('io.github.llamalad7:mixinextras-common:0.4.1'))
 }
 
 genEclipseRuns.dependsOn eclipseClasspath
