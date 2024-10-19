@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -12,23 +13,50 @@ import com.google.gson.JsonObject;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
+import net.enderturret.patchedmod.util.MixinCallbacks;
 import net.enderturret.patchedmod.util.PatchUtil;
 
 /**
  * Handles evaluating custom test conditions.
  * @author EnderTurret
  */
-public final class PatchedTestConditions implements ITestEvaluator {
+public final class PatchedTestConditions implements RootEvaluator {
 
-	public static final PatchedTestConditions INSTANCE = new PatchedTestConditions();
+	/**
+	 * The singleton instance of {@code PatchedTestConditions}.
+	 * @deprecated Use {@link #getRootEvaluator(PackType)} instead.
+	 */
+	@Deprecated
+	public static final PatchedTestConditions INSTANCE = new PatchedTestConditions(null);
 
 	private static Map<String, ITestEvaluator> conditions = new ConcurrentHashMap<>();
 
-	private PatchedTestConditions() {}
+	private final PackType type;
+
+	private PatchedTestConditions(@Nullable PackType type) {
+		this.type = type;
+	}
+
+	@Override
+	@Nullable
+	public PackType packType() {
+		return type;
+	}
+
+	/**
+	 * Returns the {@linkplain ITestEvaluator custom test evaluator} for the specified {@code PackType}.
+	 * A {@code null} {@code PackType} indicates this method should return a type-agnostic test evaluator (turns off some test types).
+	 * @param type The type to create the evaluator for. This customizes some test types that require knowledge of the {@code PackType}. Passing {@code null} turns them off.
+	 * @return The test evaluator.
+	 */
+	public static RootEvaluator getRootEvaluator(@Nullable PackType type) {
+		return new PatchedTestConditions(type);
+	}
 
 	@Internal
 	public static void registerDefaults() {
@@ -59,6 +87,15 @@ public final class PatchedTestConditions implements ITestEvaluator {
 		// Simpler version of "registered" specifically for items.
 		registerSimple(id("item_registered"),
 				value -> BuiltInRegistries.ITEM.containsKey(PatchUtil.assertIsResourceLocation("patched:item_registered", "value", value)));
+
+		register(id("pack_enabled"), (root, _type, target, value, context) -> {
+					final String name = PatchUtil.assertIsString("patched:pack_enabled", "value", value);
+					final PackType type = ((RootEvaluator) context.testEvaluator()).packType();
+					// Happens if someone uses PatchUtil.CONTEXT or INSTANCE directly (or otherwise constructs a type-agnostic evaluator).
+					if (type == null) throw new PatchingException("Cannot use patched:pack_enabled in type-agnostic context");
+
+					return MixinCallbacks.getTargetManagers().get(type).containsPack(name);
+				});
 	}
 
 	/**

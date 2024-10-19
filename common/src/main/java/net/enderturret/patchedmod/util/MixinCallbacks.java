@@ -39,6 +39,7 @@ import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.PatchedTestConditions;
 import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 /**
@@ -210,7 +211,7 @@ public class MixinCallbacks {
 			if (audit != null)
 				audit.setPatchPath(pack.name());
 			if (context.getValue() == null)
-				context.setValue(PatchUtil.CONTEXT.audit(audit));
+				context.setValue(PatchUtil.CONTEXT.audit(audit).testEvaluator(PatchedTestConditions.getRootEvaluator(type)));
 
 			Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}{}.",
 					patchName,
