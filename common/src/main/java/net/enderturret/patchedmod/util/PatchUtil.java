@@ -45,7 +45,7 @@ public final class PatchUtil {
 	public static final PatchContext CONTEXT = PatchContext.newContext()
 			.testExtensions(true)
 			.patchedExtensions(true)
-			.testEvaluator(PatchedTestConditions.INSTANCE);
+			.testEvaluator(PatchedTestConditions.getRootEvaluator(null));
 
 	/**
 	 * The {@link Gson} instance used for reading patches and {@linkplain #readPrettyJson(InputStream, String, boolean, boolean) prettying Json data}.

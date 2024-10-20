@@ -49,9 +49,9 @@ Regardless, the overall structure is identical to that of the `patched` `pack.mc
 
 **Note**: if you have multiple packs in your mod, this metadata *may or may not* apply to all of them.
 
-#### On NeoForge
+#### On (Neo)Forge
 
-The Patched metadata can be placed in your `neoforge.mods.toml` like so:
+The Patched metadata can be placed in your (`neoforge.`)`mods.toml` like so:
 
 ```toml
 [modproperties.<mod id>.patched]
@@ -102,7 +102,7 @@ The Patched metadata can be placed in your `fabric.mod.json` like so:
 #### On Quilt
 
 **There are not currently any Quilt builds of Patched for the versions this feature is available in.**
-However, assuming the Fabric build works on Quilt, the Patched metadata should be able to be placed in your `quilt.mod.json` like so:
+The Patched metadata can be placed in your `quilt.mod.json` like so:
 
 ```json
 {
