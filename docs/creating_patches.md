@@ -88,7 +88,7 @@ The only field here is `format_version`, which should be pretty obvious in purpo
 It only exists to specify the section schema version the pack was made for.
 The current format version is 1.
 
-For the most part, this is as bare-bones as it gets -- and it was plenty enough for older versions of the mod (prior to `5.1.0+1.20.4`).
+For the most part, this is as bare-bones as it gets -- and it was plenty enough for older versions of the mod (prior to `5.1.0+1.20.4` and `3.3.0+1.20.1`).
 Previously, this was all we had:
 
 ```json
@@ -170,7 +170,7 @@ This leads nicely into the following section:
 
 ### Using `include` patches
 
-Include patches are a relatively new patch operation (added in `5.1.0+1.20.4`):
+Include patches are a relatively new patch operation (added in `5.1.0+1.20.4` and `3.3.0+1.20.1`):
 
 ```json
 {

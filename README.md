@@ -43,7 +43,7 @@ It could also add blocks from other mods to spruce up its biomes more than vanil
 Another example might be a mod that adds configuration support for data/resource packs.
 This could be exposed through [a test condition](docs/api.md#custom-test-registration) that these packs could use to enable/disable features.
 
-Lastly, Patched (as of `5.1.0+1.20.4`) allows packs to apply the same patch to *any number of files*, via the 'dynamic patching' feature.
+Lastly, Patched (as of `5.1.0+1.20.4` and `3.3.0+1.20.1`) allows packs to apply the same patch to *any number of files*, via the 'dynamic patching' feature.
 This means that data pack developers do not need to make use of undocumented bespoke mod loader features to add their custom ores to every biome (or certain ones).
 
 > [!IMPORTANT]

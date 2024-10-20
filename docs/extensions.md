@@ -78,7 +78,7 @@ This could allow someone to use features Patched introduces later without causin
 
 ### `patched:registered`
 
-This condition was added in `5.1.0+1.20.4`. It allows checking if something exists in a given registry:
+This condition was added in `5.1.0+1.20.4` (and backported to `3.3.0+1.20.1`). It allows checking if something exists in a given registry:
 
 ```json
 {

@@ -43,7 +43,7 @@ modImplementation 'maven.modrinth:patched:<platform>-<latest version here>+<mine
 
 ### Patched metadata in the mod metadata
 
-As of `7.1.0+1.21.1`, mods can optionally place the `patched` block that would normally be in the `pack.mcmeta` in their loader-specific metadata instead.
+As of `7.1.0+1.21.1` (and backported to `3.3.0+1.20.1`), mods can optionally place the `patched` block that would normally be in the `pack.mcmeta` in their loader-specific metadata instead.
 What this looks like for each loader is described below.
 Regardless, the overall structure is identical to that of the `patched` `pack.mcmeta` block.
 
@@ -101,7 +101,6 @@ The Patched metadata can be placed in your `fabric.mod.json` like so:
 
 #### On Quilt
 
-**There are not currently any Quilt builds of Patched for the versions this feature is available in.**
 The Patched metadata can be placed in your `quilt.mod.json` like so:
 
 ```json
