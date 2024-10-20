@@ -27,7 +27,7 @@ dependencies {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
-    compileOnly (project(':PatchedModCommon')) {
+    implementation (project(':PatchedModCommon')) {
         exclude group: 'org.spongepowered', module: 'mixin'
         exclude group: 'net.minecraft', module: 'joined_aw'
     }
