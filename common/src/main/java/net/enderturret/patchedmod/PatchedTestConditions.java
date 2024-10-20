@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -19,6 +20,7 @@ import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.internal.MixinCallbacks;
+import net.enderturret.patchedmod.internal.PatchTargetManager;
 import net.enderturret.patchedmod.util.PatchUtil;
 
 /**
@@ -89,13 +91,23 @@ public final class PatchedTestConditions implements RootEvaluator {
 				value -> BuiltInRegistries.ITEM.containsKey(PatchUtil.assertIsResourceLocation("patched:item_registered", "value", value)));
 
 		register(id("pack_enabled"), (root, _type, target, value, context) -> {
-					final String name = PatchUtil.assertIsString("patched:pack_enabled", "value", value);
-					final PackType type = ((RootEvaluator) context.testEvaluator()).packType();
-					// Happens if someone uses PatchUtil.CONTEXT or INSTANCE directly (or otherwise constructs a type-agnostic evaluator).
-					if (type == null) throw new PatchingException("Cannot use patched:pack_enabled in type-agnostic context");
+			final PackType type = ((RootEvaluator) context.testEvaluator()).packType();
+			// Happens if someone uses PatchUtil.CONTEXT or INSTANCE directly (or otherwise constructs a type-agnostic evaluator).
+			if (type == null) throw new PatchingException("Cannot use patched:pack_enabled in type-agnostic context");
+			final PatchTargetManager manager = MixinCallbacks.getTargetManagers().get(type);
 
-					return MixinCallbacks.getTargetManagers().get(type).containsPack(name);
-				});
+			if (value instanceof JsonArray array) {
+				if (array.isEmpty()) throw new PatchingException("patched:pack_enabled: value array must not be empty");
+
+				for (int i = 0; i < array.size(); i++)
+					if (manager.containsPack(PatchUtil.assertIsString("patched:pack_enabled", "value$" + (i + 1), array.get(i))))
+						return true;
+
+				return false;
+			}
+
+			return manager.containsPack(PatchUtil.assertIsString("patched:pack_enabled", "value", value));
+		});
 	}
 
 	/**

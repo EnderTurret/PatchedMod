@@ -121,3 +121,58 @@ This tests if Quark's Crafter is present.
 (Note: this doesn't guarantee that the crafter module is *enabled* -- see caveat #2.
 Many mods that do "conditional" registration still register everything, and simply hide them from creative tabs and item lists.
 This is usually so that opening saves or connecting to servers with different configs doesn't cause missing items.)
+
+### `patched:pack_enabled`
+
+This condition was added in `7.2.0+1.21.1` and `3.3.0+1.20.1`.
+It allows checking if a given resource or data pack is enabled.
+The pack type (resource or data) to check is decided based on the pack type of the patch, meaning that data packs check data packs and resource packs check resource packs.
+(This is because resource packs are loaded far too early to decide whether a given data pack is present, and data packs checking for resource packs doesn't make sense on a dedicated server.)
+
+The format of this condition looks like this:
+
+```json
+{
+  "op": "test",
+  "type": "patched:pack_enabled",
+  "value": "<pack id to check>"
+}
+```
+
+The pack id takes the form of `file/<folder name>`, `file/<file name>.zip`, `mod/<mod name>`, or `mod/<mod name>/<pack name>`, depending on whether the pack in question is a folder pack, zip pack, mod, or mod-provided pack, respectively. If you're not sure which one to use, `/patched list packs verbose` can tell you (`/patchedc` for resource packs).
+
+Alternatively, one can specify more than one pack id (in which case the test succeeds if *any* of them are present):
+
+```json
+{
+  "op": "test",
+  "type": "patched:pack_enabled",
+  "value": ["<pack id 1>", "<pack id 2>"]
+}
+```
+
+For example, the following checks to see if Terralith is present:
+
+```json
+{
+  "op": "test",
+  "type": "patched:pack_enabled",
+  "value": ["file/Terralith", "file/Terralith.zip", "mod/Terralith"]
+}
+```
+
+Note the multiple pack ids for Terralith; since it can be packaged as a data pack or as a mod one needs to account for all possibilities. The three pack ids here check for Terralith being a folder data pack, zip data pack, and mod. The first pack id is necessary as despite Terralith not being distributed as a folder data pack, one could still unzip it (say, to make personal modifications to it).
+
+#### Detecting feature flags
+
+Another use for `patched:pack_enabled` is to detect the presence of enabled "feature flags" (or "experiments"), such as the bundle. For example:
+
+```json
+{
+  "op": "test",
+  "type": "patched:pack_enabled",
+  "value": "bundle"
+}
+```
+
+The pack id of an experiment/feature flag varies depending on the name. In this case the bundle feature flag is simply `bundle`. Generally, one will need to enable the feature and then use `/patched list packs verbose` (or `/datapack list`) to find the pack id.

@@ -16,6 +16,8 @@ Here is a list of all the pages in this documentation:
 	* [`patched:mod_loaded`](extensions.md#patchedmod_loaded)
 	* [`patched:registered`](extensions.md#patchedregistered)
 	* [`patched:item_registered`](extensions.md#patcheditem_registered)
+	* [`patched:pack_enabled`](extensions.md#patchedpack_enabled)
+		* [Detecting feature flags](extensions.md#detecting-feature-flags)
 * [Commands](commands.md)
 	* [The `list` subcommand](commands.md#the-list-subcommand)
 	* [The `dump` subcommand](commands.md#the-dump-subcommand)

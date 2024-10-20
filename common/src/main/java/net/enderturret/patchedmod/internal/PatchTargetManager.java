@@ -147,7 +147,7 @@ public final class PatchTargetManager {
 	}
 
 	public boolean containsPack(String name) {
-		return priorityByPack.containsKey(name);
+		return priorityByPack.containsKey(name.intern());
 	}
 
 	@Override
