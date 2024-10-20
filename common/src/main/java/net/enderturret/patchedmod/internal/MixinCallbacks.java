@@ -147,7 +147,7 @@ public class MixinCallbacks {
 							);
 
 					IFileAccess access = null;
-					for (String patch : targets.getOrDefault(entry.resources, List.of())) {
+					for (String patch : targets.getOrDefault(pack.resources, List.of())) {
 						// We use the IFileAccess instead of grabbing it manually so that it's cached.
 						if (access == null)
 							if (ctx != null)
