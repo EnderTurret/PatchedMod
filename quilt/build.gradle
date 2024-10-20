@@ -1,5 +1,5 @@
 plugins {
-    id 'org.quiltmc.loom' version '1.7.4'
+    id 'org.quiltmc.loom' version '1.8.3'
 }
 
 base {
@@ -15,7 +15,8 @@ dependencies {
     minecraft 'com.mojang:minecraft:1.21.1'
     mappings loom.officialMojangMappings()
 
-    modImplementation 'org.quiltmc:quilt-loader:0.26.4-beta.3'
+    modImplementation 'org.quiltmc:quilt-loader:0.27.0-beta.1'
+    // https://maven.quiltmc.org/repository/release/org/quiltmc/
     modImplementation 'org.quiltmc:qsl:10.0.0-alpha.3+1.21.1'
     modImplementation 'org.quiltmc.quilted-fabric-api:quilted-fabric-api:11.0.0-alpha.3+0.102.0-1.21'
 

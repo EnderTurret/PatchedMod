@@ -1,6 +1,7 @@
+// https://projects.neoforged.net/
 plugins {
     id 'java-library'
-    id 'net.neoforged.gradle.userdev' version '7.0.161'
+    id 'net.neoforged.gradle.userdev' version '7.0.165'
 }
 
 base {
@@ -13,7 +14,7 @@ configurations {
 }
 
 dependencies {
-    implementation 'net.neoforged:neoforge:21.1.23'
+    implementation 'net.neoforged:neoforge:21.1.72'
 
     compileOnly (project(':PatchedModCommon')) {
         exclude group: 'org.spongepowered', module: 'mixin'
@@ -30,6 +31,8 @@ dependencies {
 
 subsystems {
     parchment {
+        // https://parchmentmc.org/docs/getting-started
+        // https://ldtteam.jfrog.io/ui/native/parchmentmc-public/org/parchmentmc/data/
         minecraftVersion = '1.21'
         mappingsVersion = '2024.07.28'
     }
