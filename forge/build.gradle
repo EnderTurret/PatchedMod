@@ -1,7 +1,7 @@
 // https://projects.neoforged.net/
 plugins {
     id 'java-library'
-    id 'net.neoforged.gradle.userdev' version '7.0.165'
+    id 'net.neoforged.moddev' version '1.0.21'
 }
 
 base {
@@ -9,19 +9,18 @@ base {
 }
 
 configurations {
+    shadow {}
     minecraftLibrary {}
     implementation.extendsFrom minecraftLibrary
 }
 
 dependencies {
-    implementation 'net.neoforged:neoforge:21.1.72'
-
     compileOnly (project(':PatchedModCommon')) {
         exclude group: 'org.spongepowered', module: 'mixin'
         exclude group: 'net.minecraft', module: 'joined_aw'
     }
 
-    minecraftLibrary ("com.github.EnderTurret:Patched:$patchedVersion") {
+    shadow (minecraftLibrary("com.github.EnderTurret:Patched:$patchedVersion")) {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
     sourceShadow ("com.github.EnderTurret:Patched:$patchedVersion:sources") {
@@ -29,47 +28,48 @@ dependencies {
     }
 }
 
-subsystems {
+neoForge {
+    version = '21.1.72'
+
+    mods {
+        patched {
+            sourceSet sourceSets.main
+            sourceSet project(':PatchedModCommon').sourceSets.main
+        }
+    }
+
     parchment {
         // https://parchmentmc.org/docs/getting-started
         // https://ldtteam.jfrog.io/ui/native/parchmentmc-public/org/parchmentmc/data/
         minecraftVersion = '1.21'
         mappingsVersion = '2024.07.28'
     }
-}
 
-minecraft {
-    accessTransformers.file rootProject.file('forge/src/main/resources/META-INF/accesstransformer.cfg')
-}
-
-runs {
-    configureEach {
-        workingDirectory project.file('run/1.21')
-
-        modSources {
-            local project(':PatchedModCommon').sourceSets.main
+    runs {
+        configureEach {
+            additionalRuntimeClasspathConfiguration.extendsFrom configurations.minecraftLibrary
         }
 
-        dependencies {
-            runtime project.configurations.minecraftLibrary
+        client {
+            client()
+            ideName = 'runPatchedModNeoForgeClient'
+            gameDirectory = project.file('run/1.21')
         }
-    }
-
-    client {}
-
-    server {}
-
-    data {
-        arguments.addAll '--mod', 'patched', '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        server {
+            server()
+            ideName = 'runPatchedModNeoForgeServer'
+        }
+        data {
+            data()
+            ideName = 'runPatchedModNeoForgeData'
+        }
     }
 }
 
 tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
     archiveClassifier = ''
 
-    dependencies {
-        include(dependency("com.github.EnderTurret:Patched:$patchedVersion"))
-    }
+    configurations = [project.configurations.shadow]
 
     from (rootDir) {
         include 'LICENSE.txt'
@@ -80,4 +80,5 @@ jar.enabled = false
 
 artifacts {
     archives shadowJar
+    shadow shadowJar
 }
