@@ -1,7 +1,6 @@
 plugins {
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
     id 'fabric-loom' version '1.7.3'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 base {
@@ -12,6 +11,7 @@ configurations {
     implementation.extendsFrom shadow
 }
 
+// https://fabricmc.net/develop/
 dependencies {
     minecraft 'com.mojang:minecraft:1.21.1'
     mappings loom.officialMojangMappings()
@@ -19,6 +19,9 @@ dependencies {
     modImplementation 'net.fabricmc.fabric-api:fabric-api:0.102.1+1.21.1'
 
     shadow ("com.github.EnderTurret:Patched:$patchedVersion") {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+    sourceShadow ("com.github.EnderTurret:Patched:$patchedVersion:sources") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
@@ -52,27 +55,17 @@ loom {
     }
 }
 
-shadowJar {
+tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
     configurations = [project.configurations.shadow]
 }
 
-compileJava {
-    source project(':PatchedModCommon').sourceSets.main.allSource
-}
-
-sourcesJar {
-    from project(':PatchedModCommon').sourceSets.main.allJava
-}
-
-processResources {
-    from project(':PatchedModCommon').sourceSets.main.resources
-}
-
-import net.fabricmc.loom.task.RemapJarTask
-
-task remappedShadowJar(type: RemapJarTask, dependsOn: shadowJar) {
-    input = tasks.shadowJar.archiveFile
+tasks.register('remappedShadowJar', net.fabricmc.loom.task.RemapJarTask) {
     archiveClassifier = ''
+    input = tasks.shadowJar.archiveFile
+    dependsOn shadowJar
+    from (rootDir) {
+        include 'LICENSE.txt'
+    }
 }
 
 artifacts {
@@ -80,7 +73,7 @@ artifacts {
     shadow shadowJar
 }
 
-processResources {
+tasks.named('processResources', ProcessResources).configure {
     inputs.property 'version', project.version
 
     filesMatching('fabric.mod.json') {

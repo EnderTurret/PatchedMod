@@ -1,10 +1,14 @@
 plugins {
-    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.7'
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.9'
+    id 'com.gradleup.shadow' version '8.3.0' apply false
+    id 'com.diffplug.eclipse.apt' version '4.1.0' apply false
 }
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'eclipse'
+    apply plugin: 'com.gradleup.shadow'
+    apply plugin: 'com.diffplug.eclipse.apt'
 
     version = '7.1.1+1.21.1'
     group = 'net.enderturret'
@@ -25,6 +29,10 @@ subprojects {
         }
     }
 
+    configurations {
+        sourceShadow
+    }
+
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
     }
@@ -36,6 +44,14 @@ subprojects {
     tasks.withType(AbstractArchiveTask).configureEach {
         preserveFileTimestamps = false
         reproducibleFileOrder = true
+    }
+
+    tasks.named('processResources', ProcessResources).configure {
+        doLast {
+            fileTree(dir: outputs.files.asPath, include: '**/*.json').each {
+                File file -> file.text = groovy.json.JsonOutput.toJson(new groovy.json.JsonSlurper().parse(file))
+            }
+        }
     }
 
     tasks.named('jar', Jar).configure {
@@ -51,11 +67,29 @@ subprojects {
         }
     }
 
-    tasks.named('processResources', ProcessResources).configure {
-        doLast {
-            fileTree(dir: outputs.files.asPath, include: '**/*.json').each {
-                File file -> file.text = groovy.json.JsonOutput.toJson(new groovy.json.JsonSlurper().parse(file))
-            }
+    tasks.named('sourcesJar', Jar).configure {
+        // Add the Patched library sources to the built jars' sources.
+        dependsOn configurations.sourceShadow
+        from {
+            configurations.sourceShadow.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+        }
+
+        from (rootDir) {
+            include 'LICENSE.txt'
+        }
+    }
+
+    if (it != project(':PatchedModCommon')) {
+        tasks.named('compileJava', JavaCompile).configure {
+            source project(':PatchedModCommon').sourceSets.main.allSource
+        }
+
+        tasks.named('sourcesJar', Jar).configure {
+            from project(':PatchedModCommon').sourceSets.main.allJava
+        }
+
+        tasks.named('processResources', ProcessResources).configure {
+            from project(':PatchedModCommon').sourceSets.main.resources
         }
     }
 }

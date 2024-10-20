@@ -1,6 +1,5 @@
 plugins {
     id 'org.quiltmc.loom' version '1.7.4'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 base {
@@ -21,6 +20,9 @@ dependencies {
     modImplementation 'org.quiltmc.quilted-fabric-api:quilted-fabric-api:11.0.0-alpha.3+0.102.0-1.21'
 
     shadow ("com.github.EnderTurret:Patched:$patchedVersion") {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+    sourceShadow ("com.github.EnderTurret:Patched:$patchedVersion:sources") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
@@ -54,27 +56,17 @@ loom {
     }
 }
 
-shadowJar {
+tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
     configurations = [project.configurations.shadow]
 }
 
-compileJava {
-    source project(':PatchedModCommon').sourceSets.main.allSource
-}
-
-sourcesJar {
-    from project(':PatchedModCommon').sourceSets.main.allJava
-}
-
-processResources {
-    from project(':PatchedModCommon').sourceSets.main.resources
-}
-
-import net.fabricmc.loom.task.RemapJarTask
-
-task remappedShadowJar(type: RemapJarTask, dependsOn: shadowJar) {
-    input = tasks.shadowJar.archiveFile
+tasks.register('remappedShadowJar', net.fabricmc.loom.task.RemapJarTask) {
     archiveClassifier = ''
+    input = tasks.shadowJar.archiveFile
+    dependsOn shadowJar
+    from (rootDir) {
+        include 'LICENSE.txt'
+    }
 }
 
 artifacts {
@@ -82,7 +74,7 @@ artifacts {
     shadow shadowJar
 }
 
-processResources {
+tasks.named('processResources', ProcessResources).configure {
     inputs.property 'version', project.version
 
     filesMatching('quilt.mod.json') {

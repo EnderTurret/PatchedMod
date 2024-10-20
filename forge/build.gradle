@@ -1,6 +1,5 @@
 plugins {
     id 'java-library'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'net.neoforged.gradle.userdev' version '7.0.161'
 }
 
@@ -24,6 +23,9 @@ dependencies {
     minecraftLibrary ("com.github.EnderTurret:Patched:$patchedVersion") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
+    sourceShadow ("com.github.EnderTurret:Patched:$patchedVersion:sources") {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
 }
 
 subsystems {
@@ -42,7 +44,6 @@ runs {
         workingDirectory project.file('run/1.21')
 
         modSources {
-            //add sourceSets.main
             local project(':PatchedModCommon').sourceSets.main
         }
 
@@ -56,27 +57,19 @@ runs {
     server {}
 
     data {
-        programArguments.addAll '--mod', 'patched', '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        arguments.addAll '--mod', 'patched', '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
     }
 }
 
-compileJava {
-    source project(':PatchedModCommon').sourceSets.main.allSource
-}
-
-sourcesJar {
-    from project(':PatchedModCommon').sourceSets.main.allJava
-}
-
-processResources {
-    from project(':PatchedModCommon').sourceSets.main.resources
-}
-
-shadowJar {
+tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
     archiveClassifier = ''
 
     dependencies {
         include(dependency("com.github.EnderTurret:Patched:$patchedVersion"))
+    }
+
+    from (rootDir) {
+        include 'LICENSE.txt'
     }
 }
 
