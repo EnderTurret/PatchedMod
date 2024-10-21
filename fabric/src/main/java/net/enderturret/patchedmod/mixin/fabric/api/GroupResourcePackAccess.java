@@ -6,15 +6,16 @@ import java.util.Map;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-import net.fabricmc.fabric.api.resource.ModResourcePack;
 import net.fabricmc.fabric.impl.resource.loader.GroupResourcePack;
+
+import net.minecraft.server.packs.PackResources;
 
 @Mixin(GroupResourcePack.class)
 public interface GroupResourcePackAccess {
 
 	@Accessor(value = "packs", remap = false)
-	public List<ModResourcePack> patched$getPacks();
+	public List<PackResources> patched$getPacks();
 
 	@Accessor(value = "namespacedPacks", remap = false)
-	public Map<String, List<ModResourcePack>> patched$getNamespacedPacks();
+	public Map<String, List<PackResources>> patched$getNamespacedPacks();
 }

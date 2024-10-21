@@ -114,16 +114,12 @@ final class FabricPlatform implements IPlatform {
 
 	@Override
 	public Collection<PackResources> getChildren(PackResources pack) {
-		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.patched$getPacks()) : List.of();
+		return pack instanceof GroupResourcePackAccess grpa ? grpa.patched$getPacks() : List.of();
 	}
 
 	@Override
 	public Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) {
-		return pack instanceof GroupResourcePackAccess grpa ? transform(grpa.patched$getNamespacedPacks().getOrDefault(file.getNamespace(), List.of())) : List.of();
-	}
-
-	private static Collection<PackResources> transform(List<ModResourcePack> list) {
-		return list.stream().map(mrp -> (PackResources) mrp).toList();
+		return pack instanceof GroupResourcePackAccess grpa ? grpa.patched$getNamespacedPacks().getOrDefault(file.getNamespace(), List.of()) : List.of();
 	}
 
 	@Override
