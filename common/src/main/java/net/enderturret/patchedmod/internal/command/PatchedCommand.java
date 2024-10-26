@@ -27,6 +27,12 @@ import net.enderturret.patchedmod.internal.flow.PatchingManager;
 @Internal
 public final class PatchedCommand {
 
+	/**
+	 * Creates the {@code LiteralArgumentBuilder} for the `/patched` and `/patchedc` commands.
+	 * @param <T> The command source type.
+	 * @param env The environment instance, to handle interpreting the command source.
+	 * @return The new argument builder.
+	 */
 	@Internal
 	public static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
 		final var ret = env.literal("patched" + (env.client() ? "c" : ""))

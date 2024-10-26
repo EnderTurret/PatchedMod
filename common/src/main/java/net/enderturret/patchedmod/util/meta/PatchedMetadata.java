@@ -38,10 +38,19 @@ import net.enderturret.patched.exception.PatchingException;
  */
 public record PatchedMetadata(byte formatVersion, List<PatchTarget> patchTargets) {
 
+	/**
+	 * Constructs a new {@code PatchedMetadata}.
+	 * @param formatVersion Specifies the Patched metadata schema version in use. {@code -1} means the pack doesn't use Patched, and {@code 0} is the legacy {@code "patched:has_patches"} format.
+	 * @param patchTargets A list of patch "targets" which allow applying the same patch to multiple files.
+	 */
 	public PatchedMetadata {
 		if (formatVersion < -1) throw new IllegalArgumentException("Format version must be in range [-1, 147], was: " + formatVersion);
 	}
 
+	/**
+	 * Constructs a new {@code PatchedMetadata}.
+	 * @param formatVersion Specifies the Patched metadata schema version in use. {@code -1} means the pack doesn't use Patched, and {@code 0} is the legacy {@code "patched:has_patches"} format.
+	 */
 	public PatchedMetadata(byte formatVersion) {
 		this(formatVersion, List.of());
 	}
@@ -109,6 +118,15 @@ public record PatchedMetadata(byte formatVersion, List<PatchTarget> patchTargets
 		return DISABLED_METADATA;
 	}
 
+	/**
+	 * Attempts to parse a {@code PatchedMetadata} from the specified input.
+	 * @param <T> The type of the input data.
+	 * @param data The input data.
+	 * @param ops The {@code DynamicOps} used to parse the input.
+	 * @param source Something that identifies the source of the input, such as the name of the pack/mod containing it. Used for informative error messages.
+	 * @return The parsed {@code PatchedMetadata}.
+	 * @throws PatchingException If the metadata could not be parsed.
+	 */
 	public static <T> PatchedMetadata of(T data, DynamicOps<T> ops, String source) {
 		final DataResult<Pair<PatchedMetadata, T>> pair = CODEC.decode(ops, data);
 

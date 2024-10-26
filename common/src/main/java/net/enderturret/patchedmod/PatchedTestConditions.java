@@ -60,6 +60,9 @@ public final class PatchedTestConditions implements RootEvaluator {
 		return new PatchedTestConditions(type);
 	}
 
+	/**
+	 * Registers all default test conditions.
+	 */
 	@Internal
 	public static void registerDefaults() {
 		registerSimple(id("mod_loaded"),
@@ -147,10 +150,16 @@ public final class PatchedTestConditions implements RootEvaluator {
 	@FunctionalInterface
 	public static interface ISimpleTestEvaluator extends ITestEvaluator {
 
+		/**
+		 * Determines whether the condition succeeds for the specified value.
+		 * This is a simplified version of {@link #test(JsonElement, String, JsonElement, JsonElement, PatchContext)}.
+		 * @param value The value given by the patch.
+		 * @return {@code true} if the condition succeeds, {@code false} otherwise.
+		 */
 		public boolean test(JsonElement value);
 
 		@Override
-		default boolean test(JsonElement root, String type, JsonElement target, JsonElement value, PatchContext context) {
+		public default boolean test(JsonElement root, String type, JsonElement target, JsonElement value, PatchContext context) {
 			if (value == null)
 				throw new PatchingException(type + ": value must not be null");
 

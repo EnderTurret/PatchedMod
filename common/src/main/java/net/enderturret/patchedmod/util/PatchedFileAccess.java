@@ -22,6 +22,11 @@ import net.enderturret.patched.Patches;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 
+/**
+ * An implementation of {@link IFileAccess} for Minecraft's resource system.
+ * The file cache is not stored in each {@code PatchedFileAccess} instance, so they need not be kept around, and are relatively cheap to construct.
+ * @author EnderTurret
+ */
 public final class PatchedFileAccess implements IFileAccess {
 
 	private static final LoadingCache<PackResources, Map<String, JsonPatch>> CACHE = CacheBuilder.newBuilder()
@@ -35,10 +40,18 @@ public final class PatchedFileAccess implements IFileAccess {
 
 	private final PackResources pack;
 
+	/**
+	 * Constructs a new {@code PatchedFileAccess}.
+	 * @param pack The pack to read files from.
+	 */
 	public PatchedFileAccess(PackResources pack) {
 		this.pack = pack;
 	}
 
+	/**
+	 * Returns the pack wrapped by this {@code PatchedFileAccess}.
+	 * @return The wrapped pack.
+	 */
 	public PackResources pack() {
 		return pack;
 	}

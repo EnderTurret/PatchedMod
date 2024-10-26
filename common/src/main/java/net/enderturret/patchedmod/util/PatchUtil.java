@@ -55,6 +55,14 @@ public final class PatchUtil {
 
 	private static boolean fileResourcesHookWorks = true;
 
+	/**
+	 * Returns a list of all resources in the provided pack under the given namespace that match the specified filter.
+	 * @param pack The pack to look for resources in.
+	 * @param type The type of resources to look for. Most important for mods, which may have both kinds.
+	 * @param namespace The namespace to look under.
+	 * @param filter A filter for filtering out undesired results.
+	 * @return The list of resources.
+	 */
 	public static List<ResourceLocation> getResources(PackResources pack, PackType type, String namespace, Predicate<ResourceLocation> filter) {
 		if (pack instanceof FilePackResources fpp) return fileResourcesHookWorks ? getFileResources(fpp, type, namespace, filter) : List.of();
 
@@ -63,10 +71,11 @@ public final class PatchUtil {
 		// This one's gonna require some explaining:
 		// Basically, we want to look at all resources in the pack.
 		// The problem is that Minecraft prevents this by bailing for paths "", ".", etc.
+		// However, it doesn't check *namespaces*...
 		//
 		// So what we do here is swap the namespace and path so that it initially
 		// resolves the same directory and then resolves the namespace directory.
-		// We have to use a dot for the VanillaPackResources because otherwise LinkFileSystem's path handling gets a little concerned.
+		// We must use a dot for VanillaPackResources because otherwise LinkFileSystem throws.
 		try {
 			final Function<ResourceLocation, ResourceLocation> renamer = Patched.platform().getRenamer(pack, namespace);
 			final String fakeNamespace;

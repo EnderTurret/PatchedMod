@@ -14,6 +14,9 @@ import net.enderturret.patchedmod.util.PatchUtil;
 @Mixin(FilePackResources.class)
 public interface FilePackResourcesAccess {
 
+	/**
+	 * @return {@link FilePackResources#zipFileAccess}.
+	 */
 	@Accessor
 	public FilePackResources.SharedZipFileAccess getZipFileAccess();
 }

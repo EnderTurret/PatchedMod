@@ -11,8 +11,13 @@ import net.minecraft.server.WorldLoader;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 
+import net.enderturret.patchedmod.internal.PatchTargetManager;
 import net.enderturret.patchedmod.internal.flow.DynamicPatches;
 
+/**
+ * Handles setting up the data pack {@link PatchTargetManager}.
+ * @author EnderTurret
+ */
 @Mixin(WorldLoader.PackConfig.class)
 public abstract class MixinPackConfig {
 

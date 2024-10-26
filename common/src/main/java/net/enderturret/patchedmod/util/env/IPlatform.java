@@ -14,6 +14,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.util.IPatchingPackResources;
@@ -145,18 +146,49 @@ public interface IPlatform {
 	 */
 	public default Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) { return List.of(); }
 
+	/**
+	 * Determines whether the specified pack needs the namespace and path flipped in order to discover all files in a given namespace.
+	 * In short, this determines whether to ask for ":minecraft" (flipped) or "minecraft:" (normal).
+	 * This is necessary because {@link PathPackResources} throws for empty/dotted paths (so we trick it by putting the namespace in the path).
+	 * @param pack The pack in question.
+	 * @return {@code true} if the namespace and path must be swapped.
+	 */
 	public boolean needsSwapNamespaceAndPath(PackResources pack);
+
+	/**
+	 * As a consequence of {@link #needsSwapNamespaceAndPath(PackResources)}, the returned {@linkplain ResourceLocation resource locations} may need to be renamed.
+	 * This method returns the renamer function for a given pack.
+	 * @param pack The pack in question.
+	 * @param namespace The namespace being searched.
+	 * @return The renamer function.
+	 */
 	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace);
 
+	/**
+	 * Returns a {@code Stream} over all packs in the given resource manager, expanding {@linkplain #getChildren(PackResources) group packs} as necessary.
+	 * @param manager The resource manager to query the packs of.
+	 * @return The stream.
+	 */
 	public default Stream<PackResources> getExpandedPacks(ResourceManager manager) {
 		return manager.listPacks()
 				.flatMap(p -> isGroup(p) ? getChildren(p).stream() : Stream.of(p));
 	}
 
+	/**
+	 * Returns a {@code Stream} over all patching-enabled packs in the given resource manager, expanding {@linkplain #getChildren(PackResources) group packs} as necessary.
+	 * This functions like {@link #getExpandedPacks(ResourceManager)}, but additionally filtering out non-patching packs.
+	 * @param manager The resource manager to query the packs of.
+	 * @return The stream.
+	 */
 	public default Stream<PackResources> getPatchingPacks(ResourceManager manager) {
 		return getExpandedPacks(manager).filter(this::hasPatches);
 	}
 
+	/**
+	 * A convenience method to check whether or not the specified pack has patching enabled.
+	 * @param pack The pack in question.
+	 * @return {@code true} if the pack has patching enabled.
+	 */
 	public default boolean hasPatches(PackResources pack) {
 		return pack instanceof IPatchingPackResources ppp && ppp.patchedMetadata().patchingEnabled();
 	}

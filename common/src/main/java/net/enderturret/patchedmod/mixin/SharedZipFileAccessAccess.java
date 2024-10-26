@@ -16,6 +16,9 @@ import net.enderturret.patchedmod.util.PatchUtil;
 @Mixin(SharedZipFileAccess.class)
 public interface SharedZipFileAccessAccess {
 
+	/**
+	 * @return {@link SharedZipFileAccess#getOrCreateZipFile()}.
+	 */
 	@Invoker
 	public ZipFile callGetOrCreateZipFile();
 }

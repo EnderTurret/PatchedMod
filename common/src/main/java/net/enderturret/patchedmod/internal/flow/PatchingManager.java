@@ -44,6 +44,11 @@ import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 @Internal
 public final class PatchingManager {
 
+	/**
+	 * A global flag that allows turning on various debug messages from Patched, as well as the {@code debug} subcommand.
+	 * The most noticeable effect is several log messages being raised from {@code DEBUG} to {@code INFO} -- this
+	 * is because those messages are otherwise invisible on Fabric and Quilt.
+	 */
 	@Internal
 	public static final boolean DEBUG = Boolean.getBoolean("patched.debug");
 

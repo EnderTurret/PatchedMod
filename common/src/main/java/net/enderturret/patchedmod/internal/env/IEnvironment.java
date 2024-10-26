@@ -22,24 +22,67 @@ import net.minecraft.server.packs.resources.ResourceManager;
 @Internal
 public interface IEnvironment<T> {
 
+	/**
+	 * Returns whether or not the environment represents a client context.
+	 * This determines whether to register the client version of the command as well as which pack type to use.
+	 * @return {@code true} if this is a client context.
+	 */
 	public boolean client();
 
+	/**
+	 * Returns the {@code ResourceManager} for the specified command source.
+	 * @param source The command source.
+	 * @return The corresponding resource manager.
+	 */
 	public ResourceManager getResourceManager(T source);
 
+	/**
+	 * Sends a success message to the command source, and optionally logs the message to operators and the console.
+	 * @param source The command source.
+	 * @param message The message.
+	 * @param allowLogging Whether or not to log the message to operators and the server console.
+	 */
 	public void sendSuccess(T source, Component message, boolean allowLogging);
 
+	/**
+	 * Sends an error message to the command source.
+	 * @param source The command source.
+	 * @param message The message.
+	 */
 	public void sendFailure(T source, Component message);
 
+	/**
+	 * Determines whether the command source has the specified permission level.
+	 * @param source The command source.
+	 * @param level The permission level.
+	 * @return {@code true} if they have the specified permission level.
+	 */
 	public boolean hasPermission(T source, int level);
 
+	/**
+	 * Creates a {@link LiteralArgumentBuilder} for the command source type represented by this environment instance.
+	 * @param name The name of the literal.
+	 * @return The argument builder.
+	 */
 	public default LiteralArgumentBuilder<T> literal(String name) {
 		return LiteralArgumentBuilder.literal(name);
 	}
 
+	/**
+	 * Creates a {@link RequiredArgumentBuilder} for the command source type represented by this environment instance.
+	 * @param <A> The underlying object type of the argument.
+	 * @param name The name of the argument.
+	 * @param type The argument type.
+	 * @return The argument builder.
+	 */
 	public default <A> RequiredArgumentBuilder<T, A> argument(String name, ArgumentType<A> type) {
 		return RequiredArgumentBuilder.argument(name, type);
 	}
 
+	/**
+	 * A loader-agnostic implementation of {@code IEnvironment} for the server.
+	 * @author EnderTurret
+	 */
 	@Internal
 	public static final class ServerEnvironment implements IEnvironment<CommandSourceStack> {
 

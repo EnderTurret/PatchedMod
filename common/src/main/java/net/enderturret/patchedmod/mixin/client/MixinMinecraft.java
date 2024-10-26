@@ -10,8 +10,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
+import net.enderturret.patchedmod.internal.PatchTargetManager;
 import net.enderturret.patchedmod.internal.flow.DynamicPatches;
 
+/**
+ * Handles setting up the resource pack {@link PatchTargetManager}.
+ * @author EnderTurret
+ */
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
 
