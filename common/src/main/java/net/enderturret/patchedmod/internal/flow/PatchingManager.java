@@ -119,7 +119,7 @@ public final class PatchingManager {
 
 		from = findTrueSource(from, type, name);
 
-		final Map<PackResources, List<String>> targets = DynamicPatches.getTargets(type, patchName, from);
+		final Map<PackResources, List<String>> targets = DynamicPatches.getTargets(type, name, from);
 
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
 			final PackEntry packEntry = manager.fallbacks.get(i);
