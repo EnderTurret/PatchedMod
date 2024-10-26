@@ -23,13 +23,13 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceMetadata;
 
 import net.enderturret.patchedmod.internal.FallbackResourceManagerHidingTreeMap;
-import net.enderturret.patchedmod.internal.MixinCallbacks;
+import net.enderturret.patchedmod.internal.flow.PatchingManager;
 
 /**
  * <p>This mixin implements the functionality for actually patching resources.</p>
  * <p>This is done by wrapping the {@link IoSupplier}
  * returned by {@link FallbackResourceManager#wrapForDebug(ResourceLocation, PackResources, IoSupplier)} with
- * {@link MixinCallbacks#chain(IoSupplier, FallbackResourceManager, PackType, ResourceLocation, PackResources) MixinCallbacks.chain(IoSupplier, FallbackResourceManager, PackType, ResourceLocation, PackResources)}.</p>
+ * {@link PatchingManager#chain(IoSupplier, FallbackResourceManager, PackType, ResourceLocation, PackResources) MixinCallbacks.chain(IoSupplier, FallbackResourceManager, PackType, ResourceLocation, PackResources)}.</p>
  * @author EnderTurret
  */
 @Mixin(FallbackResourceManager.class)
@@ -49,7 +49,7 @@ public abstract class MixinFallbackResourceManager {
 			method = { "getResource", "listResourceStacks" })
 	private Resource patched$replaceResource(PackResources pack, ResourceLocation location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier, Operation<Resource> downstream) {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
-		final IoSupplier<InputStream> sup = MixinCallbacks.chain(streamSupplier, self, type, location, pack);
+		final IoSupplier<InputStream> sup = PatchingManager.chain(streamSupplier, self, type, location, pack);
 		return downstream.call(pack, location, sup, metadataSupplier);
 	}
 
@@ -88,7 +88,7 @@ public abstract class MixinFallbackResourceManager {
 		else
 			throw new IllegalStateException("Neither map is the expected type; did a mixin fail?");
 
-		final IoSupplier<InputStream> sup = MixinCallbacks.chain(streamSupplier, hidden.manager, hidden.type, location, pack);
+		final IoSupplier<InputStream> sup = PatchingManager.chain(streamSupplier, hidden.manager, hidden.type, location, pack);
 
 		return downstream.call(pack, location, sup, metadataSupplier);
 	}

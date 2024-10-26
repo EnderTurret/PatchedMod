@@ -11,13 +11,13 @@ import net.minecraft.server.WorldLoader;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 
-import net.enderturret.patchedmod.internal.MixinCallbacks;
+import net.enderturret.patchedmod.internal.flow.DynamicPatches;
 
 @Mixin(WorldLoader.PackConfig.class)
 public abstract class MixinPackConfig {
 
 	@Inject(at = @At("RETURN"), method = "createResourceManager")
 	private void patched$setupServerPatchTargetManager(CallbackInfoReturnable<Pair<?, CloseableResourceManager>> cir) {
-		MixinCallbacks.setupTargetManager(PackType.SERVER_DATA, cir.getReturnValue().getSecond().listPacks().toList());
+		DynamicPatches.setupTargetManager(PackType.SERVER_DATA, cir.getReturnValue().getSecond().listPacks().toList());
 	}
 }

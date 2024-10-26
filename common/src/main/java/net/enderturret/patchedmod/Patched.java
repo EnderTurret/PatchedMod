@@ -6,14 +6,14 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.resources.ResourceLocation;
 
-import net.enderturret.patchedmod.internal.MixinCallbacks;
 import net.enderturret.patchedmod.internal.env.DummyPlatform;
+import net.enderturret.patchedmod.internal.flow.PatchingManager;
 import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
 /**
  * <p>The main mod class.</p>
- * <p>All the exciting content is in {@link MixinCallbacks} and {@link PatchUtil}.</p>
+ * <p>All the exciting content is in {@link PatchingManager} and {@link PatchUtil}.</p>
  * @author EnderTurret
  */
 public final class Patched {

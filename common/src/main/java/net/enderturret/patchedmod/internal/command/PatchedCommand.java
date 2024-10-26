@@ -17,8 +17,8 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.internal.MixinCallbacks;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
+import net.enderturret.patchedmod.internal.flow.PatchingManager;
 
 /**
  * Defines the root '/patched' command and provides a few utility methods for the subcommands to use.
@@ -34,7 +34,7 @@ public final class PatchedCommand {
 				.then(DumpCommand.create(env))
 				.then(ListCommand.create(env));
 
-		return MixinCallbacks.DEBUG ? ret.then(DebugCommand.create(env)) : ret;
+		return PatchingManager.DEBUG ? ret.then(DebugCommand.create(env)) : ret;
 	}
 
 	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, IEnvironment<T> env, boolean quoted) {
