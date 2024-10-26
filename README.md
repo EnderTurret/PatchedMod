@@ -6,7 +6,7 @@ It is an implementation of [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6
 This mod supports [Forge](https://minecraftforge.net) (for 1.20.1 and below), [NeoForge](https://neoforged.net) (for 1.20.1 and above), [Fabric](https://fabricmc.net), and [Quilt](https://quiltmc.org/en),
 and can be found on [Modrinth](https://modrinth.com/mod/patched) and [CurseForge](https://www.curseforge.com/minecraft/mc-mods/patched).
 
-Patched's documentation can be found [here](docs/index.md).
+Patched's documentation can be found [here](https://github.com/EnderTurret/PatchedMod/wiki).
 
 ## What this mod can do that vanilla packs cannot
 
