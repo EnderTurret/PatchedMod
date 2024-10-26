@@ -21,8 +21,15 @@ import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.meta.IPattern;
 import net.enderturret.patchedmod.util.meta.PatchTarget;
 import net.enderturret.patchedmod.util.meta.PatchTarget.Target;
+import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.util.meta.PatchedPackType;
 
+/**
+ * {@code PatchTargetManager}, as the name may suggest, manages patch targets.
+ * These are defined in individual packs' {@link PatchedMetadata} and allow patching many files based on one or more regular expressions.
+ * Reading all of this data every time a file is patched isn't quick however, so this class tracks this information to speed things up.
+ * @author EnderTurret
+ */
 @Internal
 public final class PatchTargetManager {
 
@@ -36,6 +43,11 @@ public final class PatchTargetManager {
 	@Nullable
 	private final Map<String, List<BakedTarget>> targetsByNamespace;
 
+	/**
+	 * Constructs a new {@code PatchTargetManager} with the specified pack type and list of packs.
+	 * @param type The pack type.
+	 * @param packsByPriority The list of packs, ordered by priority.
+	 */
 	@Internal
 	public PatchTargetManager(PackType type, List<PackResources> packsByPriority) {
 		this.type = type;
@@ -87,6 +99,12 @@ public final class PatchTargetManager {
 		targetsByNamespace.put(ns, List.copyOf(targets));
 	}
 
+	/**
+	 * From the specified location and pack, builds up a list of applicable patches to apply to the file and returns it.
+	 * @param loc The location of the file being patched.
+	 * @param from The pack the file originated from. Determines which other packs to take into account.
+	 * @return The list of all applicable patches, paired with their owning packs (for priority handling).
+	 */
 	@Internal
 	public Map<PackResources, List<String>> getTargets(ResourceLocation loc, PackResources from) {
 		if (targetsByNamespace == null) return Map.of();
@@ -149,6 +167,11 @@ public final class PatchTargetManager {
 		return ret;
 	}
 
+	/**
+	 * Returns whether or not the specified pack ID is tracked by this {@code PatchTargetManager}.
+	 * @param name The pack ID to test.
+	 * @return {@code true} if the specified pack is tracked.
+	 */
 	@Internal
 	public boolean containsPack(String name) {
 		return priorityByPack.containsKey(name.intern());

@@ -16,6 +16,9 @@ import net.enderturret.patchedmod.util.PatchUtil;
 @Mixin(FilePackResources.class)
 public interface FilePackResourcesAccess {
 
+	/**
+	 * @return {@link FilePackResources#getOrCreateZipFile()}.
+	 */
 	@Invoker("getOrCreateZipFile")
 	public ZipFile patched$callGetOrCreateZipFile();
 }

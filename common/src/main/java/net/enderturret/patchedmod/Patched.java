@@ -18,12 +18,19 @@ import net.enderturret.patchedmod.util.env.IPlatform;
  */
 public final class Patched {
 
+	/**
+	 * Patched's mod ID.
+	 */
 	public static final String MOD_ID = "patched";
 
 	private static IPlatform platform;
 
 	private Patched() {}
 
+	/**
+	 * Returns Patched's platform instance.
+	 * @return The platform.
+	 */
 	@Internal
 	public static IPlatform platform() {
 		if (platform == null) {
@@ -35,6 +42,10 @@ public final class Patched {
 		return platform;
 	}
 
+	/**
+	 * Sets Patched's platform instance.
+	 * @param value The new value.
+	 */
 	@Internal
 	public static void setPlatform(IPlatform value) {
 		platform = Objects.requireNonNull(value);

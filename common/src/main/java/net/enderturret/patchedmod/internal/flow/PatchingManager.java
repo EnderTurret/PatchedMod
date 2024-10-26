@@ -44,9 +44,16 @@ import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 @Internal
 public final class PatchingManager {
 
+	/**
+	 * A global flag that allows turning on various debug messages from Patched, as well as the {@code debug} subcommand.
+	 * The most noticeable effect is several log messages being raised from {@code DEBUG} to {@code INFO} -- this
+	 * is because those messages are otherwise invisible on Fabric and Quilt.
+	 */
 	@Internal
 	public static final boolean DEBUG = Boolean.getBoolean("patched.debug");
 
+	// Whether to print the "patched:has_patches" deprecation warning.
+	// This is here so it can be disabled on older versions.
 	private static final boolean HASPATCHES_WARNING = false;
 
 	private static final AtomicBoolean LOG_EXCEPTIONS = new AtomicBoolean(true);
@@ -131,10 +138,7 @@ public final class PatchingManager {
 					for (String patch : targets.getOrDefault(pack.resources(), List.of())) {
 						// We use the IFileAccess instead of grabbing it manually so that it's cached.
 						if (access == null)
-							if (ctx != null)
-								access = ctx.fileAccess();
-							else
-								access = new PatchedFileAccess(pack.resources());
+							access = ctx != null ? ctx.fileAccess() : new PatchedFileAccess(pack.resources());
 
 						applyPatch(
 								type, access.readIncludedPatch(patch),

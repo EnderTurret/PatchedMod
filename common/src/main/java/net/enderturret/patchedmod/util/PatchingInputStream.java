@@ -12,7 +12,17 @@ import net.minecraft.server.packs.resources.IoSupplier;
 
 import net.enderturret.patched.audit.PatchAudit;
 
-@SuppressWarnings("resource")
+/**
+ * <p>
+ * {@code PatchingInputStream} wraps another stream and allows patching it using a supplied 'patch function'.
+ * This allows delaying the patching of the stream until it is used.
+ * </p>
+ * <p>
+ * The main purpose of this class is to expose <i>some</i> implementation details to callers so they may customize the patching operation.
+ * In particular, this allows filling in {@linkplain PatchAudit patch audits} or shutting off patching entirely, although the latter is <i>not</i> considered API.
+ * </p>
+ * @author EnderTurret
+ */
 public class PatchingInputStream extends FilterInputStream {
 
 	private PatchFunction patcher;
@@ -20,6 +30,12 @@ public class PatchingInputStream extends FilterInputStream {
 	@Nullable
 	private PatchAudit audit = null;
 
+	/**
+	 * Constructs a new {@code PatchingInputStream}.
+	 * @param delegate The stream to be patched.
+	 * @param patcher The patch function to apply to the stream.
+	 * @throws IOException If an I/O error occurs opening the stream.
+	 */
 	public PatchingInputStream(IoSupplier<InputStream> delegate, PatchFunction patcher) throws IOException {
 		super(delegate.get());
 		this.patcher = Objects.requireNonNull(patcher);
@@ -45,6 +61,10 @@ public class PatchingInputStream extends FilterInputStream {
 		patcher = null;
 	}
 
+	/**
+	 * Attaches an audit to the patching operation, allowing it to be filled out when the file is patched.
+	 * @param audit The audit to fill out.
+	 */
 	public void withAudit(PatchAudit audit) {
 		this.audit = audit;
 	}
@@ -97,8 +117,19 @@ public class PatchingInputStream extends FilterInputStream {
 		return super.markSupported();
 	}
 
+	/**
+	 * Represents a function that may be applied to transform the contents of an {@link InputStream}.
+	 * @author EnderTurret
+	 */
 	@FunctionalInterface
 	public static interface PatchFunction {
+
+		/**
+		 * Applies the patch function to the specified stream, optionally with the specified audit.
+		 * @param stream The stream to patch the contents of.
+		 * @param audit The audit. May be {@code null}.
+		 * @return The patched stream.
+		 */
 		public InputStream patch(InputStream stream, @Nullable PatchAudit audit);
 	}
 }

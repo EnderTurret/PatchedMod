@@ -19,9 +19,21 @@ import net.minecraft.server.packs.resources.FallbackResourceManager;
 @Internal
 public final class FallbackResourceManagerHidingTreeMap<K, V> extends TreeMap<K, V> {
 
+	/**
+	 * The resource manager being smuggled into {@code static} context.
+	 */
 	public final FallbackResourceManager manager;
+
+	/**
+	 * The {@linkplain #manager resource manager}'s pack type.
+	 */
 	public final PackType type;
 
+	/**
+	 * Constructs a new {@code FallbackResourceManagerHidingTreeMap} with the specified parameters.
+	 * @param manager The resource manager.
+	 * @param type The pack type.
+	 */
 	public FallbackResourceManagerHidingTreeMap(FallbackResourceManager manager, PackType type) {
 		this.manager = manager;
 		this.type = type;
