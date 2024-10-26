@@ -1,13 +1,6 @@
-package net.enderturret.patchedmod.internal;
+package net.enderturret.patchedmod.internal.flow;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -16,7 +9,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.event.Level;
 
 import com.google.common.collect.Iterables;
@@ -32,7 +24,6 @@ import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 
 import net.enderturret.patched.IFileAccess;
-import net.enderturret.patched.JsonDocument;
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patched.exception.PatchingException;
@@ -47,22 +38,18 @@ import net.enderturret.patchedmod.util.PatchingInputStream;
 import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 /**
- * <p>Handles callbacks from mixins -- what you would expect from the name.</p>
- * <p>Specifically, this handles the overall management of patching files and setting up packs for patching.</p>
+ * The {@code PatchingManager} class handles the overall management of patching files and setting up packs for patching.
  * @author EnderTurret
  */
 @Internal
-public class MixinCallbacks {
+public final class PatchingManager {
 
 	@Internal
 	public static final boolean DEBUG = Boolean.getBoolean("patched.debug");
 
-	@Internal
-	static final boolean DEBUG_TARGETS = Boolean.getBoolean("patched.debugTargets");
-
+	// Whether to print the "patched:has_patches" deprecation warning.
+	// This is here so it can be disabled on older versions.
 	private static final boolean HASPATCHES_WARNING = true;
-
-	private static final Map<PackType, PatchTargetManager> PATCH_TARGET_MANAGERS = new EnumMap<>(PackType.class);
 
 	private static final AtomicBoolean LOG_EXCEPTIONS = new AtomicBoolean(true);
 
@@ -127,18 +114,14 @@ public class MixinCallbacks {
 
 		from = findTrueSource(from, type, name);
 
-		final PatchTargetManager targetManager = PATCH_TARGET_MANAGERS.get(type);
-		final Map<PackResources, List<String>> targets = targetManager == null ? Map.of() : targetManager.getTargets(name, from);
-
-		if (DEBUG_TARGETS && !targets.isEmpty())
-			Patched.platform().logger().info("Targets for {} (from {}): {}", name, from, targets);
+		final Map<PackResources, List<String>> targets = DynamicPatches.getTargets(type, patchName, from);
 
 		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
 			final PackEntry packEntry = manager.fallbacks.get(i);
 			if (packEntry.resources() == null) continue;
 			final Entry entry = new Entry(packEntry);
 
-			if (hasPatches(entry.resources))
+			if (hasPatches(entry.resources()))
 				for (Entry pack : packsIn(entry, type, patchName)) {
 					PatchContext ctx = applyPatch(
 							type, pack.resources().getResource(type, patchName),
@@ -147,13 +130,10 @@ public class MixinCallbacks {
 							);
 
 					IFileAccess access = null;
-					for (String patch : targets.getOrDefault(pack.resources, List.of())) {
+					for (String patch : targets.getOrDefault(pack.resources(), List.of())) {
 						// We use the IFileAccess instead of grabbing it manually so that it's cached.
 						if (access == null)
-							if (ctx != null)
-								access = ctx.fileAccess();
-							else
-								access = new PatchedFileAccess(pack.resources);
+							access = ctx != null ? ctx.fileAccess() : new PatchedFileAccess(pack.resources());
 
 						applyPatch(
 								type, access.readIncludedPatch(patch),
@@ -283,7 +263,7 @@ public class MixinCallbacks {
 								final String json = PatchUtil.readString(is);
 								final JsonElement elem = JsonParser.parseString(json);
 
-								meta = PatchedMetadata.of(elem, entry.name);
+								meta = PatchedMetadata.of(elem, entry.name());
 							} catch (Exception e) {
 								Patched.platform().logger().warn("Failed to read pack.mcmeta in {}:", entry.name(), e);
 								meta = PatchedMetadata.DISABLED_METADATA;
@@ -326,7 +306,7 @@ public class MixinCallbacks {
 					Iterables.filter(Patched.platform().getFilteredChildren(entry.resources(), type, patchName),
 							pack -> hasPatches(pack)),
 					Entry::new);
-		else if (hasPatches(entry.resources))
+		else if (hasPatches(entry.resources()))
 			return List.of(entry);
 
 		return List.of();
@@ -352,96 +332,5 @@ public class MixinCallbacks {
 					return pack;
 
 		return from;
-	}
-
-	public static void setupTargetManager(PackType type, List<PackResources> packsByPriority) {
-		PATCH_TARGET_MANAGERS.put(type, new PatchTargetManager(type, packsByPriority));
-	}
-
-	@VisibleForTesting
-	public static Map<PackType, PatchTargetManager> getTargetManagers() {
-		return Collections.unmodifiableMap(PATCH_TARGET_MANAGERS);
-	}
-
-	/**
-	 * An alternative to ATing {@link PackEntry}'s constructor public.
-	 * @author EnderTurret
-	 * @param name The name of the pack.
-	 * @param resources The pack itself.
-	 */
-	static record Entry(String name, PackResources resources) {
-
-		Entry {}
-
-		Entry(PackEntry packEntry) {
-			this(Objects.requireNonNull(packEntry.resources(), "packEntry.resources()"));
-		}
-
-		Entry(PackResources resources) {
-			this(Patched.platform().getName(Objects.requireNonNull(resources, "resources")), resources);
-		}
-	}
-
-	/**
-	 * A class that wraps an {@link InputStream} in such a way that we can avoid reading from it if no patching is performed.
-	 * @author EnderTurret
-	 */
-	private static class LazyPatchingWrapper {
-
-		private InputStream stream;
-		private byte[] oldBytes;
-		private JsonDocument doc;
-
-		public LazyPatchingWrapper(InputStream stream) {
-			this.stream = stream;
-		}
-
-		public InputStream getOrCreateStream() {
-			if (oldBytes == null) return Objects.requireNonNull(stream);
-
-			if (doc != null)
-				oldBytes = PatchUtil.GSON.toJson(doc.getRoot()).getBytes(StandardCharsets.UTF_8);
-
-			return new ByteArrayInputStream(oldBytes);
-		}
-
-		public JsonDocument get() {
-			if (doc == null)
-				doc = new JsonDocument(read());
-
-			return doc;
-		}
-
-		private JsonElement read() {
-			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-			try {
-				stream.transferTo(baos);
-				stream.close();
-				stream = null;
-			} catch (IOException e) {
-				throw new UncheckedIOException("Failed to transfer data to byte array", e);
-			}
-
-			oldBytes = baos.toByteArray();
-
-			String json = new String(oldBytes, StandardCharsets.UTF_8);
-
-			try {
-				return JsonParser.parseString(json);
-			} catch (Exception e) {
-				throw new BailException(e);
-			}
-		}
-	}
-
-	/**
-	 * An exception thrown to signal that we should really just bail out and let someone else handle this mess.
-	 * @author EnderTurret
-	 */
-	private static class BailException extends RuntimeException {
-
-		public BailException() {}
-		public BailException(Throwable cause) { super(cause); }
 	}
 }

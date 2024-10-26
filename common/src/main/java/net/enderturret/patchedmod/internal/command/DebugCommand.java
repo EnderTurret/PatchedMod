@@ -9,9 +9,9 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
 
-import net.enderturret.patchedmod.internal.MixinCallbacks;
 import net.enderturret.patchedmod.internal.PatchTargetManager;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
+import net.enderturret.patchedmod.internal.flow.DynamicPatches;
 
 final class DebugCommand {
 
@@ -22,7 +22,7 @@ final class DebugCommand {
 	}
 
 	private static <T> int dumpTargetManagers(CommandContext<T> ctx, IEnvironment<T> env) {
-		final Map<PackType, PatchTargetManager> managers = MixinCallbacks.getTargetManagers();
+		final Map<PackType, PatchTargetManager> managers = DynamicPatches.getTargetManagers();
 
 		for (PackType type : PackType.values())
 			env.sendSuccess(

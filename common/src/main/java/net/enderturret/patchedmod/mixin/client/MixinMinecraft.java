@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
-import net.enderturret.patchedmod.internal.MixinCallbacks;
+import net.enderturret.patchedmod.internal.flow.DynamicPatches;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
@@ -24,7 +24,7 @@ public abstract class MixinMinecraft {
 			ordinal = 0
 	)
 	private List<PackResources> patched$setupClientPatchTargetManagerInitial(List<PackResources> packsByPriority) {
-		MixinCallbacks.setupTargetManager(PackType.CLIENT_RESOURCES, packsByPriority);
+		DynamicPatches.setupTargetManager(PackType.CLIENT_RESOURCES, packsByPriority);
 		return packsByPriority;
 	}
 
@@ -37,7 +37,7 @@ public abstract class MixinMinecraft {
 			ordinal = 0
 	)
 	private List<PackResources> patched$setupClientPatchTargetManagerReload(List<PackResources> packsByPriority) {
-		MixinCallbacks.setupTargetManager(PackType.CLIENT_RESOURCES, packsByPriority);
+		DynamicPatches.setupTargetManager(PackType.CLIENT_RESOURCES, packsByPriority);
 		return packsByPriority;
 	}
 }

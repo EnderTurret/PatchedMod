@@ -2,7 +2,7 @@ package net.enderturret.patchedmod.util;
 
 import net.minecraft.server.packs.PackResources;
 
-import net.enderturret.patchedmod.internal.MixinCallbacks;
+import net.enderturret.patchedmod.internal.flow.PatchingManager;
 import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 /**
@@ -36,7 +36,7 @@ public interface IPatchingPackResources {
 	 */
 	public default boolean checkInitialized() {
 		if (!initialized())
-			MixinCallbacks.maybeInitialize((PackResources) this);
+			PatchingManager.maybeInitialize((PackResources) this);
 
 		return true;
 	}

@@ -19,8 +19,8 @@ import net.minecraft.server.packs.PackType;
 import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
-import net.enderturret.patchedmod.internal.MixinCallbacks;
 import net.enderturret.patchedmod.internal.PatchTargetManager;
+import net.enderturret.patchedmod.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.util.PatchUtil;
 
 /**
@@ -94,7 +94,7 @@ public final class PatchedTestConditions implements RootEvaluator {
 			final PackType type = ((RootEvaluator) context.testEvaluator()).packType();
 			// Happens if someone uses PatchUtil.CONTEXT or INSTANCE directly (or otherwise constructs a type-agnostic evaluator).
 			if (type == null) throw new PatchingException("Cannot use patched:pack_enabled in type-agnostic context");
-			final PatchTargetManager manager = MixinCallbacks.getTargetManagers().get(type);
+			final PatchTargetManager manager = DynamicPatches.getTargetManagers().get(type);
 
 			if (value instanceof JsonArray array) {
 				if (array.isEmpty()) throw new PatchingException("patched:pack_enabled: value array must not be empty");

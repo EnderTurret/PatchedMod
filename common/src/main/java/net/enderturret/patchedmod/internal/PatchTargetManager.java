@@ -16,6 +16,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.meta.IPattern;
 import net.enderturret.patchedmod.util.meta.PatchTarget;
@@ -35,7 +36,8 @@ public final class PatchTargetManager {
 	@Nullable
 	private final Map<String, List<BakedTarget>> targetsByNamespace;
 
-	PatchTargetManager(PackType type, List<PackResources> packsByPriority) {
+	@Internal
+	public PatchTargetManager(PackType type, List<PackResources> packsByPriority) {
 		this.type = type;
 
 		packsByPriority = packsByPriority.stream()
@@ -85,7 +87,8 @@ public final class PatchTargetManager {
 		targetsByNamespace.put(ns, List.copyOf(targets));
 	}
 
-	Map<PackResources, List<String>> getTargets(ResourceLocation loc, PackResources from) {
+	@Internal
+	public Map<PackResources, List<String>> getTargets(ResourceLocation loc, PackResources from) {
 		if (targetsByNamespace == null) return Map.of();
 
 		bakeNamespace(loc.getNamespace());
@@ -108,22 +111,22 @@ public final class PatchTargetManager {
 				lastList = null; // Here we avoid creating hundreds of ArrayLists in the event there's no relevant targets.
 			}
 
-			if (MixinCallbacks.DEBUG_TARGETS)
+			if (DynamicPatches.DEBUG_TARGETS)
 				Patched.platform().logger().info("Processing {} with last values {}, {}, {}...", target, lastPack, lastIdx, lastList);
 
 			// Don't allow patches from lower packs to affect a replacement from a higher one.
 			final int idx = priorityByPack.get(target.from.packId().intern());
 
-			if (MixinCallbacks.DEBUG_TARGETS)
+			if (DynamicPatches.DEBUG_TARGETS)
 				Patched.platform().logger().info("  Priority check: {} < {}?", idx, fromIndex);
 
 			if (idx < fromIndex) break;
 
-			if (MixinCallbacks.DEBUG_TARGETS)
+			if (DynamicPatches.DEBUG_TARGETS)
 				Patched.platform().logger().info("  Trying patterns {} on {}", target.target().path(), loc.getPath());
 
 			for (IPattern pattern : target.target().path()) {
-				if (MixinCallbacks.DEBUG_TARGETS)
+				if (DynamicPatches.DEBUG_TARGETS)
 					Patched.platform().logger().info("    Trying pattern {} ({}) on {}", pattern, pattern.getClass().getSimpleName(), loc.getPath());
 
 				if (pattern.test(loc.getPath())) {
@@ -132,7 +135,7 @@ public final class PatchTargetManager {
 
 					lastList.add(target.patch);
 
-					if (MixinCallbacks.DEBUG_TARGETS)
+					if (DynamicPatches.DEBUG_TARGETS)
 						Patched.platform().logger().info("    Success: added {} to {}", target.patch, lastList);
 
 					continue parent;
@@ -140,12 +143,13 @@ public final class PatchTargetManager {
 			}
 		}
 
-		if (MixinCallbacks.DEBUG_TARGETS)
+		if (DynamicPatches.DEBUG_TARGETS)
 			Patched.platform().logger().info("Returning {}", ret);
 
 		return ret;
 	}
 
+	@Internal
 	public boolean containsPack(String name) {
 		return priorityByPack.containsKey(name.intern());
 	}
