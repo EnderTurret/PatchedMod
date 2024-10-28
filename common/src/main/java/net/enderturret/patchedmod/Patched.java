@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import net.enderturret.patched.IDataSource;
 import net.enderturret.patchedmod.internal.PatchedDataSource;
+import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.internal.env.DummyPlatform;
 import net.enderturret.patchedmod.internal.flow.PatchingManager;
 import net.enderturret.patchedmod.util.PatchUtil;
@@ -51,6 +52,7 @@ public final class Patched {
 	@Internal
 	public static void setPlatform(IPlatform value) {
 		platform = Objects.requireNonNull(value);
+		PatchedTestEvaluator.registerDefaults();
 	}
 
 	/**
@@ -60,6 +62,24 @@ public final class Patched {
 	 */
 	public static void registerDataSource(ResourceLocation id, SingleDataSource source) {
 		PatchedDataSource.register(id.toString(), source);
+	}
+
+	/**
+	 * Registers a new {@linkplain TestCondition test condition}.
+	 * @param id The name of the test condition -- what goes in the {@code type} field.
+	 * @param condition The condition to register.
+	 */
+	public static void registerTestCondition(ResourceLocation id, TestCondition condition) {
+		PatchedTestEvaluator.register(id, condition);
+	}
+
+	/**
+	 * Registers a new {@linkplain TestCondition.Simple simple test condition}.
+	 * @param id The name of the test condition -- what goes in the {@code type} field.
+	 * @param condition The condition to register.
+	 */
+	public static void registerSimpleTestCondition(ResourceLocation id, TestCondition.Simple condition) {
+		PatchedTestEvaluator.register(id, condition);
 	}
 
 	/**

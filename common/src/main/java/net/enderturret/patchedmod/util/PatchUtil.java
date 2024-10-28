@@ -29,10 +29,9 @@ import net.enderturret.patched.Patches;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.PatchedTestConditions;
 import net.enderturret.patchedmod.internal.PatchedDataSource;
-import net.enderturret.patchedmod.mixin.FilePackResourcesAccess;
-import net.enderturret.patchedmod.mixin.SharedZipFileAccessAccess;
+import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
+import net.enderturret.patchedmod.internal.PatchedVersionUtil;
 
 /**
  * An assortment of utilities related to patching Json data.
@@ -46,7 +45,7 @@ public final class PatchUtil {
 	public static final PatchContext CONTEXT = PatchContext.newContext()
 			.testExtensions(true)
 			.patchedExtensions(true)
-			.testEvaluator(PatchedTestConditions.getRootEvaluator(null))
+			.testEvaluator(new PatchedTestEvaluator(null))
 			.dataSource(new PatchedDataSource());
 
 	/**
@@ -117,18 +116,18 @@ public final class PatchUtil {
 	 * @return The list of resources under the given namespace.
 	 */
 	private static List<ResourceLocation> getFileResources(FilePackResources pack, PackType type, String namespace, Predicate<ResourceLocation> filter) {
-		final List<ResourceLocation> ret = new ArrayList<>();
-
 		final ZipFile zip;
 		try {
-			zip = ((SharedZipFileAccessAccess) ((FilePackResourcesAccess) pack).getZipFileAccess()).callGetOrCreateZipFile();
+			zip = PatchedVersionUtil.getZipFile(pack);
 		} catch (Throwable e) {
 			Patched.platform().logger().error("Accessing FilePackResources ZipFile threw an exception! Listing FilePackResources contents is now disabled. Informational commands for zip packs may not work correctly!", e);
 			fileResourcesHookWorks = false;
 			return List.of();
 		}
 
-		if (zip == null) return ret;
+		if (zip == null) return List.of();
+
+		final List<ResourceLocation> ret = new ArrayList<>();
 
 		final String root = type.getDirectory() + "/" + namespace + "/";
 
@@ -220,7 +219,7 @@ public final class PatchUtil {
 
 	/**
 	 * If the given value is a {@link String}, returns it. Otherwise, throws an exception.
-	 * @param name Some extra context for the message. Used in {@link PatchedTestConditions} to identify the test condition.
+	 * @param name Some extra context for the message. Used to identify the test condition.
 	 * @param field The name that the given value is associated with.
 	 * @param value The given value.
 	 * @return The given value as a {@link String}.
@@ -236,19 +235,19 @@ public final class PatchUtil {
 	/**
 	 * Simplified version of {@link #assertIsString(String, String, JsonElement)}.
 	 * @deprecated Use {@link #assertIsString(String, String, JsonElement) assertIsString(String, "value", JsonElement)} instead.
-	 * @param name Some extra context for the message. Used in {@link PatchedTestConditions} to identify the test condition.
+	 * @param name Some extra context for the message. Used to identify the test condition.
 	 * @param value The given value.
 	 * @return The given value as a {@link String}.
 	 * @throws PatchingException
 	 */
-	@Deprecated(forRemoval = true, since = "1.20.4")
+	@Deprecated(since = "1.20.4", forRemoval = true)
 	public static String assertIsString(String name, JsonElement value) throws PatchingException {
 		return assertIsString(name, "value", value);
 	}
 
 	/**
 	 * If the given value is a valid {@link ResourceLocation}, returns it. Otherwise, throws an exception.
-	 * @param name Some extra context for the message. Used in {@link PatchedTestConditions} to identify the test condition.
+	 * @param name Some extra context for the message. Used to identify the test condition.
 	 * @param field The name that the given value is associated with.
 	 * @param value The given value.
 	 * @return The given value as a {@link ResourceLocation}.

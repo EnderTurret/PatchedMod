@@ -7,7 +7,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.PatchedTestConditions;
 import net.enderturret.patchedmod.internal.command.PatchedCommand;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 
@@ -18,7 +17,6 @@ public final class PatchedForge {
 	public PatchedForge() {
 		NeoForge.EVENT_BUS.addListener(this::registerCommands);
 		Patched.setPlatform(new ForgePlatform());
-		PatchedTestConditions.registerDefaults();
 	}
 
 	private void registerCommands(RegisterCommandsEvent e) {
