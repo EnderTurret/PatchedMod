@@ -5,7 +5,6 @@ import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.PatchedTestConditions;
 
 @Internal
 public final class PatchedQuilt implements ModInitializer {
@@ -13,6 +12,5 @@ public final class PatchedQuilt implements ModInitializer {
 	@Override
 	public void onInitialize(ModContainer mod) {
 		Patched.setPlatform(new QuiltPlatform());
-		PatchedTestConditions.registerDefaults();
 	}
 }

@@ -6,15 +6,16 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.resources.ResourceLocation;
 
+import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.internal.env.DummyPlatform;
-import net.enderturret.patchedmod.internal.flow.PatchingManager;
 import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
 /**
- * <p>The main mod class.</p>
- * <p>All the exciting content is in {@link PatchingManager} and {@link PatchUtil}.</p>
+ * Patched's loader-agnostic entrypoint and API.
  * @author EnderTurret
+ * @see #registerTestCondition(ResourceLocation, TestCondition)
+ * @see #registerSimpleTestCondition(ResourceLocation, TestCondition.Simple)
  */
 public final class Patched {
 
@@ -49,6 +50,25 @@ public final class Patched {
 	@Internal
 	public static void setPlatform(IPlatform value) {
 		platform = Objects.requireNonNull(value);
+		PatchedTestEvaluator.registerDefaults();
+	}
+
+	/**
+	 * Registers a new {@linkplain TestCondition test condition}.
+	 * @param id The name of the test condition -- what goes in the {@code type} field.
+	 * @param condition The condition to register.
+	 */
+	public static void registerTestCondition(ResourceLocation id, TestCondition condition) {
+		PatchedTestEvaluator.register(id, condition);
+	}
+
+	/**
+	 * Registers a new {@linkplain TestCondition.Simple simple test condition}.
+	 * @param id The name of the test condition -- what goes in the {@code type} field.
+	 * @param condition The condition to register.
+	 */
+	public static void registerSimpleTestCondition(ResourceLocation id, TestCondition.Simple condition) {
+		PatchedTestEvaluator.register(id, condition);
 	}
 
 	/**

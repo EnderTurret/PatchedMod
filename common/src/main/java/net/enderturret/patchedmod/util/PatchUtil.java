@@ -16,7 +16,6 @@ import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
-import net.enderturret.patchedmod.PatchedTestConditions;
 import net.enderturret.patchedmod.internal.PatchedInternal;
 
 /**
@@ -39,6 +38,7 @@ public final class PatchUtil {
 
 	/**
 	 * Returns a list of all resources in the provided pack under the given namespace that match the specified filter.
+	 * @deprecated
 	 * @param pack The pack to look for resources in.
 	 * @param type The type of resources to look for. Most important for mods, which may have both kinds.
 	 * @param namespace The namespace to look under.
@@ -92,7 +92,7 @@ public final class PatchUtil {
 
 	/**
 	 * If the given value is a {@link String}, returns it. Otherwise, throws an exception.
-	 * @param name Some extra context for the message. Used in {@link PatchedTestConditions} to identify the test condition.
+	 * @param name Some extra context for the message. Used to identify the test condition.
 	 * @param field The name that the given value is associated with.
 	 * @param value The given value.
 	 * @return The given value as a {@link String}.
@@ -108,7 +108,7 @@ public final class PatchUtil {
 	/**
 	 * Simplified version of {@link #assertIsString(String, String, JsonElement)}.
 	 * @deprecated Use {@link #assertIsString(String, String, JsonElement) assertIsString(String, "value", JsonElement)} instead.
-	 * @param name Some extra context for the message. Used in {@link PatchedTestConditions} to identify the test condition.
+	 * @param name Some extra context for the message. Used to identify the test condition.
 	 * @param value The given value.
 	 * @return The given value as a {@link String}.
 	 * @throws PatchingException
@@ -120,7 +120,7 @@ public final class PatchUtil {
 
 	/**
 	 * If the given value is a valid {@link ResourceLocation}, returns it. Otherwise, throws an exception.
-	 * @param name Some extra context for the message. Used in {@link PatchedTestConditions} to identify the test condition.
+	 * @param name Some extra context for the message. Used to identify the test condition.
 	 * @param field The name that the given value is associated with.
 	 * @param value The given value.
 	 * @return The given value as a {@link ResourceLocation}.

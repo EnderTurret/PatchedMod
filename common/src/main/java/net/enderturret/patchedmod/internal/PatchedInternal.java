@@ -29,8 +29,6 @@ import net.minecraft.server.packs.VanillaPackResources;
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.PatchedTestConditions;
-import net.enderturret.patchedmod.mixin.FilePackResourcesAccess;
 
 /**
  * Internal utilities for Patched.
@@ -46,7 +44,7 @@ public final class PatchedInternal {
 	public static final PatchContext BASE_CONTEXT = PatchContext.newContext()
 			.testExtensions(true)
 			.patchedExtensions(true)
-			.testEvaluator(PatchedTestConditions.getRootEvaluator(null));
+			.testEvaluator(new PatchedTestEvaluator(null));
 
 	/**
 	 * The {@link Gson} instance used for reading patches and {@linkplain #readPrettyJson(InputStream, String, boolean, boolean) prettying Json data}.
@@ -190,7 +188,7 @@ public final class PatchedInternal {
 	private static List<ResourceLocation> getFileResources(FilePackResources pack, PackType type, String namespace, Predicate<ResourceLocation> filter) {
 		final ZipFile zip;
 		try {
-			zip = ((FilePackResourcesAccess) pack).patched$callGetOrCreateZipFile();
+			zip = PatchedVersionUtil.getZipFile(pack);
 		} catch (Throwable e) {
 			Patched.platform().logger().error("Accessing FilePackResources ZipFile threw an exception! Listing FilePackResources contents is now disabled. Informational commands for zip packs may not work correctly!", e);
 			fileResourcesHookWorks = false;
