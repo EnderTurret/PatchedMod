@@ -6,6 +6,8 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.resources.ResourceLocation;
 
+import net.enderturret.patched.IDataSource;
+import net.enderturret.patchedmod.internal.PatchedDataSource;
 import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.internal.env.DummyPlatform;
 import net.enderturret.patchedmod.util.PatchUtil;
@@ -14,6 +16,7 @@ import net.enderturret.patchedmod.util.env.IPlatform;
 /**
  * Patched's loader-agnostic entrypoint and API.
  * @author EnderTurret
+ * @see #registerDataSource(ResourceLocation, SingleDataSource)
  * @see #registerTestCondition(ResourceLocation, TestCondition)
  * @see #registerSimpleTestCondition(ResourceLocation, TestCondition.Simple)
  */
@@ -51,6 +54,15 @@ public final class Patched {
 	public static void setPlatform(IPlatform value) {
 		platform = Objects.requireNonNull(value);
 		PatchedTestEvaluator.registerDefaults();
+	}
+
+	/**
+	 * Registers a new {@linkplain IDataSource data source}.
+	 * @param id The name of the data source -- what goes in the {@code type} field.
+	 * @param source The data source to register.
+	 */
+	public static void registerDataSource(ResourceLocation id, SingleDataSource source) {
+		PatchedDataSource.register(id.toString(), source);
 	}
 
 	/**

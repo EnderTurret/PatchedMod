@@ -44,7 +44,8 @@ public final class PatchedInternal {
 	public static final PatchContext BASE_CONTEXT = PatchContext.newContext()
 			.testExtensions(true)
 			.patchedExtensions(true)
-			.testEvaluator(new PatchedTestEvaluator(null));
+			.testEvaluator(new PatchedTestEvaluator(null))
+			.dataSource(new PatchedDataSource());
 
 	/**
 	 * The {@link Gson} instance used for reading patches and {@linkplain #readPrettyJson(InputStream, String, boolean, boolean) prettying Json data}.
