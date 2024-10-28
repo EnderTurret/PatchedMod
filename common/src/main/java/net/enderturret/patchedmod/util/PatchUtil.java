@@ -30,6 +30,7 @@ import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.PatchedTestConditions;
+import net.enderturret.patchedmod.internal.PatchedDataSource;
 import net.enderturret.patchedmod.mixin.FilePackResourcesAccess;
 import net.enderturret.patchedmod.mixin.SharedZipFileAccessAccess;
 
@@ -45,7 +46,8 @@ public final class PatchUtil {
 	public static final PatchContext CONTEXT = PatchContext.newContext()
 			.testExtensions(true)
 			.patchedExtensions(true)
-			.testEvaluator(PatchedTestConditions.getRootEvaluator(null));
+			.testEvaluator(PatchedTestConditions.getRootEvaluator(null))
+			.dataSource(new PatchedDataSource());
 
 	/**
 	 * The {@link Gson} instance used for reading patches and {@linkplain #readPrettyJson(InputStream, String, boolean, boolean) prettying Json data}.

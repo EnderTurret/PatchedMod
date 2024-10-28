@@ -6,6 +6,8 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.resources.ResourceLocation;
 
+import net.enderturret.patched.IDataSource;
+import net.enderturret.patchedmod.internal.PatchedDataSource;
 import net.enderturret.patchedmod.internal.env.DummyPlatform;
 import net.enderturret.patchedmod.internal.flow.PatchingManager;
 import net.enderturret.patchedmod.util.PatchUtil;
@@ -49,6 +51,15 @@ public final class Patched {
 	@Internal
 	public static void setPlatform(IPlatform value) {
 		platform = Objects.requireNonNull(value);
+	}
+
+	/**
+	 * Registers a new {@linkplain IDataSource data source}.
+	 * @param id The name of the data source -- what goes in the {@code type} field.
+	 * @param source The data source to register.
+	 */
+	public static void registerDataSource(ResourceLocation id, SingleDataSource source) {
+		PatchedDataSource.register(id.toString(), source);
 	}
 
 	/**
