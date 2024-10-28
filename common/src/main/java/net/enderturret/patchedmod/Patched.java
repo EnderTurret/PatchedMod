@@ -15,9 +15,11 @@ import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
 /**
- * <p>The main mod class.</p>
- * <p>All the exciting content is in {@link PatchingManager} and {@link PatchUtil}.</p>
+ * Patched's loader-agnostic entrypoint and API.
  * @author EnderTurret
+ * @see #registerDataSource(ResourceLocation, SingleDataSource)
+ * @see #registerTestCondition(ResourceLocation, TestCondition)
+ * @see #registerSimpleTestCondition(ResourceLocation, TestCondition.Simple)
  */
 public final class Patched {
 
