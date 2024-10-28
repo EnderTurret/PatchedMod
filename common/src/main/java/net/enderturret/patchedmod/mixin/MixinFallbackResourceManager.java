@@ -1,15 +1,20 @@
 package net.enderturret.patchedmod.mixin;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Coerce;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -26,31 +31,66 @@ import net.enderturret.patchedmod.internal.FallbackResourceManagerHidingTreeMap;
 import net.enderturret.patchedmod.internal.flow.PatchingManager;
 
 /**
- * <p>This mixin implements the functionality for actually patching resources.</p>
- * <p>This is done by wrapping the {@link IoSupplier}
- * returned by {@link FallbackResourceManager#wrapForDebug(ResourceLocation, PackResources, IoSupplier)} with
- * {@link PatchingManager#chain(IoSupplier, FallbackResourceManager, PackType, ResourceLocation, PackResources) MixinCallbacks.chain(IoSupplier, FallbackResourceManager, PackType, ResourceLocation, PackResources)}.</p>
+ * This mixin implements the functionality for actually patching resources.
  * @author EnderTurret
  */
 @Mixin(FallbackResourceManager.class)
 public abstract class MixinFallbackResourceManager {
+
+	@Unique
+	private static final String CREATE_RESOURCE = "Lnet/minecraft/server/packs/resources/FallbackResourceManager;createResource("
+			+ "Lnet/minecraft/server/packs/PackResources;"
+			+ "Lnet/minecraft/resources/ResourceLocation;"
+			+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
+			+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
+			+ ")Lnet/minecraft/server/packs/resources/Resource;";
 
 	@Shadow
 	@Final
 	private PackType type;
 
 	@WrapOperation(
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/FallbackResourceManager;createResource("
-					+ "Lnet/minecraft/server/packs/PackResources;"
-					+ "Lnet/minecraft/resources/ResourceLocation;"
-					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
-					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
-					+ ")Lnet/minecraft/server/packs/resources/Resource;"),
-			method = { "getResource", "listResourceStacks" })
-	private Resource patched$replaceResource(PackResources pack, ResourceLocation location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier, Operation<Resource> downstream) {
+			at = @At(value = "INVOKE", target = CREATE_RESOURCE),
+			method = { "getResource" })
+	private Resource patched$replaceResourceMulti(
+			PackResources pack, ResourceLocation location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
+			Operation<Resource> downstream) {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
-		final IoSupplier<InputStream> sup = PatchingManager.chain(streamSupplier, self, type, location, pack);
+		final IoSupplier<InputStream> sup = PatchingManager.chain(streamSupplier, self, type, location, pack, false);
 		return downstream.call(pack, location, sup, metadataSupplier);
+	}
+
+	@WrapOperation(
+			at = @At(value = "INVOKE", target = CREATE_RESOURCE),
+			method = { "listResourceStacks" })
+	private Resource patched$replaceResourceSingle(
+			PackResources pack, ResourceLocation location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
+			Operation<Resource> downstream) {
+		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
+		final IoSupplier<InputStream> sup = PatchingManager.chain(streamSupplier, self, type, location, pack, true);
+		return downstream.call(pack, location, sup, metadataSupplier);
+	}
+
+	// This one might take a little bit of explaining.
+	// So every loader in this era has a GroupResourcePack/DelegatingPackResources/whatever.
+	// The purpose of these is to contain every mod's pack.
+	// This means that every loader must patch this method to expand the group pack.
+	// On Forge, we'd be fine just doing like above.
+	// On Fabric, we'd be screwed, since they manually 'expand' the pack by adding a bunch of resources to the list.
+	// This means that in order for this to work on Fabric we have to *transform the list*.
+	// Thus, this injector.
+	@Inject(
+			at = @At("RETURN"),
+			method = { "getResourceStack" })
+	private void patched$replaceResourceSingleCtor(ResourceLocation location, CallbackInfoReturnable<List<Resource>> cir) {
+		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
+		final List<Resource> resources = Objects.requireNonNull(cir.getReturnValue());
+		for (int i = 0; i < resources.size(); i++) {
+			final Resource res = resources.get(i);
+			final ResourceAccess access = (ResourceAccess) res;
+			final IoSupplier<InputStream> sup = PatchingManager.chain(access.patched$getStreamSupplier(), self, type, location, res.source(), true);
+			resources.set(i, new Resource(res.source(), sup, access.patched$getMetadataSupplier()));
+		}
 	}
 
 	/**
@@ -66,12 +106,7 @@ public abstract class MixinFallbackResourceManager {
 	}
 
 	@WrapOperation(
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/FallbackResourceManager;createResource("
-					+ "Lnet/minecraft/server/packs/PackResources;"
-					+ "Lnet/minecraft/resources/ResourceLocation;"
-					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
-					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
-					+ ")Lnet/minecraft/server/packs/resources/Resource;"),
+			at = @At(value = "INVOKE", target = CREATE_RESOURCE),
 			method = { "lambda$listResources$3", "m_244901_", "method_45293" },
 			require = 1,
 			remap = false)
@@ -88,7 +123,7 @@ public abstract class MixinFallbackResourceManager {
 		else
 			throw new IllegalStateException("Neither map is the expected type; did a mixin fail?");
 
-		final IoSupplier<InputStream> sup = PatchingManager.chain(streamSupplier, hidden.manager, hidden.type, location, pack);
+		final IoSupplier<InputStream> sup = PatchingManager.chain(streamSupplier, hidden.manager, hidden.type, location, pack, false);
 
 		return downstream.call(pack, location, sup, metadataSupplier);
 	}

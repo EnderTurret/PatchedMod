@@ -12,7 +12,8 @@
     "FilePackResourcesAccess",
     "MixinAbstractPackResources",
     "MixinFallbackResourceManager",
-    "MixinPackConfig"
+    "MixinPackConfig",
+    "ResourceAccess"
   ],
   "client": [
     "client.MixinMinecraft"

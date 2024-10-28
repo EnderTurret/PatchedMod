@@ -66,13 +66,14 @@ public final class PatchingManager {
 	 * @param type The type of pack this data is from.
 	 * @param name The location of the data.
 	 * @param origin The resource or data pack that the data originated from.
+	 * @param singlePack Whether or not only patches from the pack containing the resource should be applied.
 	 * @return The new {@code IoSupplier}.
 	 */
 	@Internal
-	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, PackType type, ResourceLocation name, PackResources origin) {
+	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, PackType type, ResourceLocation name, PackResources origin, boolean singlePack) {
 		if (!PatchUtil.isPatchable(name)) return delegate;
 
-		return () -> new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, type, name, stream, audit));
+		return () -> new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, type, name, stream, audit, singlePack));
 	}
 
 	/**
@@ -83,15 +84,19 @@ public final class PatchingManager {
 	 * @param name The location of the data.
 	 * @param stream The data stream.
 	 * @param audit The audit to record changes made by the patches.
+	 * @param singlePack Whether or not only patches from the pack containing the resource should be applied.
 	 * @return A new stream containing the patched data.
 	 */
-	private static InputStream patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, InputStream stream, @Nullable PatchAudit audit) {
+	private static InputStream patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, InputStream stream, @Nullable PatchAudit audit, boolean singlePack) {
 		if (stream == null || !PatchUtil.isPatchable(name)) return stream;
 
 		final LazyPatchingWrapper wrapper = new LazyPatchingWrapper(stream);
 
 		try {
-			patch(manager, from, type, name, wrapper, audit);
+			if (singlePack)
+				patchSingle(manager, from, type, name, wrapper, audit);
+			else
+				patch(manager, from, type, name, wrapper, audit);
 		} catch (BailException e) {
 			// Let the future data consumer handle these.
 		} catch (Exception e) {
@@ -100,6 +105,38 @@ public final class PatchingManager {
 		}
 
 		return wrapper.getOrCreateStream();
+	}
+
+	/**
+	 * Patches the given stream using only patches from the source pack.
+	 * @param manager The resource manager that the stream is from.
+	 * @param from The resource or data pack that the stream originated from.
+	 * @param type The type of pack this stream is from.
+	 * @param name The location of the stream.
+	 * @param wrapper The stream to patch.
+	 * @param audit The audit to record changes made by the patches.
+	 * @return Whether any patches were actually applied.
+	 */
+	@SuppressWarnings("resource")
+	private static boolean patchSingle(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
+		// Since many packs could provide this file, we cannot rely on existence checks to find the real pack.
+		// This will simply have to not work in that case.
+		//from = findTrueSource(from, type, name);
+
+		if (hasPatches(from)) {
+			final ResourceLocation patchName = name.withPath(name.getPath() + ".patch");
+			final MutableObject<PatchContext> context = new MutableObject<>();
+
+			applyPatch(
+					type, from.getResource(type, patchName),
+					patchName.toString(), new Entry(from), wrapper, audit, context,
+					null
+					);
+
+			return context.getValue() != null;
+		}
+
+		return false;
 	}
 
 	/**
