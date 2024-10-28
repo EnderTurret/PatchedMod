@@ -22,6 +22,11 @@ public final class PatchedVersionUtil {
 		return ResourceLocation.fromNamespaceAndPath(Patched.MOD_ID, path);
 	}
 
+	/**
+	 * Returns the {@code ZipFile} associated with the given pack.
+	 * @param pack The pack.
+	 * @return The zip file.
+	 */
 	public static ZipFile getZipFile(FilePackResources pack) {
 		return ((SharedZipFileAccessAccess) ((FilePackResourcesAccess) pack).getZipFileAccess()).callGetOrCreateZipFile();
 	}

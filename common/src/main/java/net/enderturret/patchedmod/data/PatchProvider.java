@@ -49,7 +49,7 @@ import net.enderturret.patchedmod.Patched;
  */
 public abstract class PatchProvider implements DataProvider {
 
-	private static final Gson GSON = net.enderturret.patchedmod.util.PatchUtil.GSON;
+	private static final Gson GSON = net.enderturret.patchedmod.internal.PatchedInternal.GSON;
 
 	private final DataGenerator generator;
 

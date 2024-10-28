@@ -30,6 +30,7 @@ import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.internal.PatchedInternal;
 import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.PatchUtil;
@@ -169,7 +170,7 @@ public final class PatchingManager {
 		final String patchJson;
 
 		try (InputStream patchStream = patchSupplier.get()) {
-			patchJson = PatchUtil.readString(patchStream);
+			patchJson = PatchedInternal.readString(patchStream);
 		} catch (Exception e) {
 			Patched.platform().logger().warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
 			return null;
@@ -178,7 +179,7 @@ public final class PatchingManager {
 		final JsonPatch patch;
 
 		try {
-			patch = Patches.readPatch(PatchUtil.GSON, patchJson);
+			patch = Patches.readPatch(PatchedInternal.GSON, patchJson);
 		} catch (Exception e) {
 			Patched.platform().logger().warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
 			return null;
@@ -200,7 +201,7 @@ public final class PatchingManager {
 			if (audit != null)
 				audit.setPatchPath(pack.name());
 			if (context.getValue() == null)
-				context.setValue(PatchUtil.CONTEXT.audit(audit).testEvaluator(new PatchedTestEvaluator(type)));
+				context.setValue(PatchedInternal.BASE_CONTEXT.audit(audit).testEvaluator(new PatchedTestEvaluator(type)));
 
 			Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}{}.",
 					patchName,
@@ -265,7 +266,7 @@ public final class PatchingManager {
 
 						if (io != null)
 							try (InputStream is = io.get()) {
-								final String json = PatchUtil.readString(is);
+								final String json = PatchedInternal.readString(is);
 								final JsonElement elem = JsonParser.parseString(json);
 
 								meta = PatchedMetadata.of(elem, entry.name());

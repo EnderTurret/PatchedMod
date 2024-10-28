@@ -12,7 +12,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import net.enderturret.patched.JsonDocument;
-import net.enderturret.patchedmod.util.PatchUtil;
+import net.enderturret.patchedmod.internal.PatchedInternal;
 
 /**
  * A class that wraps an {@link InputStream} in such a way that we can avoid reading from it if no patching is performed.
@@ -32,7 +32,7 @@ final class LazyPatchingWrapper {
 		if (oldBytes == null) return Objects.requireNonNull(stream);
 
 		if (doc != null)
-			oldBytes = PatchUtil.GSON.toJson(doc.getRoot()).getBytes(StandardCharsets.UTF_8);
+			oldBytes = PatchedInternal.GSON.toJson(doc.getRoot()).getBytes(StandardCharsets.UTF_8);
 
 		return new ByteArrayInputStream(oldBytes);
 	}

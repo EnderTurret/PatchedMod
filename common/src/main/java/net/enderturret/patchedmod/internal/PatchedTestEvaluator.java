@@ -1,6 +1,7 @@
 package net.enderturret.patchedmod.internal;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -68,7 +69,7 @@ public final class PatchedTestEvaluator implements RootEvaluator {
 	 */
 	@Internal
 	public static void register(ResourceLocation key, TestCondition value) {
-		CONDITIONS.put(key.toString(), value);
+		CONDITIONS.put(key.toString(), Objects.requireNonNull(value, "value"));
 	}
 
 	/**
@@ -78,6 +79,7 @@ public final class PatchedTestEvaluator implements RootEvaluator {
 	 */
 	@Internal
 	public static void registerLegacy(ResourceLocation key, ITestEvaluator value) {
+		Objects.requireNonNull(value);
 		final String str = key.toString();
 		register(key, (root, target, _value, context) -> value.test(root, str, target, _value, context));
 	}

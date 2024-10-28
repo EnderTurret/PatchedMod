@@ -34,7 +34,7 @@ public final class PatchedDataSource implements IDataSource {
 	 */
 	@Internal
 	public static void register(String key, SingleDataSource value) {
-		DATA_SOURCES.put(Objects.requireNonNull(key), Objects.requireNonNull(value));
+		DATA_SOURCES.put(Objects.requireNonNull(key, "key"), Objects.requireNonNull(value, "value"));
 	}
 
 	@Override

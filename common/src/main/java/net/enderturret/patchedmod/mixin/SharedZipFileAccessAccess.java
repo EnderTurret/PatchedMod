@@ -7,10 +7,10 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 import net.minecraft.server.packs.FilePackResources.SharedZipFileAccess;
 
-import net.enderturret.patchedmod.util.PatchUtil;
+import net.enderturret.patchedmod.internal.PatchedInternal;
 
 /**
- * See {@link PatchUtil#getFileResources}.
+ * See {@link PatchedInternal#getFileResources}.
  * @author EnderTurret
  */
 @Mixin(SharedZipFileAccess.class)

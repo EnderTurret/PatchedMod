@@ -28,8 +28,8 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.internal.PatchedInternal;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
-import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.PatchingInputStream;
 
 /**
@@ -77,7 +77,7 @@ final class DumpCommand {
 					if (reqNamespace != null && !reqNamespace.equals(namespace))
 						continue;
 
-					PatchUtil.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch"))
+					PatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch"))
 						.stream()
 						.filter(loc -> loc.toString().startsWith(input))
 						.sorted()
@@ -112,7 +112,7 @@ final class DumpCommand {
 				.toList();
 
 		for (PackResources pack : packs)
-			PatchUtil.getResources(pack, type, reqNamespace, s -> s.getPath().endsWith(".json"))
+			PatchedInternal.getResources(pack, type, reqNamespace, s -> s.getPath().endsWith(".json"))
 				.stream()
 				.filter(loc -> loc.toString().startsWith(input))
 				.map(loc -> {
@@ -164,7 +164,7 @@ final class DumpCommand {
 		}
 
 		try (InputStream is = io.get()) {
-			final String src = PatchUtil.readPrettyJson(is, location.toString() + " (in " + packName + ")", true, true);
+			final String src = PatchedInternal.readPrettyJson(is, location.toString() + " (in " + packName + ")", true, true);
 			if (src == null) {
 				env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));
 				return 0;
@@ -213,7 +213,7 @@ final class DumpCommand {
 		}
 
 		try (InputStream is = io.get()) {
-			final String src = PatchUtil.readPrettyJson(is, patchName + " (in " + packName + ")", true, true);
+			final String src = PatchedInternal.readPrettyJson(is, patchName + " (in " + packName + ")", true, true);
 			if (src == null) {
 				env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));
 				return 0;
@@ -250,14 +250,14 @@ final class DumpCommand {
 			if (!usePatches && is instanceof PatchingInputStream pis)
 				pis._disablePatching();
 
-			final JsonElement src = PatchUtil.readJson(is, location.toString(), false);
+			final JsonElement src = PatchedInternal.readJson(is, location.toString(), false);
 
 			if (src == null) {
 				env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That file is not a json file."));
 				return 0;
 			}
 
-			env.sendSuccess(ctx.getSource(), Component.literal(audit != null ? audit.toString(src) : PatchUtil.GSON.toJson(src)), false);
+			env.sendSuccess(ctx.getSource(), Component.literal(audit != null ? audit.toString(src) : PatchedInternal.GSON.toJson(src)), false);
 		} catch (NoSuchFileException e) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
 			return 0;
