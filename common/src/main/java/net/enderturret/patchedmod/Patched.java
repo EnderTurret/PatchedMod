@@ -10,7 +10,6 @@ import net.enderturret.patched.IDataSource;
 import net.enderturret.patchedmod.internal.PatchedDataSource;
 import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.internal.env.DummyPlatform;
-import net.enderturret.patchedmod.internal.flow.PatchingManager;
 import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.env.IPlatform;
 

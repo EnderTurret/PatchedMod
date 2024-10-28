@@ -8,6 +8,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.resources.ResourceLocation;
 
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -22,9 +23,9 @@ import net.enderturret.patchedmod.internal.env.IEnvironment;
 @Mod(Patched.MOD_ID)
 public final class PatchedForge {
 
-	public PatchedForge() {
+	public PatchedForge(IEventBus modBus) {
 		NeoForge.EVENT_BUS.addListener(this::registerCommands);
-		NeoForge.EVENT_BUS.addListener(this::handleIMC);
+		modBus.addListener(this::handleIMC);
 		Patched.setPlatform(new ForgePlatform());
 	}
 
