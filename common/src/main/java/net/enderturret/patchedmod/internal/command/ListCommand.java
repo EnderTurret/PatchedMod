@@ -24,9 +24,9 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.internal.PatchedInternal;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
-import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.meta.IPattern;
 import net.enderturret.patchedmod.util.meta.PatchTarget;
 
@@ -78,7 +78,7 @@ final class ListCommand {
 
 		for (PackType type : PackType.values())
 			for (String namespace : pack.getNamespaces(type))
-				for (ResourceLocation loc : PatchUtil.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")))
+				for (ResourceLocation loc : PatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")))
 					patches.add(new Patch(loc.toString(), null, null));
 
 		if (pack instanceof IPatchingPackResources ppp)

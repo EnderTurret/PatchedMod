@@ -21,6 +21,7 @@ import net.enderturret.patched.IFileAccess;
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
+import net.enderturret.patchedmod.internal.PatchedInternal;
 
 /**
  * An implementation of {@link IFileAccess} for Minecraft's resource system.
@@ -67,7 +68,7 @@ public final class PatchedFileAccess implements IFileAccess {
 				try (InputStream is = sup.get();
 						InputStreamReader isr = new InputStreamReader(is);
 						BufferedReader br = new BufferedReader(isr)) {
-					return Patches.readPatch(PatchUtil.GSON, br);
+					return Patches.readPatch(PatchedInternal.GSON, br);
 				} catch (IOException e) {
 					throw new UncheckedIOException(e);
 				}
