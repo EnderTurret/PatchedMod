@@ -431,6 +431,66 @@ public abstract class PatchProvider implements DataProvider {
 			return save(PatchUtil.test(path, serializeUnchecked(value, valueCodec, provider), inverse));
 		}
 
+		// Paste
+
+		/**
+		 * Creates and adds a new {@code paste} patch.
+		 * @param path The path to place the pasted element.
+		 * @param type The data source identifier.
+		 * @param from The path to the input element. May be {@code null}.
+		 * @param value The value to pass to the data source. May be {@code null}.
+		 * @return {@code this}.
+		 */
+		public OperationBuilder paste(String path, ResourceLocation type, @Nullable String from, @Nullable JsonElement value) {
+			return save(PatchUtil.paste(path, type.toString(), from, value));
+		}
+
+		/**
+		 * Creates and adds a new {@code paste} patch.
+		 * @param path The path to place the pasted element.
+		 * @param type The data source identifier.
+		 * @param from The path to the input element. May be {@code null}.
+		 * @return {@code this}.
+		 */
+		public OperationBuilder paste(String path, ResourceLocation type, @Nullable String from) {
+			return paste(path, type, from, null);
+		}
+
+		/**
+		 * Creates and adds a new {@code paste} patch.
+		 * @param path The path to place the pasted element.
+		 * @param type The data source identifier.
+		 * @param value The value to pass to the data source. May be {@code null}.
+		 * @return {@code this}.
+		 */
+		public OperationBuilder paste(String path, ResourceLocation type, @Nullable JsonElement value) {
+			return paste(path, type, null, value);
+		}
+
+		/**
+		 * Creates and adds a new {@code paste} patch.
+		 * @param path The path to place the pasted element.
+		 * @param type The data source identifier.
+		 * @param value The value to pass to the data source. May be {@code null}. If non-{@code null}, it must be either a {@link JsonElement} of some kind, or an {@code Object} that the {@code PatchProvider} can serialize.
+		 * @return {@code this}.
+		 */
+		public OperationBuilder paste(String path, ResourceLocation type, @Nullable Object value) {
+			return paste(path, type, null, PatchProvider.this.serialize(value));
+		}
+
+		/**
+		 * Creates and adds a new {@code paste} patch.
+		 * @param path The path to place the pasted element.
+		 * @param type The data source identifier.
+		 * @param value The value to pass to the data source. May be {@code null}.
+		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
+		 * @param provider Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
+		 * @return {@code this}.
+		 */
+		public <T> OperationBuilder paste(String path, ResourceLocation type, @Nullable T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider) {
+			return paste(path, type, null, serializeUnchecked(value, valueCodec, provider));
+		}
+
 		// Snowflakes
 
 		/**
