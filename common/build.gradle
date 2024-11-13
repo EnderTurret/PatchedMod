@@ -2,10 +2,6 @@ plugins {
     id 'net.neoforged.moddev' version '1.0.21'
 }
 
-base {
-    archivesName = 'Patched-common'
-}
-
 neoForge {
     neoFormVersion = '1.21.1-20240808.144430'
     accessTransformers = ["$rootDir/common/common_ats.cfg"]

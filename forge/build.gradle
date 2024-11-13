@@ -4,10 +4,6 @@ plugins {
     id 'net.neoforged.moddev' version '1.0.21'
 }
 
-base {
-    archivesName = 'Patched-neoforge'
-}
-
 configurations {
     shadow {}
     minecraftLibrary {}

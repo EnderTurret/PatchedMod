@@ -3,10 +3,6 @@ plugins {
     id 'fabric-loom' version '1.8.9'
 }
 
-base {
-    archivesName = 'Patched-fabric'
-}
-
 configurations {
     implementation.extendsFrom shadow
 }
