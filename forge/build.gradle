@@ -4,10 +4,6 @@ plugins {
     id 'org.parchmentmc.librarian.forgegradle' version '1.2.0'
 }
 
-base {
-    archivesName = 'Patched-forge'
-}
-
 mixin {
     add sourceSets.main, 'patched.refmap.json'
     quiet
