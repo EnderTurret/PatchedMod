@@ -24,7 +24,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 
-import net.minecraft.Util;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
@@ -41,6 +40,7 @@ import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchUtil;
 import net.enderturret.patched.patch.TestPatch;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.internal.PatchedVersionUtil;
 
 /**
  * A data provider for patches.
@@ -137,7 +137,7 @@ public abstract class PatchProvider implements DataProvider {
 		final Path to = root.resolve(path.getNamespace()).resolve(path.getPath() + ".json.patch");
 		// The ordering is guaranteed to be stable, as patches are serialized manually.
 		// Using this method prevents the "type" field of test patches from jumping to the top of the json object.
-		return CompletableFuture.runAsync(() -> write(cache, GSON.toJsonTree(patch), to), Util.backgroundExecutor());
+		return CompletableFuture.runAsync(() -> write(cache, GSON.toJsonTree(patch), to), PatchedVersionUtil.getBackgroundExecutor("writePatch"));
 	}
 
 	@SuppressWarnings("deprecation")

@@ -55,6 +55,40 @@ public interface IPlatform {
 	public boolean isModLoaded(String modId, String version);
 
 	/**
+	 * Remaps the given field name.
+	 * @param moj The name in Mojang mappings.
+	 * @param intermediaryOwner The owner class in Intermediary mappings.
+	 * @param intermediaryName The field name in Intermediary mappings.
+	 * @param intermediaryDescriptor The field descriptor in Intermediary mappings.
+	 * @return The remapped name.
+	 */
+	public default String remapField(String moj, String intermediaryOwner, String intermediaryName, String intermediaryDescriptor) {
+		return moj;
+	}
+
+	/**
+	 * Remaps the given method name.
+	 * @param moj The name in Mojang mappings.
+	 * @param intermediaryOwner The owner class in Intermediary mappings.
+	 * @param intermediaryName The method name in Intermediary mappings.
+	 * @param intermediaryDescriptor The method descriptor in Intermediary mappings.
+	 * @return The remapped name.
+	 */
+	public default String remapMethod(String moj, String intermediaryOwner, String intermediaryName, String intermediaryDescriptor) {
+		return moj;
+	}
+
+	/**
+	 * Remaps the given class name.
+	 * @param moj The name in Mojang mappings.
+	 * @param intermediary The name in Intermediary mappings.
+	 * @return The remapped name.
+	 */
+	public default String remapClass(String moj, String intermediary) {
+		return moj;
+	}
+
+	/**
 	 * Returns the {@link PackOutput} of the given {@link DataGenerator}.
 	 * @param generator The {@code DataGenerator} to fetch the {@code PackOutput} from.
 	 * @return The {@code PackOutput}.
