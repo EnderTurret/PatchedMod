@@ -51,18 +51,21 @@ public abstract class PatchProvider implements DataProvider {
 
 	private static final Gson GSON = net.enderturret.patchedmod.internal.PatchedInternal.GSON;
 
-	private final DataGenerator generator;
-
+	private final PackOutput output;
 	private final PackOutput.Target target;
 	private final String modId;
 
 	private final Map<ResourceLocation, JsonPatch> patches = new HashMap<>();
 
-	protected PatchProvider(DataGenerator generator, PackOutput.Target target, @Nullable String modId) {
+	protected PatchProvider(PackOutput output, PackOutput.Target target, @Nullable String modId) {
 		if (target == null || target == PackOutput.Target.REPORTS) throw new IllegalArgumentException("Bad type");
-		this.generator = generator;
+		this.output = output;
 		this.target = target;
 		this.modId = modId;
+	}
+
+	protected PatchProvider(DataGenerator generator, PackOutput.Target target, @Nullable String modId) {
+		this(Patched.platform().getPackOutput(generator), target, modId);
 	}
 
 	/**
@@ -118,7 +121,7 @@ public abstract class PatchProvider implements DataProvider {
 		registerPatches();
 
 		if (!patches.isEmpty()) {
-			final Path root = Patched.platform().getPackOutput(generator).getOutputFolder(target);
+			final Path root = output.getOutputFolder(target);
 			final List<CompletableFuture<?>> futures = new ArrayList<>();
 
 			for (Map.Entry<ResourceLocation, JsonPatch> entry : patches.entrySet())
