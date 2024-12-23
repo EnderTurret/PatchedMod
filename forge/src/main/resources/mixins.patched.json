@@ -6,6 +6,7 @@
     "FilePackResourcesAccess",
     "MixinAbstractPackResources",
     "MixinFallbackResourceManager",
+    "MixinMinecraftServer",
     "MixinPackConfig",
     "SharedZipFileAccessAccess"
   ],
