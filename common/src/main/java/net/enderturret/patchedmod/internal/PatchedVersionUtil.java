@@ -53,6 +53,7 @@ public final class PatchedVersionUtil {
 			try {
 				final Method getValue = Registry.class.getDeclaredMethod(registryGetValue, ResourceLocation.class);
 				temp = MethodHandles.publicLookup().unreflect(getValue);
+				Patched.platform().logger().debug("Found Registry.getValue(): {}", getValue);
 			} catch (NoSuchMethodException e) {
 				Patched.platform().logger().warn("Could not find Registry.getValue()!", e);
 			} catch (Exception e) {
@@ -88,7 +89,7 @@ public final class PatchedVersionUtil {
 			return registry.get(id);
 
 		try {
-			return (T) registryGet.invoke(id);
+			return (T) registryGet.invoke(registry, id);
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		}
