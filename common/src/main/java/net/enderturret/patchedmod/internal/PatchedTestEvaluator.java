@@ -111,7 +111,7 @@ public final class PatchedTestEvaluator implements RootEvaluator {
 			final ResourceLocation registry = PatchUtil.assertIsResourceLocation("patched:registered", "registry", obj.get("registry"));
 			final ResourceLocation id = PatchUtil.assertIsResourceLocation("patched:registered", "id", obj.get("id"));
 
-			final Registry<?> reg = BuiltInRegistries.REGISTRY.get(registry);
+			final Registry<?> reg = PatchedVersionUtil.get(BuiltInRegistries.REGISTRY, registry);
 			return reg != null && reg.containsKey(id);
 		}
 

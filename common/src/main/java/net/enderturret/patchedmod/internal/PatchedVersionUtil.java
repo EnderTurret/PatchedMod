@@ -1,12 +1,17 @@
 package net.enderturret.patchedmod.internal;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
 import java.util.zip.ZipFile;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.Util;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
 
@@ -35,6 +40,28 @@ public final class PatchedVersionUtil {
 	}
 
 	private static Executor backgroundExecutor;
+	@Nullable
+	private static final MethodHandle registryGet;
+
+	static {
+		MethodHandle temp = null;
+
+		if (Patched.platform().isModLoaded("minecraft", "1.21.4")) {
+			final String registryInt = "net.minecraft.class_2378";
+			final String registryGetValueMoj = "getValue", registryGetValueInt = "method_63535", registryGetValueDescInt = "(Lnet.minecraft.class_2960;)Ljava/lang/Object;";
+			final String registryGetValue = Patched.platform().remapMethod(registryGetValueMoj, registryInt, registryGetValueInt, registryGetValueDescInt);
+			try {
+				final Method getValue = Registry.class.getDeclaredMethod(registryGetValue, ResourceLocation.class);
+				temp = MethodHandles.publicLookup().unreflect(getValue);
+			} catch (NoSuchMethodException e) {
+				Patched.platform().logger().warn("Could not find Registry.getValue()!", e);
+			} catch (Exception e) {
+				Patched.platform().logger().warn("Exception locating Registry.getValue():", e);
+			}
+		}
+
+		registryGet = temp;
+	}
 
 	/**
 	 * Provides access to the background executor, for 1.21.1 and 1.21.2.
@@ -46,6 +73,25 @@ public final class PatchedVersionUtil {
 			findBackgroundExecutor();
 
 		return backgroundExecutor;
+	}
+
+	/**
+	 * Retrieves the value with the associated ID from the given registry.
+	 * @param <T> The type.
+	 * @param registry The registry to retrieve the value from.
+	 * @param id The ID of the value to retrieve.
+	 * @return The value, or {@code null} if no value corresponds to the given ID.
+	 */
+	@Nullable
+	public static <T> T get(Registry<T> registry, ResourceLocation id) {
+		if (registryGet == null)
+			return registry.get(id);
+
+		try {
+			return (T) registryGet.invoke(id);
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private static void findBackgroundExecutor() {
