@@ -51,7 +51,7 @@ final class ListCommand {
 		final String packName = StringArgumentType.getString(ctx, "pack");
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final List<PackResources> packs = Patched.platform().getExpandedPacks(man)
+		final List<PackResources> packs = man.listPacks()
 				.filter(p -> packName.equals(Patched.platform().getName(p)))
 				.toList();
 
@@ -120,7 +120,7 @@ final class ListCommand {
 
 		record Entry(PackResources pack, String name, boolean patching) {}
 
-		final List<Entry> packs = Patched.platform().getExpandedPacks(man)
+		final List<Entry> packs = man.listPacks()
 				.map(p -> new Entry(p, Patched.platform().getName(p), Patched.platform().hasPatches(p)))
 				.sorted(Comparator.comparing(Entry::name))
 				.toList();

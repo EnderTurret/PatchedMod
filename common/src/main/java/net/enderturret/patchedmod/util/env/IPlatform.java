@@ -156,6 +156,7 @@ public interface IPlatform {
 	 * @param pack The pack to check.
 	 * @return {@code true} if the pack is a group pack.
 	 */
+	@Deprecated(since = "7.4.0+1.21.1", forRemoval = true)
 	public default boolean isGroup(PackResources pack) { return false; }
 
 	/**
@@ -163,6 +164,7 @@ public interface IPlatform {
 	 * @param pack The pack to unpack.
 	 * @return The pack's children.
 	 */
+	@Deprecated(since = "7.4.0+1.21.1", forRemoval = true)
 	public default Collection<PackResources> getChildren(PackResources pack) { return List.of(); }
 
 	/**
@@ -178,6 +180,7 @@ public interface IPlatform {
 	 * @param file The file.
 	 * @return The list of {@link PackResources} that contain the namespace of the given file.
 	 */
+	@Deprecated(since = "7.4.0+1.21.1", forRemoval = true)
 	public default Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) { return List.of(); }
 
 	/**
@@ -203,6 +206,7 @@ public interface IPlatform {
 	 * @param manager The resource manager to query the packs of.
 	 * @return The stream.
 	 */
+	@Deprecated(since = "7.4.0+1.21.1", forRemoval = true)
 	public default Stream<PackResources> getExpandedPacks(ResourceManager manager) {
 		return manager.listPacks()
 				.flatMap(p -> isGroup(p) ? getChildren(p).stream() : Stream.of(p));
@@ -215,7 +219,7 @@ public interface IPlatform {
 	 * @return The stream.
 	 */
 	public default Stream<PackResources> getPatchingPacks(ResourceManager manager) {
-		return getExpandedPacks(manager).filter(this::hasPatches);
+		return manager.listPacks().filter(this::hasPatches);
 	}
 
 	/**

@@ -135,7 +135,7 @@ final class DumpCommand {
 		final ResourceLocation location = ctx.getArgument("location", ResourceLocation.class);
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final List<PackResources> packs = Patched.platform().getExpandedPacks(man)
+		final List<PackResources> packs = man.listPacks()
 				.filter(p -> packName.equals(Patched.platform().getName(p)))
 				.toList();
 
@@ -184,7 +184,7 @@ final class DumpCommand {
 		final String patchName = ctx.getArgument("patch", String.class);
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final List<PackResources> packs = Patched.platform().getExpandedPacks(man)
+		final List<PackResources> packs = man.listPacks()
 				.filter(p -> packName.equals(Patched.platform().getName(p)))
 				.toList();
 
