@@ -119,7 +119,7 @@ final class FabricPlatform implements IPlatform {
 	@Override
 	public boolean needsSwapNamespaceAndPath(PackResources pack) {
 		// Fabric implementations surprisingly throw no errors, unlike Minecraft.
-		return !isGroup(pack) && !(pack instanceof IFabricModPackResources);
+		return !(pack instanceof IFabricModPackResources);
 	}
 
 	@Override
