@@ -155,12 +155,21 @@ public final class PatchingManager {
 
 		final Map<PackResources, List<String>> targets = DynamicPatches.getTargets(type, name, from);
 
-		for (int i = manager.fallbacks.size() - 1; i >= 0; i--) {
+		boolean seenOriginal = false;
+		for (int i = 0; i < manager.fallbacks.size(); i++) {
 			final PackEntry packEntry = manager.fallbacks.get(i);
 			if (packEntry.resources() == null) continue;
-			final Entry pack = new Entry(packEntry);
 
-			if (hasPatches(pack.resources())) {
+			// Until we see the pack the file originated from, don't apply any patches.
+			if (!seenOriginal)
+				if (packEntry.resources() == from)
+					seenOriginal = true;
+				else
+					continue;
+
+			if (hasPatches(packEntry.resources())) {
+				final Entry pack = new Entry(packEntry);
+
 				PatchContext ctx = applyPatch(
 						type, pack.resources().getResource(type, patchName),
 						patchName.toString(), pack, wrapper, audit, context,
@@ -179,9 +188,6 @@ public final class PatchingManager {
 							name.toString()
 							);
 				}
-
-				if (pack.resources() == from)
-					break;
 			}
 		}
 
