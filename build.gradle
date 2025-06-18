@@ -14,7 +14,7 @@ subprojects {
         archivesName = 'Patched'
     }
 
-    version = '7.4.0+1.21.1'
+    version = '7.4.1+1.21.1'
     group = 'net.enderturret'
 
     if (it == project(':PatchedModCommon')) {
