@@ -25,6 +25,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.internal.PatchedInternal;
+import net.enderturret.patchedmod.internal.PatchedVersionUtil;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.meta.IPattern;
@@ -138,7 +139,7 @@ final class ListCommand {
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
 		for (Entry pack : patching) {
-			final HoverEvent hover = listAll ? new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+			final HoverEvent hover = listAll ? PatchedVersionUtil.showText(
 					Component.literal(pack.pack.packId() + " (" + pack.pack.getClass().getSimpleName() + ")")) : null;
 
 			c.append("\n  ").append(Component.literal(pack.name)
@@ -154,7 +155,7 @@ final class ListCommand {
 			c.append("\n\n").append(translate("command.patched.list.packs.verbose", "Additionally, the following packs do not have patching enabled:"));
 			for (Entry pack : notPatching)
 				c.append("\n  ").append(Component.literal(pack.name)
-						.setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+						.setStyle(Style.EMPTY.withHoverEvent(PatchedVersionUtil.showText(
 								Component.literal(pack.pack.packId() + " (" + pack.pack.getClass().getSimpleName() + ")")))));
 		}
 

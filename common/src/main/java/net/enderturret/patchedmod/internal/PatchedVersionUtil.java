@@ -2,6 +2,7 @@ package net.enderturret.patchedmod.internal;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
@@ -12,6 +13,9 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.Util;
 import net.minecraft.core.Registry;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
 
@@ -39,9 +43,45 @@ public final class PatchedVersionUtil {
 		return ((SharedZipFileAccessAccess) ((FilePackResourcesAccess) pack).getZipFileAccess()).callGetOrCreateZipFile();
 	}
 
+	/**
+	 * Creates a {@link ClickEvent} that suggests the specified command.
+	 * This is a bridge between ≤1.21.5 and 1.21.6.
+	 * @param command The command to suggest.
+	 * @return The new {@code ClickEvent}.
+	 */
+	public static ClickEvent suggestCommand(String command) {
+		if (newSuggestCommandClickEvent == null)
+			return new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command);
+
+		try {
+			return (ClickEvent) newSuggestCommandClickEvent.invoke(command);
+		} catch (Throwable e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	/**
+	 * Creates a {@link HoverEvent} that displays the specified text.
+	 * This is a bridge between ≤1.21.5 and 1.21.6.
+	 * @param text The text to display.
+	 * @return The new {@code HoverEvent}.
+	 */
+	public static HoverEvent showText(Component text) {
+		if (newShowTextHoverEvent == null)
+			return new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
+
+		try {
+			return (HoverEvent) newShowTextHoverEvent.invoke(text);
+		} catch (Throwable e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
 	private static Executor backgroundExecutor;
 	@Nullable
 	private static final MethodHandle registryGet;
+	private static final MethodHandle newSuggestCommandClickEvent;
+	private static final MethodHandle newShowTextHoverEvent;
 
 	static {
 		MethodHandle temp = null;
@@ -62,6 +102,43 @@ public final class PatchedVersionUtil {
 		}
 
 		registryGet = temp;
+		temp = null;
+
+		final boolean is216 = Patched.platform().isModLoaded("minecraft", "1.21.6");
+		if (is216) {
+			final String clickEventSuggestCommandInt = "net.minecraft.class_2558$class_10610";
+			try {
+				final Class<?> suggestCommand = Class.forName(Patched.platform().remapClass("net.minecraft.network.chat.ClickEvent$SuggestCommand", clickEventSuggestCommandInt),
+						true, ClickEvent.class.getClassLoader());
+				final Constructor<?> ctor = suggestCommand.getConstructor(String.class);
+				temp = MethodHandles.publicLookup().unreflectConstructor(ctor);
+				Patched.platform().logger().debug("Found ClickEvent$SuggestCommand <init>(String): {}", ctor);
+			} catch (ClassNotFoundException e) {
+				Patched.platform().logger().warn("Could not find ClickEvent$SuggestCommand!", e);
+			} catch (Exception e) {
+				Patched.platform().logger().warn("Exception locating ClickEvent$SuggestCommand <init>(String):", e);
+			}
+		}
+
+		newSuggestCommandClickEvent = temp;
+		temp = null;
+
+		if (is216) {
+			final String hoverEventShowTextInt = "net.minecraft.class_2568$class_10613";
+			try {
+				final Class<?> showText = Class.forName(Patched.platform().remapClass("net.minecraft.network.chat.HoverEvent$ShowText", hoverEventShowTextInt),
+						true, HoverEvent.class.getClassLoader());
+				final Constructor<?> ctor = showText.getConstructor(Component.class);
+				temp = MethodHandles.publicLookup().unreflectConstructor(ctor);
+				Patched.platform().logger().debug("Found HoverEvent$ShowText <init>(Component): {}", ctor);
+			} catch (ClassNotFoundException e) {
+				Patched.platform().logger().warn("Could not find HoverEvent$ShowText!", e);
+			} catch (Exception e) {
+				Patched.platform().logger().warn("Exception locating HoverEvent$ShowText <init>(Component):", e);
+			}
+		}
+
+		newShowTextHoverEvent = temp;
 	}
 
 	/**

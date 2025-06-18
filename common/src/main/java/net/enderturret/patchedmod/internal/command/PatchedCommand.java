@@ -10,13 +10,13 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.internal.PatchedVersionUtil;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 import net.enderturret.patchedmod.internal.flow.PatchingManager;
 
@@ -64,7 +64,7 @@ public final class PatchedCommand {
 
 	static Style suggestCommand(String command) {
 		return Style.EMPTY
-				.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command))
+				.withClickEvent(PatchedVersionUtil.suggestCommand(command))
 				.withUnderlined(true);
 	}
 }
