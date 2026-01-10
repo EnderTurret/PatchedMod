@@ -60,8 +60,7 @@ final class NightConfigOps implements DynamicOps<Object> {
 	@Override
 	public DataResult<Stream<Pair<Object, Object>>> getMapValues(Object input) {
 		return input instanceof UnmodifiableConfig c ? DataResult.success(
-				c.valueMap()
-				.entrySet()
+				c.entrySet()
 				.stream()
 				.map(entry -> Pair.of(entry.getKey(), entry.getValue()))) : DataResult.error(() -> "Not an object: " + input);
 	}

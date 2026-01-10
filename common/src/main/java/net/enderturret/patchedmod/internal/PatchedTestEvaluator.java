@@ -13,7 +13,7 @@ import com.google.gson.JsonObject;
 
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patched.ITestEvaluator;
@@ -28,8 +28,8 @@ import net.enderturret.patchedmod.util.PatchUtil;
 
 /**
  * Patched's implementation of {@link ITestEvaluator}.
- * Mods can register their own test conditions using {@link Patched#registerTestCondition(ResourceLocation, TestCondition)}
- * and {@link Patched#registerSimpleTestCondition(ResourceLocation, Simple)}.
+ * Mods can register their own test conditions using {@link Patched#registerTestCondition(Identifier, TestCondition)}
+ * and {@link Patched#registerSimpleTestCondition(Identifier, Simple)}.
  * @author EnderTurret
  */
 @Internal
@@ -68,7 +68,7 @@ public final class PatchedTestEvaluator implements RootEvaluator {
 	 * @param value The condition to register.
 	 */
 	@Internal
-	public static void register(ResourceLocation key, TestCondition value) {
+	public static void register(Identifier key, TestCondition value) {
 		CONDITIONS.put(key.toString(), Objects.requireNonNull(value, "value"));
 	}
 
@@ -78,7 +78,7 @@ public final class PatchedTestEvaluator implements RootEvaluator {
 	 * @param value The condition to register.
 	 */
 	@Internal
-	public static void registerLegacy(ResourceLocation key, ITestEvaluator value) {
+	public static void registerLegacy(Identifier key, ITestEvaluator value) {
 		Objects.requireNonNull(value);
 		final String str = key.toString();
 		register(key, (root, target, _value, context) -> value.test(root, str, target, _value, context));
@@ -108,8 +108,8 @@ public final class PatchedTestEvaluator implements RootEvaluator {
 
 	private static boolean registered(JsonElement value) {
 		if (value instanceof JsonObject obj) {
-			final ResourceLocation registry = PatchUtil.assertIsResourceLocation("patched:registered", "registry", obj.get("registry"));
-			final ResourceLocation id = PatchUtil.assertIsResourceLocation("patched:registered", "id", obj.get("id"));
+			final Identifier registry = PatchUtil.assertIsResourceLocation("patched:registered", "registry", obj.get("registry"));
+			final Identifier id = PatchUtil.assertIsResourceLocation("patched:registered", "id", obj.get("id"));
 
 			final Registry<?> reg = PatchedVersionUtil.get(BuiltInRegistries.REGISTRY, registry);
 			return reg != null && reg.containsKey(id);

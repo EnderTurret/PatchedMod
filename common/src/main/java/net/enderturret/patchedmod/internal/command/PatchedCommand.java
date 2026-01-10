@@ -14,6 +14,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.PermissionLevel;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.internal.PatchedVersionUtil;
@@ -35,8 +37,10 @@ public final class PatchedCommand {
 	 */
 	@Internal
 	public static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
+		final Permission permission = new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS);
+
 		final var ret = env.literal("patched" + (env.client() ? "c" : ""))
-				.requires(src -> env.hasPermission(src, 2))
+				.requires(src -> env.hasPermission(src, permission))
 				.then(DumpCommand.create(env))
 				.then(ListCommand.create(env));
 

@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonElement;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patched.ITestEvaluator;
@@ -14,7 +14,7 @@ import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 
 /**
  * Handles evaluating custom test conditions.
- * @deprecated Use {@link Patched#registerTestCondition(ResourceLocation, TestCondition)} instead.
+ * @deprecated Use {@link Patched#registerTestCondition(Identifier, TestCondition)} instead.
  * @author EnderTurret
  */
 @Deprecated(since = "7.3.0+1.21.1", forRemoval = true)
@@ -33,6 +33,7 @@ public final class PatchedTestConditions implements RootEvaluator {
 		this.type = type;
 	}
 
+	@Deprecated
 	@Override
 	@Nullable
 	public PackType packType() {
@@ -53,27 +54,28 @@ public final class PatchedTestConditions implements RootEvaluator {
 
 	/**
 	 * Registers the given condition under the given name.
-	 * @deprecated Use {@link Patched#registerTestCondition(ResourceLocation, TestCondition)} instead.
+	 * @deprecated Use {@link Patched#registerTestCondition(Identifier, TestCondition)} instead.
 	 * @param name The name of the condition. This will be the {@code type} value that the condition is invoked for.
 	 * @param condition The condition itself.
 	 */
 	@Deprecated(since = "7.3.0+1.21.1", forRemoval = true)
-	public static void register(ResourceLocation name, ITestEvaluator condition) {
+	public static void register(Identifier name, ITestEvaluator condition) {
 		PatchedTestEvaluator.registerLegacy(name, condition);
 	}
 
 	/**
 	 * Registers the given condition under the given name.
-	 * This is a "simpler" version of {@link #register(ResourceLocation, ITestEvaluator)} that is much more lambda-friendly.
-	 * @deprecated Use {@link Patched#registerSimpleTestCondition(ResourceLocation, TestCondition.Simple)} instead.
+	 * This is a "simpler" version of {@link #register(Identifier, ITestEvaluator)} that is much more lambda-friendly.
+	 * @deprecated Use {@link Patched#registerSimpleTestCondition(Identifier, TestCondition.Simple)} instead.
 	 * @param name The name of the condition. This will be the {@code type} value that the condition is invoked for.
 	 * @param condition The condition itself.
 	 */
 	@Deprecated(since = "7.3.0+1.21.1", forRemoval = true)
-	public static void registerSimple(ResourceLocation name, ISimpleTestEvaluator condition) {
+	public static void registerSimple(Identifier name, ISimpleTestEvaluator condition) {
 		register(name, condition);
 	}
 
+	@Deprecated
 	@Override
 	public boolean test(JsonElement root, String type, JsonElement target, JsonElement value, PatchContext context) {
 		return false;
@@ -81,7 +83,7 @@ public final class PatchedTestConditions implements RootEvaluator {
 
 	/**
 	 * Represents a "simple" condition.
-	 * See {@link PatchedTestConditions#registerSimple(ResourceLocation, ISimpleTestEvaluator)} for more information.
+	 * See {@link PatchedTestConditions#registerSimple(Identifier, ISimpleTestEvaluator)} for more information.
 	 * @author EnderTurret
 	 */
 	@FunctionalInterface
@@ -94,8 +96,10 @@ public final class PatchedTestConditions implements RootEvaluator {
 		 * @param value The value given by the patch.
 		 * @return {@code true} if the condition succeeds, {@code false} otherwise.
 		 */
+		@Deprecated
 		public boolean test(JsonElement value);
 
+		@Deprecated
 		@Override
 		public default boolean test(JsonElement root, String type, @Nullable JsonElement target, @Nullable JsonElement value, PatchContext context) {
 			if (value == null)

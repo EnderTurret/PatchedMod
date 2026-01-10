@@ -20,7 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -135,10 +135,10 @@ public final class PatchedInternal {
 	 * @param filter A filter for filtering out undesired results.
 	 * @return The list of resources.
 	 */
-	public static List<ResourceLocation> getResources(PackResources pack, PackType type, String namespace, Predicate<ResourceLocation> filter) {
+	public static List<Identifier> getResources(PackResources pack, PackType type, String namespace, Predicate<Identifier> filter) {
 		if (pack instanceof FilePackResources fpp) return fileResourcesHookWorks ? getFileResources(fpp, type, namespace, filter) : List.of();
 
-		final List<ResourceLocation> ret = new ArrayList<>();
+		final List<Identifier> ret = new ArrayList<>();
 
 		// This one's gonna require some explaining:
 		// Basically, we want to look at all resources in the pack.
@@ -149,7 +149,7 @@ public final class PatchedInternal {
 		// resolves the same directory and then resolves the namespace directory.
 		// We must use a dot for VanillaPackResources because otherwise LinkFileSystem throws.
 		try {
-			final Function<ResourceLocation, ResourceLocation> renamer = Patched.platform().getRenamer(pack, namespace);
+			final Function<Identifier, Identifier> renamer = Patched.platform().getRenamer(pack, namespace);
 			final String fakeNamespace;
 			final String fakePath;
 
@@ -164,7 +164,7 @@ public final class PatchedInternal {
 
 			pack.listResources(type, fakeNamespace, fakePath, (loc, io) -> {
 				if (filter.test(loc)) {
-					final ResourceLocation renamed = renamer.apply(loc);
+					final Identifier renamed = renamer.apply(loc);
 
 					ret.add(renamed);
 				}
@@ -186,7 +186,7 @@ public final class PatchedInternal {
 	 * @param filter A filter for deciding which resources to include in the returned list.
 	 * @return The list of resources under the given namespace.
 	 */
-	private static List<ResourceLocation> getFileResources(FilePackResources pack, PackType type, String namespace, Predicate<ResourceLocation> filter) {
+	private static List<Identifier> getFileResources(FilePackResources pack, PackType type, String namespace, Predicate<Identifier> filter) {
 		final ZipFile zip;
 		try {
 			zip = PatchedVersionUtil.getZipFile(pack);
@@ -198,7 +198,7 @@ public final class PatchedInternal {
 
 		if (zip == null) return List.of();
 
-		final List<ResourceLocation> ret = new ArrayList<>();
+		final List<Identifier> ret = new ArrayList<>();
 
 		final String root = type.getDirectory() + "/" + namespace + "/";
 
@@ -207,7 +207,7 @@ public final class PatchedInternal {
 			if (entry.isDirectory() || !entry.getName().startsWith(root)) continue;
 
 			final String path = entry.getName().substring(root.length());
-			final ResourceLocation loc = ResourceLocation.tryBuild(namespace, path);
+			final Identifier loc = Identifier.tryBuild(namespace, path);
 
 			if (filter.test(loc))
 				ret.add(loc);

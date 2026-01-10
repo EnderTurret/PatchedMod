@@ -9,6 +9,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.permissions.Permission;
 
 /**
  * An abstraction over the client and server command APIs.
@@ -52,12 +53,12 @@ public interface IEnvironment<T> {
 	public void sendFailure(T source, Component message);
 
 	/**
-	 * Determines whether the command source has the specified permission level.
+	 * Determines whether the command source has the specified permission.
 	 * @param source The command source.
-	 * @param level The permission level.
+	 * @param permission The permission.
 	 * @return {@code true} if they have the specified permission level.
 	 */
-	public boolean hasPermission(T source, int level);
+	public boolean hasPermission(T source, Permission permission);
 
 	/**
 	 * Creates a {@link LiteralArgumentBuilder} for the command source type represented by this environment instance.
@@ -107,8 +108,8 @@ public interface IEnvironment<T> {
 		}
 
 		@Override
-		public boolean hasPermission(CommandSourceStack source, int level) {
-			return source.hasPermission(level);
+		public boolean hasPermission(CommandSourceStack source, Permission permission) {
+			return source.permissions().hasPermission(permission);
 		}
 	}
 }

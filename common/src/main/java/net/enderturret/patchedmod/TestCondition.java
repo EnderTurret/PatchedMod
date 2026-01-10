@@ -2,7 +2,7 @@ package net.enderturret.patchedmod;
 
 import com.google.gson.JsonElement;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.patch.PatchContext;
@@ -10,8 +10,8 @@ import net.enderturret.patched.patch.PatchContext;
 /**
  * A version of {@link ITestEvaluator} without the {@code type} argument.
  * @author EnderTurret
- * @see Patched#registerTestCondition(ResourceLocation, TestCondition)
- * @see Patched#registerSimpleTestCondition(ResourceLocation, Simple)
+ * @see Patched#registerTestCondition(Identifier, TestCondition)
+ * @see Patched#registerSimpleTestCondition(Identifier, Simple)
  * @see Simple
  */
 public interface TestCondition {
@@ -30,7 +30,7 @@ public interface TestCondition {
 	 * Simplified version of {@link TestCondition} that only uses the {@code value} argument.
 	 * Suitable for most test conditions.
 	 * @author EnderTurret
-	 * @see Patched#registerSimpleTestCondition(ResourceLocation, Simple)
+	 * @see Patched#registerSimpleTestCondition(Identifier, Simple)
 	 */
 	public static interface Simple extends TestCondition {
 

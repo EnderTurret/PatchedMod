@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.permissions.Permission;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -21,7 +22,7 @@ import net.enderturret.patchedmod.internal.env.IEnvironment;
  * @author EnderTurret
  */
 @Internal
-@EventBusSubscriber(modid = Patched.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Patched.MOD_ID, value = Dist.CLIENT)
 public final class ClientEvents {
 
 	@SubscribeEvent
@@ -52,8 +53,8 @@ public final class ClientEvents {
 		}
 
 		@Override
-		public boolean hasPermission(CommandSourceStack source, int level) {
-			return source.hasPermission(level);
+		public boolean hasPermission(CommandSourceStack source, Permission permission) {
+			return source.permissions().hasPermission(permission);
 		}
 	}
 }

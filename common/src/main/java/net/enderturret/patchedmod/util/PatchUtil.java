@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
@@ -46,7 +46,7 @@ public final class PatchUtil {
 	 * @return The list of resources.
 	 */
 	@Deprecated(since = "7.3.0+1.21.1", forRemoval = true)
-	public static List<ResourceLocation> getResources(PackResources pack, PackType type, String namespace, Predicate<ResourceLocation> filter) {
+	public static List<Identifier> getResources(PackResources pack, PackType type, String namespace, Predicate<Identifier> filter) {
 		return PatchedInternal.getResources(pack, type, namespace, filter);
 	}
 
@@ -119,17 +119,17 @@ public final class PatchUtil {
 	}
 
 	/**
-	 * If the given value is a valid {@link ResourceLocation}, returns it. Otherwise, throws an exception.
+	 * If the given value is a valid {@link Identifier}, returns it. Otherwise, throws an exception.
 	 * @param name Some extra context for the message. Used to identify the test condition.
 	 * @param field The name that the given value is associated with.
 	 * @param value The given value.
-	 * @return The given value as a {@link ResourceLocation}.
+	 * @return The given value as a {@link Identifier}.
 	 * @throws PatchingException
 	 */
-	public static ResourceLocation assertIsResourceLocation(String name, String field, JsonElement value) throws PatchingException {
+	public static Identifier assertIsResourceLocation(String name, String field, JsonElement value) throws PatchingException {
 		final String str = assertIsString(name, field, value);
 
-		final ResourceLocation loc = ResourceLocation.tryParse(str);
+		final Identifier loc = Identifier.tryParse(str);
 		if (loc == null) throw new PatchingException(name + ": " + field + " must be a valid resource location, was \"" + value + "\"");
 
 		return loc;
@@ -139,7 +139,7 @@ public final class PatchUtil {
 	 * @param location The location of the file to test.
 	 * @return {@code true} if the file at the given location supports being patched, based on its name.
 	 */
-	public static boolean isPatchable(ResourceLocation location) {
+	public static boolean isPatchable(Identifier location) {
 		final String path = location.getPath();
 		return path.endsWith(".json") || path.endsWith(".json.patch") || (path.endsWith(".mcmeta") && !path.equals("pack.mcmeta"));
 	}

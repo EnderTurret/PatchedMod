@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
@@ -49,7 +49,7 @@ public abstract class MixinFallbackResourceManager {
 			at = @At(value = "INVOKE", target = CREATE_RESOURCE),
 			method = { "getResource" })
 	private Resource patched$replaceResourceMulti(
-			PackResources pack, ResourceLocation location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
+			PackResources pack, Identifier location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
 			Operation<Resource> downstream) {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
 		streamSupplier = PatchingManager.chain(streamSupplier, self, type, location, pack, false);
@@ -60,7 +60,7 @@ public abstract class MixinFallbackResourceManager {
 			at = @At(value = "INVOKE", target = CREATE_RESOURCE),
 			method = { "listResourceStacks" })
 	private Resource patched$replaceResourceSingle(
-			PackResources pack, ResourceLocation location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
+			PackResources pack, Identifier location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
 			Operation<Resource> downstream) {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
 		streamSupplier = PatchingManager.chain(streamSupplier, self, type, location, pack, true);
@@ -72,7 +72,7 @@ public abstract class MixinFallbackResourceManager {
 			method = { "getResourceStack" })
 	private Resource patched$replaceResourceSingleCtor(
 			PackResources pack, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
-			Operation<Resource> downstream, ResourceLocation location) {
+			Operation<Resource> downstream, Identifier location) {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
 		streamSupplier = PatchingManager.chain(streamSupplier, self, type, location, pack, true);
 		return downstream.call(pack, streamSupplier, metadataSupplier);
@@ -96,8 +96,8 @@ public abstract class MixinFallbackResourceManager {
 			require = 1,
 			remap = false)
 	private static Resource patched$intricateReplaceResource(
-			PackResources pack, ResourceLocation location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
-			Operation<Resource> downstream, Map map1, Map map2, ResourceLocation key, @Coerce Object value) {
+			PackResources pack, Identifier location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
+			Operation<Resource> downstream, Map map1, Map map2, Identifier key, @Coerce Object value) {
 		final FallbackResourceManagerHidingTreeMap hidden;
 		// Check map2 first since that's more likely to be the TreeMap.
 		if (map2 instanceof FallbackResourceManagerHidingTreeMap m)

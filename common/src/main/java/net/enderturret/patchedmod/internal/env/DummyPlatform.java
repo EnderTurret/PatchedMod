@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 
 import net.enderturret.patchedmod.util.env.IPlatform;
@@ -65,7 +65,7 @@ public final class DummyPlatform implements IPlatform {
 	}
 
 	@Override
-	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace) {
+	public Function<Identifier, Identifier> getRenamer(PackResources pack, String namespace) {
 		return Function.identity();
 	}
 }

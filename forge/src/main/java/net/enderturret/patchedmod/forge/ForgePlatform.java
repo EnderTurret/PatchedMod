@@ -13,7 +13,7 @@ import com.electronwill.nightconfig.core.UnmodifiableConfig;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.VanillaPackResources;
 
@@ -36,7 +36,7 @@ final class ForgePlatform implements IPlatform {
 
 	@Override
 	public boolean isPhysicalClient() {
-		return FMLEnvironment.dist == Dist.CLIENT;
+		return FMLEnvironment.getDist() == Dist.CLIENT;
 	}
 
 	@Override
@@ -102,12 +102,12 @@ final class ForgePlatform implements IPlatform {
 	}
 
 	@Override
-	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace) {
+	public Function<Identifier, Identifier> getRenamer(PackResources pack, String namespace) {
 		final boolean vanilla = pack instanceof VanillaPackResources;
 		final int prefixLen = vanilla ? "../".length() : 0;
 		// PathPackResources:     :minecraft/something → minecraft:something
 		// FilePackResources is handled separately.
 		// VanillaPackResources:  :../minecraft/something → minecraft:something
-		return rl -> ResourceLocation.fromNamespaceAndPath(namespace, rl.getPath().substring(prefixLen + namespace.length() + 1));
+		return rl -> Identifier.fromNamespaceAndPath(namespace, rl.getPath().substring(prefixLen + namespace.length() + 1));
 	}
 }

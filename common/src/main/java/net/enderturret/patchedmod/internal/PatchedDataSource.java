@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonElement;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import net.enderturret.patched.IDataSource;
 import net.enderturret.patched.exception.PatchingException;
@@ -18,7 +18,7 @@ import net.enderturret.patchedmod.SingleDataSource;
 
 /**
  * Patched's implementation of {@link IDataSource}.
- * Mods can register their own data sources using {@link Patched#registerDataSource(ResourceLocation, SingleDataSource)}.
+ * Mods can register their own data sources using {@link Patched#registerDataSource(Identifier, SingleDataSource)}.
  * @author EnderTurret
  */
 @Internal
@@ -30,7 +30,7 @@ public final class PatchedDataSource implements IDataSource {
 	 * Internal data source registration method.
 	 * @param key The name of the data source -- what goes in the {@code type} field.
 	 * @param value The data source to register.
-	 * @see Patched#registerDataSource(ResourceLocation, SingleDataSource)
+	 * @see Patched#registerDataSource(Identifier, SingleDataSource)
 	 */
 	@Internal
 	public static void register(String key, SingleDataSource value) {

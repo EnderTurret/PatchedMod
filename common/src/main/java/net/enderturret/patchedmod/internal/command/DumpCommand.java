@@ -17,9 +17,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.IoSupplier;
@@ -44,14 +44,14 @@ final class DumpCommand {
 				.then(env.literal("patch")
 						.then(env.argument("pack", StringArgumentType.string())
 								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env, true))
-								.then(env.argument("location", ResourceLocationArgument.id())
+								.then(env.argument("location", IdentifierArgument.id())
 										.suggests((ctx, builder) -> suggestPatch(ctx, "pack", builder, env))
 										.executes(ctx -> dumpPatch(ctx, type, env)))
 								.then(env.literal("dynamic")
 										.then(env.argument("patch", StringArgumentType.string())
 												.executes(ctx -> dumpLocalPatch(ctx, type, env))))))
 				.then(env.literal("file")
-						.then(env.argument("location", ResourceLocationArgument.id())
+						.then(env.argument("location", IdentifierArgument.id())
 								.suggests((ctx, builder) -> suggestResource(ctx, type, builder, env))
 								.executes(ctx -> dumpFile(ctx, env, true, true))
 								.then(env.literal("raw").executes(ctx -> dumpFile(ctx, env, false, true)))
@@ -81,7 +81,7 @@ final class DumpCommand {
 						.stream()
 						.filter(loc -> loc.toString().startsWith(input))
 						.sorted()
-						.map(ResourceLocation::toString)
+						.map(Identifier::toString)
 						.forEach(builder::suggest);
 				}
 
@@ -132,7 +132,7 @@ final class DumpCommand {
 	@SuppressWarnings("resource")
 	private static <T> int dumpPatch(CommandContext<T> ctx, PackType type, IEnvironment<T> env) {
 		final String packName = StringArgumentType.getString(ctx, "pack");
-		final ResourceLocation location = ctx.getArgument("location", ResourceLocation.class);
+		final Identifier location = ctx.getArgument("location", Identifier.class);
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final List<PackResources> packs = man.listPacks()
@@ -229,7 +229,7 @@ final class DumpCommand {
 
 	@SuppressWarnings("deprecation")
 	private static <T> int dumpFile(CommandContext<T> ctx, IEnvironment<T> env, boolean useAudit, boolean usePatches) {
-		final ResourceLocation location = ctx.getArgument("location", ResourceLocation.class);
+		final Identifier location = ctx.getArgument("location", Identifier.class);
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final Optional<Resource> op = man.getResource(location);

@@ -14,7 +14,7 @@ import org.slf4j.event.Level;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
@@ -68,7 +68,7 @@ public final class PatchingManager {
 	 * @return The new {@code IoSupplier}.
 	 */
 	@Internal
-	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, PackType type, ResourceLocation name, PackResources origin, boolean singlePack) {
+	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, PackType type, Identifier name, PackResources origin, boolean singlePack) {
 		if (!PatchUtil.isPatchable(name)) return delegate;
 
 		return () -> new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, type, name, stream, audit, singlePack));
@@ -85,7 +85,7 @@ public final class PatchingManager {
 	 * @param singlePack Whether or not only patches from the pack containing the resource should be applied.
 	 * @return A new stream containing the patched data.
 	 */
-	private static InputStream patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, InputStream stream, @Nullable PatchAudit audit, boolean singlePack) {
+	private static InputStream patch(FallbackResourceManager manager, PackResources from, PackType type, Identifier name, InputStream stream, @Nullable PatchAudit audit, boolean singlePack) {
 		if (stream == null || !PatchUtil.isPatchable(name)) return stream;
 
 		final LazyPatchingWrapper wrapper = new LazyPatchingWrapper(stream);
@@ -116,13 +116,13 @@ public final class PatchingManager {
 	 * @return Whether any patches were actually applied.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean patchSingle(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
+	private static boolean patchSingle(FallbackResourceManager manager, PackResources from, PackType type, Identifier name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
 		// Since many packs could provide this file, we cannot rely on existence checks to find the real pack.
 		// This will simply have to not work in that case.
 		//from = findTrueSource(from, type, name);
 
 		if (hasPatches(from)) {
-			final ResourceLocation patchName = name.withPath(name.getPath() + ".patch");
+			final Identifier patchName = name.withPath(name.getPath() + ".patch");
 			final MutableObject<PatchContext> context = new MutableObject<>();
 
 			applyPatch(
@@ -131,7 +131,7 @@ public final class PatchingManager {
 					null
 					);
 
-			return context.getValue() != null;
+			return context.get() != null;
 		}
 
 		return false;
@@ -148,8 +148,8 @@ public final class PatchingManager {
 	 * @return Whether any patches were actually applied.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean patch(FallbackResourceManager manager, PackResources from, PackType type, ResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
-		final ResourceLocation patchName = name.withPath(name.getPath() + ".patch");
+	private static boolean patch(FallbackResourceManager manager, PackResources from, PackType type, Identifier name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
+		final Identifier patchName = name.withPath(name.getPath() + ".patch");
 
 		final MutableObject<PatchContext> context = new MutableObject<>();
 
@@ -191,7 +191,7 @@ public final class PatchingManager {
 			}
 		}
 
-		return context.getValue() != null;
+		return context.get() != null;
 	}
 
 	private static PatchContext applyPatch(
@@ -238,7 +238,7 @@ public final class PatchingManager {
 		try {
 			if (audit != null)
 				audit.setPatchPath(pack.name());
-			if (context.getValue() == null)
+			if (context.get() == null)
 				context.setValue(PatchedInternal.BASE_CONTEXT.audit(audit).testEvaluator(new PatchedTestEvaluator(type)));
 
 			Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}{}.",
@@ -246,7 +246,7 @@ public final class PatchingManager {
 					pack.name(),
 					explicitTargetName != null ? " to " + explicitTargetName : "");
 
-			final PatchContext ctx = context.getValue().fileAccess(new PatchedFileAccess(pack.resources()));
+			final PatchContext ctx = context.get().fileAccess(new PatchedFileAccess(pack.resources()));
 
 			patch.patch(wrapper.get(), ctx);
 

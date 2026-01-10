@@ -15,7 +15,7 @@ import net.fabricmc.loader.api.metadata.ModMetadata;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 
 import net.enderturret.patchedmod.util.env.IPlatform;
@@ -123,12 +123,12 @@ final class FabricPlatform implements IPlatform {
 	}
 
 	@Override
-	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace) {
+	public Function<Identifier, Identifier> getRenamer(PackResources pack, String namespace) {
 		// GroupResourcePack and ModNioResourcePack
 		if (!needsSwapNamespaceAndPath(pack)) return Function.identity();
 		// PathPackResources:      :minecraft/something → minecraft:something
 		// FilePackResources is handled separately.
 		// VanillaPackResources:  .:minecraft/something → minecraft:something
-		return rl -> ResourceLocation.fromNamespaceAndPath(namespace, rl.getPath().substring(namespace.length() + 1));
+		return rl -> Identifier.fromNamespaceAndPath(namespace, rl.getPath().substring(namespace.length() + 1));
 	}
 }

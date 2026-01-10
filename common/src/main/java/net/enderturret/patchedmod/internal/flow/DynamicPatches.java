@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
@@ -30,7 +30,7 @@ public final class DynamicPatches {
 
 	private static final Map<PackType, PatchTargetManager> PATCH_TARGET_MANAGERS = new EnumMap<>(PackType.class);
 
-	static Map<PackResources, List<String>> getTargets(PackType type, ResourceLocation name, PackResources from) {
+	static Map<PackResources, List<String>> getTargets(PackType type, Identifier name, PackResources from) {
 		final PatchTargetManager targetManager = PATCH_TARGET_MANAGERS.get(type);
 		final Map<PackResources, List<String>> targets = targetManager == null ? Map.of() : targetManager.getTargets(name, from);
 

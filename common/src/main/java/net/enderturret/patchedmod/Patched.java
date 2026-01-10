@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import net.enderturret.patched.IDataSource;
 import net.enderturret.patchedmod.internal.PatchedDataSource;
@@ -16,9 +16,9 @@ import net.enderturret.patchedmod.util.env.IPlatform;
 /**
  * Patched's loader-agnostic entrypoint and API.
  * @author EnderTurret
- * @see #registerDataSource(ResourceLocation, SingleDataSource)
- * @see #registerTestCondition(ResourceLocation, TestCondition)
- * @see #registerSimpleTestCondition(ResourceLocation, TestCondition.Simple)
+ * @see #registerDataSource(Identifier, SingleDataSource)
+ * @see #registerTestCondition(Identifier, TestCondition)
+ * @see #registerSimpleTestCondition(Identifier, TestCondition.Simple)
  */
 public final class Patched {
 
@@ -61,7 +61,7 @@ public final class Patched {
 	 * @param id The name of the data source -- what goes in the {@code type} field.
 	 * @param source The data source to register.
 	 */
-	public static void registerDataSource(ResourceLocation id, SingleDataSource source) {
+	public static void registerDataSource(Identifier id, SingleDataSource source) {
 		PatchedDataSource.register(id.toString(), source);
 	}
 
@@ -70,7 +70,7 @@ public final class Patched {
 	 * @param id The name of the test condition -- what goes in the {@code type} field.
 	 * @param condition The condition to register.
 	 */
-	public static void registerTestCondition(ResourceLocation id, TestCondition condition) {
+	public static void registerTestCondition(Identifier id, TestCondition condition) {
 		PatchedTestEvaluator.register(id, condition);
 	}
 
@@ -79,17 +79,17 @@ public final class Patched {
 	 * @param id The name of the test condition -- what goes in the {@code type} field.
 	 * @param condition The condition to register.
 	 */
-	public static void registerSimpleTestCondition(ResourceLocation id, TestCondition.Simple condition) {
+	public static void registerSimpleTestCondition(Identifier id, TestCondition.Simple condition) {
 		PatchedTestEvaluator.register(id, condition);
 	}
 
 	/**
-	 * @deprecated Use {@link PatchUtil#isPatchable(ResourceLocation)} instead.
+	 * @deprecated Use {@link PatchUtil#isPatchable(Identifier)} instead.
 	 * @param location The location of the file to test.
 	 * @return {@code true} if the file at the given location supports being patched, based on its name.
 	 */
 	@Deprecated(forRemoval = true)
-	public static boolean canBePatched(ResourceLocation location) {
+	public static boolean canBePatched(Identifier location) {
 		return PatchUtil.isPatchable(location);
 	}
 }

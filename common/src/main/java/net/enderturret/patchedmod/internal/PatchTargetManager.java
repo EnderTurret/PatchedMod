@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
@@ -104,7 +104,7 @@ public final class PatchTargetManager {
 	 * @return The list of all applicable patches, paired with their owning packs (for priority handling).
 	 */
 	@Internal
-	public Map<PackResources, List<String>> getTargets(ResourceLocation loc, PackResources from) {
+	public Map<PackResources, List<String>> getTargets(Identifier loc, PackResources from) {
 		if (targetsByNamespace == null) return Map.of();
 
 		bakeNamespace(loc.getNamespace());

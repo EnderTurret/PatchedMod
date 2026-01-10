@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
@@ -181,7 +181,7 @@ public interface IPlatform {
 	 * @return The list of {@link PackResources} that contain the namespace of the given file.
 	 */
 	@Deprecated(since = "7.4.0+1.21.1", forRemoval = true)
-	public default Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, ResourceLocation file) { return List.of(); }
+	public default Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, Identifier file) { return List.of(); }
 
 	/**
 	 * Determines whether the specified pack needs the namespace and path flipped in order to discover all files in a given namespace.
@@ -193,13 +193,13 @@ public interface IPlatform {
 	public boolean needsSwapNamespaceAndPath(PackResources pack);
 
 	/**
-	 * As a consequence of {@link #needsSwapNamespaceAndPath(PackResources)}, the returned {@linkplain ResourceLocation resource locations} may need to be renamed.
+	 * As a consequence of {@link #needsSwapNamespaceAndPath(PackResources)}, the returned {@linkplain Identifier identifiers} may need to be renamed.
 	 * This method returns the renamer function for a given pack.
 	 * @param pack The pack in question.
 	 * @param namespace The namespace being searched.
 	 * @return The renamer function.
 	 */
-	public Function<ResourceLocation, ResourceLocation> getRenamer(PackResources pack, String namespace);
+	public Function<Identifier, Identifier> getRenamer(PackResources pack, String namespace);
 
 	/**
 	 * Returns a {@code Stream} over all packs in the given resource manager, expanding {@linkplain #getChildren(PackResources) group packs} as necessary.

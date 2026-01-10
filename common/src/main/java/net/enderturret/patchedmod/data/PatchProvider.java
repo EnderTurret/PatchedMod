@@ -30,7 +30,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 
 import net.enderturret.patched.ITestEvaluator;
@@ -55,7 +55,7 @@ public abstract class PatchProvider implements DataProvider {
 	private final PackOutput.Target target;
 	private final String modId;
 
-	private final Map<ResourceLocation, JsonPatch> patches = new HashMap<>();
+	private final Map<Identifier, JsonPatch> patches = new HashMap<>();
 
 	protected PatchProvider(PackOutput output, PackOutput.Target target, @Nullable String modId) {
 		if (target == null || target == PackOutput.Target.REPORTS) throw new IllegalArgumentException("Bad type");
@@ -92,21 +92,21 @@ public abstract class PatchProvider implements DataProvider {
 	}
 
 	/**
-	 * Conveniently constructs a {@link ResourceLocation} using the given arguments.
-	 * @param modId The mod id or domain of the {@link ResourceLocation}.
-	 * @param path The path of the {@link ResourceLocation}.
-	 * @return The new {@link ResourceLocation}.
+	 * Conveniently constructs a {@link Identifier} using the given arguments.
+	 * @param modId The mod id or domain of the {@link Identifier}.
+	 * @param path The path of the {@link Identifier}.
+	 * @return The new {@link Identifier}.
 	 */
-	public ResourceLocation id(String modId, String path) {
-		return ResourceLocation.fromNamespaceAndPath(modId, path);
+	public Identifier id(String modId, String path) {
+		return Identifier.fromNamespaceAndPath(modId, path);
 	}
 
 	/**
-	 * Conveniently constructs a {@link ResourceLocation} with the given path under the mod id passed in the constructor.
-	 * @param path The path of the {@link ResourceLocation}.
-	 * @return The new {@link ResourceLocation}.
+	 * Conveniently constructs a {@link Identifier} with the given path under the mod id passed in the constructor.
+	 * @param path The path of the {@link Identifier}.
+	 * @return The new {@link Identifier}.
 	 */
-	public ResourceLocation id(String path) {
+	public Identifier id(String path) {
 		return id(modId, path);
 	}
 
@@ -124,7 +124,7 @@ public abstract class PatchProvider implements DataProvider {
 			final Path root = output.getOutputFolder(target);
 			final List<CompletableFuture<?>> futures = new ArrayList<>();
 
-			for (Map.Entry<ResourceLocation, JsonPatch> entry : patches.entrySet())
+			for (Map.Entry<Identifier, JsonPatch> entry : patches.entrySet())
 				futures.add(writePatch(cache, root, entry.getKey(), entry.getValue()));
 
 			return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
@@ -133,7 +133,7 @@ public abstract class PatchProvider implements DataProvider {
 		return CompletableFuture.allOf();
 	}
 
-	private CompletableFuture<?> writePatch(CachedOutput cache, Path root, ResourceLocation path, JsonPatch patch) {
+	private CompletableFuture<?> writePatch(CachedOutput cache, Path root, Identifier path, JsonPatch patch) {
 		final Path to = root.resolve(path.getNamespace()).resolve(path.getPath() + ".json.patch");
 		// The ordering is guaranteed to be stable, as patches are serialized manually.
 		// Using this method prevents the "type" field of test patches from jumping to the top of the json object.
@@ -160,10 +160,10 @@ public abstract class PatchProvider implements DataProvider {
 
 	/**
 	 * Begin a new patch definition.
-	 * @param location The location of the file this patch is patching. See {@link #id(String, String)} for easy {@link ResourceLocation} construction.
+	 * @param location The location of the file this patch is patching. See {@link #id(String, String)} for easy {@link Identifier} construction.
 	 * @return The patch builder.
 	 */
-	public OperationBuilder patch(ResourceLocation location) {
+	public OperationBuilder patch(Identifier location) {
 		return new RootOperationBuilder(location);
 	}
 
@@ -444,7 +444,7 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param value The value to pass to the data source. May be {@code null}.
 		 * @return {@code this}.
 		 */
-		public OperationBuilder paste(String path, ResourceLocation type, @Nullable String from, @Nullable JsonElement value) {
+		public OperationBuilder paste(String path, Identifier type, @Nullable String from, @Nullable JsonElement value) {
 			return save(PatchUtil.paste(path, type.toString(), from, value));
 		}
 
@@ -455,7 +455,7 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param from The path to the input element. May be {@code null}.
 		 * @return {@code this}.
 		 */
-		public OperationBuilder paste(String path, ResourceLocation type, @Nullable String from) {
+		public OperationBuilder paste(String path, Identifier type, @Nullable String from) {
 			return paste(path, type, from, null);
 		}
 
@@ -466,7 +466,7 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param value The value to pass to the data source. May be {@code null}.
 		 * @return {@code this}.
 		 */
-		public OperationBuilder paste(String path, ResourceLocation type, @Nullable JsonElement value) {
+		public OperationBuilder paste(String path, Identifier type, @Nullable JsonElement value) {
 			return paste(path, type, null, value);
 		}
 
@@ -477,7 +477,7 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param value The value to pass to the data source. May be {@code null}. If non-{@code null}, it must be either a {@link JsonElement} of some kind, or an {@code Object} that the {@code PatchProvider} can serialize.
 		 * @return {@code this}.
 		 */
-		public OperationBuilder paste(String path, ResourceLocation type, @Nullable Object value) {
+		public OperationBuilder paste(String path, Identifier type, @Nullable Object value) {
 			return paste(path, type, null, PatchProvider.this.serialize(value));
 		}
 
@@ -490,7 +490,7 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param provider Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
 		 * @return {@code this}.
 		 */
-		public <T> OperationBuilder paste(String path, ResourceLocation type, @Nullable T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider) {
+		public <T> OperationBuilder paste(String path, Identifier type, @Nullable T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider) {
 			return paste(path, type, null, serializeUnchecked(value, valueCodec, provider));
 		}
 
@@ -541,9 +541,9 @@ public abstract class PatchProvider implements DataProvider {
 
 	final class RootOperationBuilder extends OperationBuilder {
 
-		private final ResourceLocation location;
+		private final Identifier location;
 
-		RootOperationBuilder(ResourceLocation location) {
+		RootOperationBuilder(Identifier location) {
 			this.location = location;
 		}
 

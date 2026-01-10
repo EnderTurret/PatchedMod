@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.permissions.Permission;
 
 import net.enderturret.patchedmod.internal.command.PatchedCommand;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
@@ -46,7 +47,7 @@ final class PatchedClientCommands {
 		}
 
 		@Override
-		public boolean hasPermission(FabricClientCommandSource source, int level) {
+		public boolean hasPermission(FabricClientCommandSource source, Permission permission) {
 			return true;
 		}
 	}
