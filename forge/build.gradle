@@ -1,7 +1,7 @@
 // https://projects.neoforged.net/
 plugins {
     id 'java-library'
-    id 'net.neoforged.moddev' version '1.0.21'
+    id 'net.neoforged.moddev' version '2.0.137'
 }
 
 configurations {
@@ -25,7 +25,7 @@ dependencies {
 }
 
 neoForge {
-    version = '21.1.72'
+    version = '21.11.25-beta'
 
     mods {
         patched {
@@ -37,8 +37,8 @@ neoForge {
     parchment {
         // https://parchmentmc.org/docs/getting-started
         // https://ldtteam.jfrog.io/ui/native/parchmentmc-public/org/parchmentmc/data/
-        minecraftVersion = '1.21'
-        mappingsVersion = '2024.07.28'
+        minecraftVersion = '1.21.11'
+        mappingsVersion = '2025.12.20'
     }
 
     runs {
@@ -55,9 +55,9 @@ neoForge {
             server()
             ideName = 'runPatchedModNeoForgeServer'
         }
-        data {
-            data()
-            ideName = 'runPatchedModNeoForgeData'
+        clientData {
+            clientData()
+            ideName = 'runPatchedModNeoForgeClientData'
         }
     }
 }
