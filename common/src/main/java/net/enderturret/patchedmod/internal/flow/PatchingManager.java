@@ -319,7 +319,7 @@ public final class PatchingManager {
 					if (patching.patchedMetadata().patchingEnabled()) {
 						if (patching.patchedMetadata().formatVersion() == 0) {
 							if (HASPATCHES_WARNING)
-								Patched.platform().logger().warn("Loaded legacy PatchedMetadata from {}. This behavior is deprecated and will be removed in a future release.", entry.name());
+								Patched.platform().logger().warn("Loaded legacy PatchedMetadata from {}. This behavior is deprecated and will be removed in Minecraft 26.1.", entry.name());
 							else
 								Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Loaded legacy PatchedMetadata from {}.", entry.name());
 						} else
