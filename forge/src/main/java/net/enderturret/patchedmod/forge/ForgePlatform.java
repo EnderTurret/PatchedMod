@@ -104,10 +104,10 @@ final class ForgePlatform implements IPlatform {
 	@Override
 	public Function<Identifier, Identifier> getRenamer(PackResources pack, String namespace) {
 		final boolean vanilla = pack instanceof VanillaPackResources;
-		final int prefixLen = vanilla ? "../".length() : 0;
+		final int prefixLen = 0;
 		// PathPackResources:     :minecraft/something → minecraft:something
 		// FilePackResources is handled separately.
-		// VanillaPackResources:  :../minecraft/something → minecraft:something
+		// VanillaPackResources:  :minecraft/something → minecraft:something
 		return rl -> Identifier.fromNamespaceAndPath(namespace, rl.getPath().substring(prefixLen + namespace.length() + 1));
 	}
 }
