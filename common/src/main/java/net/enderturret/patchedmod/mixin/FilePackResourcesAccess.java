@@ -17,6 +17,6 @@ public interface FilePackResourcesAccess {
 	/**
 	 * @return {@link FilePackResources#zipFileAccess}.
 	 */
-	@Accessor
-	public FilePackResources.SharedZipFileAccess getZipFileAccess();
+	@Accessor(value = "zipFileAccess")
+	public FilePackResources.SharedZipFileAccess patched$getZipFileAccess();
 }

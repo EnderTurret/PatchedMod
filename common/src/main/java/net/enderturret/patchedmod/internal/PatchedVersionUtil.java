@@ -40,7 +40,7 @@ public final class PatchedVersionUtil {
 	 * @return The zip file.
 	 */
 	public static ZipFile getZipFile(FilePackResources pack) {
-		return ((SharedZipFileAccessAccess) ((FilePackResourcesAccess) pack).getZipFileAccess()).callGetOrCreateZipFile();
+		return ((SharedZipFileAccessAccess) ((FilePackResourcesAccess) pack).patched$getZipFileAccess()).patched$getOrCreateZipFile();
 	}
 
 	/**

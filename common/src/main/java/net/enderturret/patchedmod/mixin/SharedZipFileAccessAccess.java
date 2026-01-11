@@ -19,6 +19,6 @@ public interface SharedZipFileAccessAccess {
 	/**
 	 * @return {@link SharedZipFileAccess#getOrCreateZipFile()}.
 	 */
-	@Invoker
-	public ZipFile callGetOrCreateZipFile();
+	@Invoker(value = "getOrCreateZipFile")
+	public ZipFile patched$getOrCreateZipFile();
 }

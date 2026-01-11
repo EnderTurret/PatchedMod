@@ -28,7 +28,7 @@ public abstract class MixinMinecraftServer {
 					value = "NEW",
 					target = "Lnet/minecraft/server/packs/resources/MultiPackResourceManager;"
 					),
-			method = "*"
+			method = "*" // Targeting a lambda in reloadResources().
 	)
 	private MultiPackResourceManager patched$setupServerPatchTargetManager(
 			PackType type, List<PackResources> packs, Operation<MultiPackResourceManager> original) {

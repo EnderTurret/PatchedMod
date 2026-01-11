@@ -36,7 +36,7 @@ public abstract class MixinFallbackResourceManager {
 	@Unique
 	private static final String CREATE_RESOURCE = "Lnet/minecraft/server/packs/resources/FallbackResourceManager;createResource("
 			+ "Lnet/minecraft/server/packs/PackResources;"
-			+ "Lnet/minecraft/resources/ResourceLocation;"
+			+ "Lnet/minecraft/resources/Identifier;"
 			+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
 			+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
 			+ ")Lnet/minecraft/server/packs/resources/Resource;";
