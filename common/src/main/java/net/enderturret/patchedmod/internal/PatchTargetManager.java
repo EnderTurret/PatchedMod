@@ -14,9 +14,11 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.VanillaPackResources;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.internal.flow.DynamicPatches;
+import net.enderturret.patchedmod.internal.flow.PatchingManager;
 import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.meta.IPattern;
 import net.enderturret.patchedmod.util.meta.PatchTarget;
@@ -62,11 +64,14 @@ public final class PatchTargetManager {
 
 			priorityByPack.put(pack.packId().intern(), i);
 
-			if (pack instanceof IPatchingPackResources ppp)
+			if (pack instanceof IPatchingPackResources ppp) {
 				for (PatchTarget target : ppp.patchedMetadata().patchTargets())
 					if (target.packType().map(PatchedPackType::toVanilla).orElse(type) == type)
 						for (Target subTarget : target.targets())
 							targets.add(new BakedTarget(subTarget, target.patch(), pack));
+			}
+			else if (PatchingManager.DEBUG && !(pack instanceof VanillaPackResources))
+				Patched.platform().logger().info("Note: {} does not implement IPatchingPackResources (it is a {})", pack, pack.getClass().getName());
 		}
 
 		this.targets = List.copyOf(targets);
