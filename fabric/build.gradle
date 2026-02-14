@@ -1,6 +1,6 @@
 plugins {
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom/
-    id 'fabric-loom' version '1.13.6'
+    id 'net.fabricmc.fabric-loom-remap' version '1.15.3'
 }
 
 configurations {
@@ -29,10 +29,6 @@ dependencies {
 
 loom {
     accessWidenerPath = file("$rootDir/fabric/src/main/resources/patched.accesswidener")
-
-    mixin {
-        defaultRefmapName = 'patched.refmap.json'
-    }
 
     // Due to an incredible oversight(?) in Loom, these actually do nothing.
     // You cannot change the configuration name from the default, which is derived from the project name.
