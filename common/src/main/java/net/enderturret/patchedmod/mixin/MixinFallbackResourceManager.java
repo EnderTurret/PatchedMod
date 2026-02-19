@@ -37,20 +37,17 @@ import net.enderturret.patchedmod.internal.flow.PatchingManager;
 @Mixin(FallbackResourceManager.class)
 public abstract class MixinFallbackResourceManager {
 
-	@Unique
-	private static final String CREATE_RESOURCE = "Lnet/minecraft/server/packs/resources/FallbackResourceManager;createResource("
-			+ "Lnet/minecraft/server/packs/PackResources;"
-			+ "Lnet/minecraft/resources/Identifier;"
-			+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
-			+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
-			+ ")Lnet/minecraft/server/packs/resources/Resource;";
-
 	@Shadow
 	@Final
 	private PackType type;
 
 	@WrapOperation(
-			at = @At(value = "INVOKE", target = CREATE_RESOURCE),
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/FallbackResourceManager;createResource("
+					+ "Lnet/minecraft/server/packs/PackResources;"
+					+ "Lnet/minecraft/resources/Identifier;"
+					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
+					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
+					+ ")Lnet/minecraft/server/packs/resources/Resource;"),
 			method = { "getResource" })
 	private Resource patched$replaceResourceMulti(
 			PackResources pack, Identifier location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
@@ -64,7 +61,12 @@ public abstract class MixinFallbackResourceManager {
 	}
 
 	@WrapOperation(
-			at = @At(value = "INVOKE", target = CREATE_RESOURCE),
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/FallbackResourceManager;createResource("
+					+ "Lnet/minecraft/server/packs/PackResources;"
+					+ "Lnet/minecraft/resources/Identifier;"
+					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
+					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
+					+ ")Lnet/minecraft/server/packs/resources/Resource;"),
 			method = { "listResourceStacks" })
 	private Resource patched$replaceResourceSingle(
 			PackResources pack, Identifier location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
@@ -104,7 +106,12 @@ public abstract class MixinFallbackResourceManager {
 	}
 
 	@WrapOperation(
-			at = @At(value = "INVOKE", target = CREATE_RESOURCE),
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/FallbackResourceManager;createResource("
+					+ "Lnet/minecraft/server/packs/PackResources;"
+					+ "Lnet/minecraft/resources/Identifier;"
+					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
+					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
+					+ ")Lnet/minecraft/server/packs/resources/Resource;"),
 			method = { "lambda$listResources$3", "m_244901_", "method_45293" },
 			require = 1,
 			remap = false)
