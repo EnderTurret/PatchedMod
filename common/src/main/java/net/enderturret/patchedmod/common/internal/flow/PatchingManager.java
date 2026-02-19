@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.event.Level;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
