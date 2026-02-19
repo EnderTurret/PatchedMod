@@ -1,10 +1,14 @@
 package net.enderturret.patchedmod.fabric.client;
 
+import com.mojang.brigadier.arguments.ArgumentType;
+
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.Permission;
 
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
@@ -32,6 +36,16 @@ final class PatchedClientCommands {
 		}
 
 		@Override
+		public Class<?> getResourceLocationClass() {
+			return Identifier.class;
+		}
+
+		@Override
+		public ArgumentType<?> getResourceLocationArgumentType() {
+			return IdentifierArgument.id();
+		}
+
+		@Override
 		public PatchedResourceManager getResourceManager(FabricClientCommandSource source) {
 			return (PatchedResourceManager) Minecraft.getInstance().getResourceManager();
 		}
@@ -47,7 +61,7 @@ final class PatchedClientCommands {
 		}
 
 		@Override
-		public boolean hasPermission(FabricClientCommandSource source, Permission permission) {
+		public boolean hasPermission(FabricClientCommandSource source, int permissionLevel) {
 			return true;
 		}
 	}

@@ -13,7 +13,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
 import net.enderturret.patchedmod.internal.command.PatchedCommand;
-import net.enderturret.patchedmod.internal.env.IEnvironment;
+import net.enderturret.patchedmod.internal.env.ServerEnvironment;
 
 @Mixin(Commands.class)
 public abstract class MixinCommands {
@@ -24,6 +24,6 @@ public abstract class MixinCommands {
 
 	@Inject(at = @At("TAIL"), method = "<init>")
 	private void patched$registerServerCommands(CallbackInfo ci) {
-		dispatcher.register(PatchedCommand.create(new IEnvironment.ServerEnvironment()));
+		dispatcher.register(PatchedCommand.create(new ServerEnvironment()));
 	}
 }

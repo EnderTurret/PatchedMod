@@ -13,8 +13,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.server.permissions.Permission;
-import net.minecraft.server.permissions.PermissionLevel;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
@@ -37,10 +35,8 @@ public final class PatchedCommand {
 	 */
 	@Internal
 	public static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
-		final Permission permission = new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS);
-
 		final var ret = env.literal("patched" + (env.client() ? "c" : ""))
-				.requires(src -> env.hasPermission(src, permission))
+				.requires(src -> env.hasPermission(src, 2))
 				.then(DumpCommand.create(env))
 				.then(ListCommand.create(env));
 

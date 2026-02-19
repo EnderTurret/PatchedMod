@@ -18,7 +18,7 @@ import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.SingleDataSource;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.internal.command.PatchedCommand;
-import net.enderturret.patchedmod.internal.env.IEnvironment;
+import net.enderturret.patchedmod.internal.env.ServerEnvironment;
 
 @Internal
 @Mod(Patched.MOD_ID)
@@ -30,7 +30,7 @@ public final class PatchedForge {
 	}
 
 	private void registerCommands(RegisterCommandsEvent e) {
-		e.getDispatcher().register(PatchedCommand.create(new IEnvironment.ServerEnvironment()));
+		e.getDispatcher().register(PatchedCommand.create(new ServerEnvironment()));
 	}
 
 	private void handleIMC(InterModProcessEvent e) {

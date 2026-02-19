@@ -2,9 +2,13 @@ package net.enderturret.patchedmod.forge.client;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
+import com.mojang.brigadier.arguments.ArgumentType;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.Permission;
 
 import net.neoforged.api.distmarker.Dist;
@@ -38,6 +42,16 @@ public final class ClientEvents {
 		}
 
 		@Override
+		public Class<?> getResourceLocationClass() {
+			return Identifier.class;
+		}
+
+		@Override
+		public ArgumentType<?> getResourceLocationArgumentType() {
+			return IdentifierArgument.id();
+		}
+
+		@Override
 		public PatchedResourceManager getResourceManager(CommandSourceStack source) {
 			return (PatchedResourceManager) Minecraft.getInstance().getResourceManager();
 		}
@@ -53,8 +67,8 @@ public final class ClientEvents {
 		}
 
 		@Override
-		public boolean hasPermission(CommandSourceStack source, Permission permission) {
-			return source.permissions().hasPermission(permission);
+		public boolean hasPermission(CommandSourceStack source, int permissionLevel) {
+			return true;
 		}
 	}
 }
