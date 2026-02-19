@@ -29,10 +29,14 @@ subprojects {
     }
 
     configurations {
+        shadow
         sourceShadow
     }
 
     dependencies {
+        shadow (implementation("com.github.EnderTurret:Patched:$patched_version")) {
+            exclude group: 'com.google.code.gson', module: 'gson'
+        }
         sourceShadow ("com.github.EnderTurret:Patched:$patched_version:sources") {
             exclude group: 'com.google.code.gson', module: 'gson'
         }

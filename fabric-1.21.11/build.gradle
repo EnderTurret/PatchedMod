@@ -10,10 +10,6 @@ dependencies {
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
-
-    shadow (implementation("com.github.EnderTurret:Patched:$patched_version")) {
-        exclude group: 'com.google.code.gson', module: 'gson'
-    }
 }
 
 loom {

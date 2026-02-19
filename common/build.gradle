@@ -1,9 +1,5 @@
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-configurations {
-    shadow
-}
-
 repositories {
     mavenCentral()
     maven {
@@ -17,10 +13,6 @@ dependencies {
     compileOnly 'org.slf4j:slf4j-api:1.8.0-beta4'
     compileOnly 'com.mojang:brigadier:1.0.18'
     compileOnly 'com.mojang:datafixerupper:4.1.27'
-
-    shadow (compileOnly("com.github.EnderTurret:Patched:$patched_version")) {
-        exclude group: 'com.google.code.gson', module: 'gson'
-    }
 }
 
 tasks.named('jar', Jar).configure {
