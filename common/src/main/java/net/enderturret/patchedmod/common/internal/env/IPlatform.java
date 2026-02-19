@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.util.env;
+package net.enderturret.patchedmod.common.internal.env;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;

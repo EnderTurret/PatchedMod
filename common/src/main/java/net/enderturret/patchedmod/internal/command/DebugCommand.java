@@ -8,9 +8,9 @@ import com.mojang.brigadier.context.CommandContext;
 
 import net.minecraft.network.chat.Component;
 
+import net.enderturret.patchedmod.common.internal.PatchTargetManager;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.internal.PatchTargetManager;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 
 final class DebugCommand {

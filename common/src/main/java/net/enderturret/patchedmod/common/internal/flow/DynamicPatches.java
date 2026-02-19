@@ -9,9 +9,9 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.internal.PatchTargetManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.internal.PatchTargetManager;
 
 /**
  * Manages the "dynamic patch" subsystem of Patched.

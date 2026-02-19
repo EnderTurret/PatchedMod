@@ -2,7 +2,7 @@ package net.enderturret.patchedmod.internal.env;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import net.enderturret.patchedmod.util.env.IPlatform;
+import net.enderturret.patchedmod.common.internal.env.IPlatform;
 
 /**
  * <p>

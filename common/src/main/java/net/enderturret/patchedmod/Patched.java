@@ -11,9 +11,9 @@ import net.enderturret.patchedmod.common.SingleDataSource;
 import net.enderturret.patchedmod.common.TestCondition;
 import net.enderturret.patchedmod.common.internal.PatchedDataSource;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
+import net.enderturret.patchedmod.common.internal.env.IPlatform;
 import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.internal.env.DummyPlatform;
-import net.enderturret.patchedmod.util.env.IPlatform;
 
 /**
  * Patched's loader-agnostic entrypoint and API.

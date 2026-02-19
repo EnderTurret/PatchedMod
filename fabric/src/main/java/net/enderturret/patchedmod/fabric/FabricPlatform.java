@@ -11,8 +11,8 @@ import net.fabricmc.loader.api.metadata.ModMetadata;
 
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.internal.env.IPlatform;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
-import net.enderturret.patchedmod.util.env.IPlatform;
 
 public final class FabricPlatform implements IPlatform {
 

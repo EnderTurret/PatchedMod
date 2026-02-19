@@ -12,9 +12,9 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.server.WorldLoader;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 
+import net.enderturret.patchedmod.common.internal.PatchTargetManager;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.internal.PatchTargetManager;
 
 /**
  * Handles setting up the data pack {@link PatchTargetManager}.

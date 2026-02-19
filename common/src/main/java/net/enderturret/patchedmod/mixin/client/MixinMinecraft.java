@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackResources;
 
+import net.enderturret.patchedmod.common.internal.PatchTargetManager;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.internal.PatchTargetManager;
 
 /**
  * Handles setting up the resource pack {@link PatchTargetManager}.
