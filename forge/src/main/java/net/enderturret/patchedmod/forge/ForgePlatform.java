@@ -13,7 +13,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
@@ -40,7 +40,7 @@ public final class ForgePlatform implements IPlatform {
 				.orElse(-1) >= 0;
 	}
 
-	public static Optional<? extends ModContainer> findModNameFromModFile(IPatchingPackResources pack) {
+	public static Optional<? extends ModContainer> findModNameFromModFile(PatchedPackResources pack) {
 		if (pack.patched$packId().startsWith("mod/")) {
 			final String modId = pack.patched$packId().substring("mod/".length());
 			return ModList.get().getModContainerById(modId);
@@ -51,7 +51,7 @@ public final class ForgePlatform implements IPlatform {
 
 	@Override
 	@Nullable
-	public PatchedMetadata deriveMetadataFromMod(IPatchingPackResources pack) {
+	public PatchedMetadata deriveMetadataFromMod(PatchedPackResources pack) {
 		final Optional<? extends ModContainer> owningMod = findModNameFromModFile(pack);
 		if (owningMod.isPresent()) {
 			final ModContainer mod = owningMod.get();

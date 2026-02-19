@@ -29,6 +29,7 @@ import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.flow.BailException;
 import net.enderturret.patchedmod.common.internal.flow.LazyPatchingWrapper;
@@ -296,7 +297,7 @@ public final class PatchingManager {
 	 * @param entry The pack to initialize.
 	 */
 	static void maybeInitialize(Entry entry) {
-		if (!(entry.resources() instanceof IPatchingPackResources patching))
+		if (!(entry.resources() instanceof PatchedPackResources patching))
 			return;
 
 		if (!patching.patched$initialized())

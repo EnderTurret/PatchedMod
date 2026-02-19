@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.permissions.Permission;
 
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;

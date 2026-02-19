@@ -5,7 +5,6 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.permissions.Permission;
 
 import net.neoforged.api.distmarker.Dist;

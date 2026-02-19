@@ -20,13 +20,10 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.IoSupplier;
-import net.minecraft.server.packs.resources.Resource;
 
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;
@@ -69,7 +66,7 @@ final class DumpCommand {
 		final int index = input.indexOf(':');
 		final String reqNamespace = index == -1 ? null : input.substring(0, index);
 
-		final IPatchingPackResources pack = man.patched$getPatchingPacks()
+		final PatchedPackResources pack = man.patched$getPatchingPacks()
 				.filter(p -> packName.equals(p.patched$getName()))
 				.findFirst().orElse(null);
 
@@ -109,11 +106,11 @@ final class DumpCommand {
 		// There's a lot of files here, so narrowing them down is a requirement.
 		if (reqNamespace == null) return builder.buildFuture();
 
-		final List<IPatchingPackResources> packs = man.patched$listPacks()
+		final List<PatchedPackResources> packs = man.patched$listPacks()
 				.filter(p -> p.patched$getNamespaces(type).contains(reqNamespace))
 				.toList();
 
-		for (IPatchingPackResources pack : packs)
+		for (PatchedPackResources pack : packs)
 			VersionedPatchedInternal.getResources(pack, type, reqNamespace, s -> s.getPath().endsWith(".json"))
 				.stream()
 				.filter(loc -> loc.toString().startsWith(input))
@@ -137,7 +134,7 @@ final class DumpCommand {
 		final Identifier location = ctx.getArgument("location", Identifier.class);
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final List<IPatchingPackResources> packs = man.patched$listPacks()
+		final List<PatchedPackResources> packs = man.patched$listPacks()
 				.filter(p -> packName.equals(p.patched$getName()))
 				.toList();
 
@@ -151,27 +148,29 @@ final class DumpCommand {
 			return 0;
 		}
 
-		final IPatchingPackResources pack = packs.get(0);
+		final PatchedPackResources pack = packs.get(0);
 
 		if (!Patched.platform().hasPatches(pack)) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
 
-		final IoSupplier<InputStream> io = pack.getResource(type, location);
+		try {
+			final InputStream io = pack.patched$getResource(type, location);
 
-		if (io == null) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.dump.patch_not_found", "That patch could not be found."));
-			return 0;
-		}
-
-		try (InputStream is = io.get()) {
-			final String src = PatchedInternal.readPrettyJson(is, location.toString() + " (in " + packName + ")", true, true);
-			if (src == null) {
-				env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));
+			if (io == null) {
+				env.sendFailure(ctx.getSource(), translate("command.patched.dump.patch_not_found", "That patch could not be found."));
 				return 0;
 			}
-			env.sendSuccess(ctx.getSource(), Component.literal(src), false);
+
+			try (InputStream is = io) {
+				final String src = PatchedInternal.readPrettyJson(is, location.toString() + " (in " + packName + ")", true, true);
+				if (src == null) {
+					env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));
+					return 0;
+				}
+				env.sendSuccess(ctx.getSource(), Component.literal(src), false);
+			}
 		} catch (IOException e) {
 			Patched.platform().logger().warn("Failed to read resource '{}' from {}:", location, packName, e);
 			return 0;
@@ -186,7 +185,7 @@ final class DumpCommand {
 		final String patchName = ctx.getArgument("patch", String.class);
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final List<IPatchingPackResources> packs = man.patched$listPacks()
+		final List<PatchedPackResources> packs = man.patched$listPacks()
 				.filter(p -> packName.equals(p.patched$getName()))
 				.toList();
 
@@ -200,7 +199,7 @@ final class DumpCommand {
 			return 0;
 		}
 
-		final IPatchingPackResources pack = packs.get(0);
+		final PatchedPackResources pack = packs.get(0);
 
 		if (!Patched.platform().hasPatches(pack)) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
@@ -236,32 +235,32 @@ final class DumpCommand {
 		final Identifier location = ctx.getArgument("location", Identifier.class);
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final Optional<Resource> op = man.getResource(location);
+		try {
+			final Optional<InputStream> op = man.patched$getResource(location);
 
-		if (op.isEmpty()) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
-			return 0;
-		}
-
-		final Resource res = op.get();
-
-		try (InputStream is = res.open()) {
-			final PatchAudit audit = useAudit ? new PatchAudit("null") : null;
-
-			if (audit != null && is instanceof PatchingInputStream pis)
-				pis.withAudit(audit);
-
-			if (!usePatches && is instanceof PatchingInputStream pis)
-				pis._disablePatching();
-
-			final JsonElement src = PatchedInternal.readJson(is, location.toString(), false);
-
-			if (src == null) {
-				env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That file is not a json file."));
+			if (op.isEmpty()) {
+				env.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
 				return 0;
 			}
 
-			env.sendSuccess(ctx.getSource(), Component.literal(audit != null ? audit.toString(src) : PatchedInternal.GSON.toJson(src)), false);
+			try (InputStream is = op.get()) {
+				final PatchAudit audit = useAudit ? new PatchAudit("null") : null;
+
+				if (audit != null && is instanceof PatchingInputStream pis)
+					pis.withAudit(audit);
+
+				if (!usePatches && is instanceof PatchingInputStream pis)
+					pis._disablePatching();
+
+				final JsonElement src = PatchedInternal.readJson(is, location.toString(), false);
+
+				if (src == null) {
+					env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That file is not a json file."));
+					return 0;
+				}
+
+				env.sendSuccess(ctx.getSource(), Component.literal(audit != null ? audit.toString(src) : PatchedInternal.GSON.toJson(src)), false);
+			}
 		} catch (NoSuchFileException e) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
 			return 0;

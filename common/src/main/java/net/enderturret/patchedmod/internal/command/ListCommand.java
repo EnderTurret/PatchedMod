@@ -21,7 +21,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.util.meta.IPattern;
 import net.enderturret.patchedmod.common.util.meta.PatchTarget;
@@ -51,7 +51,7 @@ final class ListCommand {
 		final String packName = StringArgumentType.getString(ctx, "pack");
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final List<IPatchingPackResources> packs = man.patched$listPacks()
+		final List<PatchedPackResources> packs = man.patched$listPacks()
 				.filter(p -> packName.equals(p.patched$getName()))
 				.toList();
 
@@ -65,7 +65,7 @@ final class ListCommand {
 			return 0;
 		}
 
-		final IPatchingPackResources pack = packs.get(0);
+		final PatchedPackResources pack = packs.get(0);
 
 		if (!Patched.platform().hasPatches(pack)) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
@@ -81,8 +81,8 @@ final class ListCommand {
 				for (Identifier loc : VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")))
 					patches.add(new Patch(loc.toString(), null, null));
 
-		if (pack instanceof IPatchingPackResources ppp)
-			for (PatchTarget patchTarget : ppp.patchedMetadata().patchTargets())
+		if (pack.patchedMetadata() != null)
+			for (PatchTarget patchTarget : pack.patchedMetadata().patchTargets())
 				for (PatchTarget.Target target : patchTarget.targets()) {
 					final String ns = target.namespace().stream().map(IPattern::toString).collect(Collectors.joining("\", \"", "\"", "\""));
 					final String paths = target.path().stream().map(IPattern::toString).collect(Collectors.joining("\", \"", "\"", "\""));
@@ -118,7 +118,7 @@ final class ListCommand {
 	private static <T> int listPacks(CommandContext<T> ctx, IEnvironment<T> env, boolean listAll) {
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
-		record Entry(IPatchingPackResources pack, String name, boolean patching) {}
+		record Entry(PatchedPackResources pack, String name, boolean patching) {}
 
 		final List<Entry> packs = man.patched$listPacks()
 				.map(p -> new Entry(p, p.patched$getName(), p.patchedMetadata().patchingEnabled()))

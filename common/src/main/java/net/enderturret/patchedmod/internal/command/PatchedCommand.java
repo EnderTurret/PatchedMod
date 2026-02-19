@@ -16,7 +16,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.permissions.Permission;
 import net.minecraft.server.permissions.PermissionLevel;
 
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.internal.PatchedVersionUtil;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
@@ -52,7 +52,7 @@ public final class PatchedCommand {
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
 		man.patched$getPatchingPacks()
-			.map(IPatchingPackResources::patched$getName)
+			.map(PatchedPackResources::patched$getName)
 			.filter(s -> s.startsWith(input))
 			.sorted()
 			.map(s -> quoted ? StringArgumentType.escapeIfRequired(s) : s)

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
@@ -49,7 +50,7 @@ public interface IPlatform {
 	 * @return A derived {@link PatchedMetadata}, or {@code null} if one could not be derived.
 	 */
 	@Nullable
-	public default PatchedMetadata deriveMetadataFromMod(IPatchingPackResources pack) {
+	public default PatchedMetadata deriveMetadataFromMod(PatchedPackResources pack) {
 		return null;
 	}
 

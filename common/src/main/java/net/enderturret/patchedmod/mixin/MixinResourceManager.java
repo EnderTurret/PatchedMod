@@ -1,29 +1,35 @@
 package net.enderturret.patchedmod.mixin;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import org.spongepowered.asm.mixin.Mixin;
 
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 
 @Mixin(ResourceManager.class)
 public interface MixinResourceManager extends PatchedResourceManager {
 
 	@Override
-	public default Stream<IPatchingPackResources> patched$getExpandedPacks() {
+	public default Stream<PatchedPackResources> patched$getExpandedPacks() {
 		return ((ResourceManager) this).listPacks()
-				.map(p -> (IPatchingPackResources) p)
+				.map(p -> (PatchedPackResources) p)
 				.flatMap(p -> p.patched$isGroupPack() ? p.patched$getChildren().stream() : Stream.of(p));
 	}
 
 	@Override
-	public default Stream<IPatchingPackResources> patched$getPatchingPacks() {
+	public default Stream<PatchedPackResources> patched$getPatchingPacks() {
 		return ((ResourceManager) this).listPacks()
-				.map(p -> (IPatchingPackResources) p)
+				.map(p -> (PatchedPackResources) p)
 				.filter(p -> p.patchedMetadata().patchingEnabled());
 	}
 
@@ -33,7 +39,14 @@ public interface MixinResourceManager extends PatchedResourceManager {
 	}
 
 	@Override
-	public default Stream<IPatchingPackResources> patched$listPacks() {
+	public default Stream<PatchedPackResources> patched$listPacks() {
 		return (Stream) ((ResourceManager) this).listPacks();
+	}
+
+	@Override
+	public default Optional<InputStream> patched$getResource(PatchedResourceLocation location) throws IOException {
+		final Optional<Resource> optional = ((ResourceManager) this).getResource((Identifier) (Object) location);
+		if (optional.isEmpty()) return Optional.empty();
+		return Optional.of(optional.get().open());
 	}
 }

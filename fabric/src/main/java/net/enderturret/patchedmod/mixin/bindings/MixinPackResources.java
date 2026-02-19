@@ -16,13 +16,14 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.VanillaPackResources;
 import net.minecraft.server.packs.resources.IoSupplier;
 
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.fabric.FabricPlatform;
 import net.enderturret.patchedmod.fabric.IFabricModPackResources;
 
 @Mixin(PackResources.class)
-public interface MixinPackResources extends IPatchingPackResources {
+public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default String patched$packId() {
@@ -42,6 +43,12 @@ public interface MixinPackResources extends IPatchingPackResources {
 	@Override
 	public default @Nullable InputStream patched$getRootResource(String... path) throws IOException {
 		final IoSupplier<InputStream> ret = ((PackResources) this).getRootResource(path);
+		return ret != null ? ret.get() : null;
+	}
+
+	@Override
+	public default @Nullable InputStream patched$getResource(PatchedPackType type, PatchedResourceLocation location) throws IOException {
+		final IoSupplier<InputStream> ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (Identifier) (Object) location);
 		return ret != null ? ret.get() : null;
 	}
 

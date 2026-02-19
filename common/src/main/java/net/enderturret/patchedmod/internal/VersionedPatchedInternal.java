@@ -16,7 +16,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 /**
@@ -36,7 +36,7 @@ public final class VersionedPatchedInternal {
 	 * @param filter A filter for filtering out undesired results.
 	 * @return The list of resources.
 	 */
-	public static List<Identifier> getResources(IPatchingPackResources pack, PatchedPackType type, String namespace, Predicate<Identifier> filter) {
+	public static List<Identifier> getResources(PatchedPackResources pack, PatchedPackType type, String namespace, Predicate<Identifier> filter) {
 		if (pack instanceof FilePackResources fpp)
 			return fileResourcesHookWorks ? getFileResources(fpp, type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), namespace, filter) : List.of();
 
