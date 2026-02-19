@@ -15,8 +15,8 @@ import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
-import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 /**
@@ -72,7 +72,7 @@ public final class VersionedPatchedInternal {
 				}
 			});
 		} catch (Exception e) {
-			Patched.platform().logger().error("Exception listing resources:", e);
+			PatchedInternal.LOGGER.error("Exception listing resources:", e);
 		}
 
 		return ret;
@@ -93,7 +93,7 @@ public final class VersionedPatchedInternal {
 		try {
 			zip = PatchedVersionUtil.getZipFile(pack);
 		} catch (Throwable e) {
-			Patched.platform().logger().error("Accessing FilePackResources ZipFile threw an exception! Listing FilePackResources contents is now disabled. Informational commands for zip packs may not work correctly!", e);
+			PatchedInternal.LOGGER.error("Accessing FilePackResources ZipFile threw an exception! Listing FilePackResources contents is now disabled. Informational commands for zip packs may not work correctly!", e);
 			fileResourcesHookWorks = false;
 			return List.of();
 		}

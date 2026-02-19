@@ -17,7 +17,6 @@ import com.google.gson.JsonParser;
 
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.patch.PatchContext;
-import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 
 /**
@@ -63,7 +62,7 @@ public final class PatchedInternal {
 			ret = GSON.toJson(elem);
 		} catch (Exception e) {
 			if (logError)
-				Patched.platform().logger().warn("Failed to parse {} as json:", location, e);
+				PatchedInternal.LOGGER.warn("Failed to parse {} as json:", location, e);
 
 			if (requireJson)
 				return null;
@@ -90,7 +89,7 @@ public final class PatchedInternal {
 			return JsonParser.parseString(ret);
 		} catch (Exception e) {
 			if (logError)
-				Patched.platform().logger().warn("Failed to parse {} as json:", location, e);
+				PatchedInternal.LOGGER.warn("Failed to parse {} as json:", location, e);
 		}
 
 		return null;

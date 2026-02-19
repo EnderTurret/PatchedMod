@@ -5,6 +5,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import net.fabricmc.api.ClientModInitializer;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 
 /**
  * Various client-side event handlers.
@@ -19,9 +20,9 @@ public final class ClientEvents implements ClientModInitializer {
 			try {
 				PatchedClientCommands.init();
 			} catch (Throwable e) {
-				Patched.platform().logger().error("Failed to register client commands:", e);
+				PatchedInternal.LOGGER.error("Failed to register client commands:", e);
 			}
 		else
-			Patched.platform().logger().info("Not initializing client commands: Fabric Command API not found.");
+			PatchedInternal.LOGGER.info("Not initializing client commands: Fabric Command API not found.");
 	}
 }

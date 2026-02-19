@@ -105,7 +105,7 @@ public final class PatchingManager {
 			// Let the future data consumer handle these.
 		} catch (Exception e) {
 			if (LOG_EXCEPTIONS.getAndSet(false))
-				Patched.platform().logger().error("An exception occurred while attempting to patch {}. Further exceptions will not be reported.", name, e);
+				PatchedInternal.LOGGER.error("An exception occurred while attempting to patch {}. Further exceptions will not be reported.", name, e);
 		}
 
 		return wrapper.getOrCreateStream();
@@ -218,7 +218,7 @@ public final class PatchingManager {
 		try (InputStream patchStream = patchSupplier.get()) {
 			patchJson = PatchedInternal.readString(patchStream);
 		} catch (Exception e) {
-			Patched.platform().logger().warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
+			PatchedInternal.LOGGER.warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
 			return null;
 		}
 
@@ -227,7 +227,7 @@ public final class PatchingManager {
 		try {
 			patch = Patches.readPatch(PatchedInternal.GSON, patchJson);
 		} catch (Exception e) {
-			Patched.platform().logger().warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
+			PatchedInternal.LOGGER.warn("Failed to parse patch {} from {}:", patchName, pack.name(), e);
 			return null;
 		}
 
@@ -249,7 +249,7 @@ public final class PatchingManager {
 			if (context.get() == null)
 				context.setValue(PatchedInternal.BASE_CONTEXT.audit(audit).testEvaluator(new PatchedTestEvaluator(type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA)));
 
-			Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}{}.",
+			PatchedInternal.LOGGER.atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}{}.",
 					patchName,
 					pack.name(),
 					explicitTargetName != null ? " to " + explicitTargetName : "");
@@ -262,9 +262,9 @@ public final class PatchingManager {
 		} catch (BailException e) {
 			throw e;
 		} catch (PatchingException e) {
-			Patched.platform().logger().warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
+			PatchedInternal.LOGGER.warn("Failed to apply patch {} from {}:\n{}", patchName, pack.name(), e.toString());
 		} catch (Exception e) {
-			Patched.platform().logger().warn("Failed to apply patch {} from {}:", patchName, pack.name(), e);
+			PatchedInternal.LOGGER.warn("Failed to apply patch {} from {}:", patchName, pack.name(), e);
 		}
 
 		return null;
@@ -318,7 +318,7 @@ public final class PatchingManager {
 
 								meta = PatchedMetadata.of(elem, entry.name());
 							} catch (Exception e) {
-								Patched.platform().logger().warn("Failed to read pack.mcmeta in {}:", entry.name(), e);
+								PatchedInternal.LOGGER.warn("Failed to read pack.mcmeta in {}:", entry.name(), e);
 								meta = PatchedMetadata.DISABLED_METADATA;
 							}
 						else
@@ -335,11 +335,11 @@ public final class PatchingManager {
 					if (patching.patchedMetadata().patchingEnabled()) {
 						if (patching.patchedMetadata().formatVersion() == 0) {
 							if (HASPATCHES_WARNING)
-								Patched.platform().logger().warn("Loaded legacy PatchedMetadata from {}. This behavior is deprecated and will be removed in Minecraft 26.1.", entry.name());
+								PatchedInternal.LOGGER.warn("Loaded legacy PatchedMetadata from {}. This behavior is deprecated and will be removed in Minecraft 26.1.", entry.name());
 							else
-								Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Loaded legacy PatchedMetadata from {}.", entry.name());
+								PatchedInternal.LOGGER.atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Loaded legacy PatchedMetadata from {}.", entry.name());
 						} else
-							Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Loaded PatchedMetadata from {} with format version {}.", entry.name(), patching.patchedMetadata().formatVersion());
+							PatchedInternal.LOGGER.atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Loaded PatchedMetadata from {} with format version {}.", entry.name(), patching.patchedMetadata().formatVersion());
 					}
 				}
 			}

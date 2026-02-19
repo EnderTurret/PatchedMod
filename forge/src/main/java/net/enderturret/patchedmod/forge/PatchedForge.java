@@ -16,6 +16,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.SingleDataSource;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.internal.command.PatchedCommand;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 
@@ -38,7 +39,7 @@ public final class PatchedForge {
 			switch (message.method()) {
 				case "registerDataSource" -> handleDataSource(message.messageSupplier().get(), message.senderModId());
 				case "registerTestCondition" -> handleTestCondition(message.messageSupplier().get(), message.senderModId());
-				default -> Patched.platform().logger().warn("Received unknown IMC method {} with content {} from {}!",
+				default -> PatchedInternal.LOGGER.warn("Received unknown IMC method {} with content {} from {}!",
 						message.method(),
 						message.messageSupplier().get(),
 						message.senderModId());
@@ -48,7 +49,7 @@ public final class PatchedForge {
 
 	private static void handleDataSource(Object obj, String sender) {
 		if (!(obj instanceof Pair<?, ?> pair) || !(pair.getLeft() instanceof Identifier rl) || !(pair.getRight() instanceof BinaryOperator op)) {
-			Patched.platform().logger().warn("Expected Pair<Identifier, BinaryOperator<JsonElement>> from IMC sent by {}, got {}!", sender, obj);
+			PatchedInternal.LOGGER.warn("Expected Pair<Identifier, BinaryOperator<JsonElement>> from IMC sent by {}, got {}!", sender, obj);
 			return;
 		}
 
@@ -57,7 +58,7 @@ public final class PatchedForge {
 
 	private static void handleTestCondition(Object obj, String sender) {
 		if (!(obj instanceof Pair<?, ?> pair) || !(pair.getLeft() instanceof Identifier rl) || !(pair.getRight() instanceof Predicate con)) {
-			Patched.platform().logger().warn("Expected Pair<Identifier, Predicate<JsonElement>> from IMC sent by {}, got {}!", sender, obj);
+			PatchedInternal.LOGGER.warn("Expected Pair<Identifier, Predicate<JsonElement>> from IMC sent by {}, got {}!", sender, obj);
 			return;
 		}
 

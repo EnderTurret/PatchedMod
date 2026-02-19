@@ -10,6 +10,7 @@ import net.enderturret.patched.IDataSource;
 import net.enderturret.patchedmod.common.SingleDataSource;
 import net.enderturret.patchedmod.common.TestCondition;
 import net.enderturret.patchedmod.common.internal.PatchedDataSource;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.internal.env.DummyPlatform;
 import net.enderturret.patchedmod.util.env.IPlatform;
@@ -40,7 +41,7 @@ public final class Patched {
 	public static IPlatform platform() {
 		if (platform == null) {
 			platform = new DummyPlatform();
-			platform.logger().error("Constructed dummy platform instance! If you're reading this, Patched was not loaded correctly!");
+			PatchedInternal.LOGGER.error("Constructed dummy platform instance! If you're reading this, Patched was not loaded correctly!");
 			// Or someone called this method way too early, but no one would do that, right?
 		}
 

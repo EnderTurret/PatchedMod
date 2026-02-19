@@ -11,11 +11,9 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.resources.Identifier;
-
-import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.util.meta.IPattern;
 import net.enderturret.patchedmod.common.util.meta.PatchTarget;
@@ -73,7 +71,7 @@ public final class PatchTargetManager {
 		this.packsByPriority = empty ? null : List.copyOf(packsByPriority);
 		this.priorityByPack = empty ? null : priorityByPack;
 
-		Patched.platform().logger().debug("Built PatchTargetManager {} with {}", type.name(), packsByPriority.stream()
+		PatchedInternal.LOGGER.debug("Built PatchTargetManager {} with {}", type.name(), packsByPriority.stream()
 				.map(pr -> pr.toString() + " (" + pr.patched$packId() + ")").collect(Collectors.joining(", ")));
 
 		bakeNamespace("minecraft"); // This is the single-most likely filled namespace.
@@ -127,22 +125,22 @@ public final class PatchTargetManager {
 			}
 
 			if (DynamicPatches.DEBUG_TARGETS)
-				Patched.platform().logger().info("Processing {} with last values {}, {}, {}...", target, lastPack, lastIdx, lastList);
+				PatchedInternal.LOGGER.info("Processing {} with last values {}, {}, {}...", target, lastPack, lastIdx, lastList);
 
 			// Don't allow patches from lower packs to affect a replacement from a higher one.
 			final int idx = priorityByPack.get(target.from.patched$packId().intern());
 
 			if (DynamicPatches.DEBUG_TARGETS)
-				Patched.platform().logger().info("  Priority check: {} < {}?", idx, fromIndex);
+				PatchedInternal.LOGGER.info("  Priority check: {} < {}?", idx, fromIndex);
 
 			if (idx < fromIndex) break;
 
 			if (DynamicPatches.DEBUG_TARGETS)
-				Patched.platform().logger().info("  Trying patterns {} on {}", target.target().path(), loc.patched$getPath());
+				PatchedInternal.LOGGER.info("  Trying patterns {} on {}", target.target().path(), loc.patched$getPath());
 
 			for (IPattern pattern : target.target().path()) {
 				if (DynamicPatches.DEBUG_TARGETS)
-					Patched.platform().logger().info("    Trying pattern {} ({}) on {}", pattern, pattern.getClass().getSimpleName(), loc.patched$getPath());
+					PatchedInternal.LOGGER.info("    Trying pattern {} ({}) on {}", pattern, pattern.getClass().getSimpleName(), loc.patched$getPath());
 
 				if (pattern.test(loc.patched$getPath())) {
 					if (lastList == null)
@@ -151,7 +149,7 @@ public final class PatchTargetManager {
 					lastList.add(target.patch);
 
 					if (DynamicPatches.DEBUG_TARGETS)
-						Patched.platform().logger().info("    Success: added {} to {}", target.patch, lastList);
+						PatchedInternal.LOGGER.info("    Success: added {} to {}", target.patch, lastList);
 
 					continue parent;
 				}
@@ -159,7 +157,7 @@ public final class PatchTargetManager {
 		}
 
 		if (DynamicPatches.DEBUG_TARGETS)
-			Patched.platform().logger().info("Returning {}", ret);
+			PatchedInternal.LOGGER.info("Returning {}", ret);
 
 		return ret;
 	}

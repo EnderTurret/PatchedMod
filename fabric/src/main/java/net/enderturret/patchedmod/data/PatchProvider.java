@@ -39,7 +39,7 @@ import net.enderturret.patched.patch.CompoundPatch;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchUtil;
 import net.enderturret.patched.patch.TestPatch;
-import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.internal.PatchedVersionUtil;
 
 /**
@@ -152,7 +152,7 @@ public abstract class PatchProvider implements DataProvider {
 			jw.close();
 			cache.writeIfNeeded(to, baos.toByteArray(), hos.hash());
 		} catch (IOException e) {
-			Patched.platform().logger().error("Exception saving file to {}:", to, e);
+			PatchedInternal.LOGGER.error("Exception saving file to {}:", to, e);
 		}
 	}
 

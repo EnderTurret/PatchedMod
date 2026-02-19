@@ -2,10 +2,8 @@ package net.enderturret.patchedmod.util.env;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
-import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
 /**
@@ -14,12 +12,6 @@ import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
  */
 @Internal
 public interface IPlatform {
-
-	/**
-	 * Returns Patched's {@code Logger} instance.
-	 * @return Patched's {@code Logger} instance.
-	 */
-	public default Logger logger() { return PatchedInternal.LOGGER; }
 
 	/**
 	 * Returns whether or not Patched is running on the (physical) client.

@@ -20,7 +20,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.network.chat.Component;
 
 import net.enderturret.patched.audit.PatchAudit;
-import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
@@ -171,7 +170,7 @@ final class DumpCommand {
 				env.sendSuccess(ctx.getSource(), Component.literal(src), false);
 			}
 		} catch (IOException e) {
-			Patched.platform().logger().warn("Failed to read resource '{}' from {}:", location, packName, e);
+			PatchedInternal.LOGGER.warn("Failed to read resource '{}' from {}:", location, packName, e);
 			return 0;
 		}
 
@@ -222,7 +221,7 @@ final class DumpCommand {
 				env.sendSuccess(ctx.getSource(), Component.literal(src), false);
 			}
 		} catch (IOException e) {
-			Patched.platform().logger().warn("Failed to read resource '{}' from {}:", patchName, packName, e);
+			PatchedInternal.LOGGER.warn("Failed to read resource '{}' from {}:", patchName, packName, e);
 			return 0;
 		}
 
@@ -264,7 +263,7 @@ final class DumpCommand {
 			env.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
 			return 0;
 		} catch (IOException e) {
-			Patched.platform().logger().warn("Failed to read resource '{}':", location, e);
+			PatchedInternal.LOGGER.warn("Failed to read resource '{}':", location, e);
 			return 0;
 		}
 
