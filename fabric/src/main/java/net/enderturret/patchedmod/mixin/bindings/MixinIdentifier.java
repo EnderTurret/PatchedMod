@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.mixin;
+package net.enderturret.patchedmod.mixin.bindings;
 
 import org.spongepowered.asm.mixin.Mixin;
 

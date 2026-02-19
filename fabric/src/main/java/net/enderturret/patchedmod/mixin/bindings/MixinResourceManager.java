@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.mixin;
+package net.enderturret.patchedmod.mixin.bindings;
 
 import java.io.IOException;
 import java.io.InputStream;
