@@ -17,13 +17,12 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;
@@ -43,14 +42,14 @@ final class DumpCommand {
 				.then(env.literal("patch")
 						.then(env.argument("pack", StringArgumentType.string())
 								.suggests((ctx, builder) -> PatchedCommand.suggestPack(ctx, builder, env, true))
-								.then(env.argument("location", IdentifierArgument.id())
+								.then(env.argument("location", env.getResourceLocationArgumentType())
 										.suggests((ctx, builder) -> suggestPatch(ctx, "pack", builder, env))
 										.executes(ctx -> dumpPatch(ctx, type, env)))
 								.then(env.literal("dynamic")
 										.then(env.argument("patch", StringArgumentType.string())
 												.executes(ctx -> dumpLocalPatch(ctx, type, env))))))
 				.then(env.literal("file")
-						.then(env.argument("location", IdentifierArgument.id())
+						.then(env.argument("location", env.getResourceLocationArgumentType())
 								.suggests((ctx, builder) -> suggestResource(ctx, type, builder, env))
 								.executes(ctx -> dumpFile(ctx, env, true, true))
 								.then(env.literal("raw").executes(ctx -> dumpFile(ctx, env, false, true)))
@@ -80,7 +79,7 @@ final class DumpCommand {
 						.stream()
 						.filter(loc -> loc.toString().startsWith(input))
 						.sorted()
-						.map(Identifier::toString)
+						.map(Object::toString)
 						.forEach(builder::suggest);
 				}
 
@@ -131,7 +130,7 @@ final class DumpCommand {
 	@SuppressWarnings("resource")
 	private static <T> int dumpPatch(CommandContext<T> ctx, PatchedPackType type, IEnvironment<T> env) {
 		final String packName = StringArgumentType.getString(ctx, "pack");
-		final Identifier location = ctx.getArgument("location", Identifier.class);
+		final PatchedResourceLocation location = (PatchedResourceLocation) ctx.getArgument("location", env.getResourceLocationClass());
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final List<PatchedPackResources> packs = man.patched$listPacks()
@@ -232,7 +231,7 @@ final class DumpCommand {
 
 	@SuppressWarnings("deprecation")
 	private static <T> int dumpFile(CommandContext<T> ctx, IEnvironment<T> env, boolean useAudit, boolean usePatches) {
-		final Identifier location = ctx.getArgument("location", Identifier.class);
+		final PatchedResourceLocation location = (PatchedResourceLocation) ctx.getArgument("location", env.getResourceLocationClass());
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
 		try {

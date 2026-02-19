@@ -7,7 +7,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.Permission;
 
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
@@ -60,6 +62,9 @@ public interface IEnvironment<T> {
 	 * @return {@code true} if they have the specified permission level.
 	 */
 	public boolean hasPermission(T source, Permission permission);
+
+	public default Class<?> getResourceLocationClass() { return Identifier.class; }
+	public default ArgumentType<?> getResourceLocationArgumentType() { return IdentifierArgument.id(); }
 
 	/**
 	 * Creates a {@link LiteralArgumentBuilder} for the command source type represented by this environment instance.
