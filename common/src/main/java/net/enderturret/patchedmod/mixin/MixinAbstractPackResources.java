@@ -41,9 +41,4 @@ public abstract class MixinAbstractPackResources implements IPatchingPackResourc
 	public boolean patched$initialized() {
 		return patched$meta != null;
 	}
-
-	@Override
-	public String patched$packId() {
-		return ((PackResources) this).packId();
-	}
 }

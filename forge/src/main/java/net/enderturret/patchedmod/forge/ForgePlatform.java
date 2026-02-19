@@ -6,13 +6,9 @@ import java.util.function.Function;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
 
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.VanillaPackResources;
@@ -22,6 +18,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 
+import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
@@ -49,23 +46,18 @@ final class ForgePlatform implements IPlatform {
 	}
 
 	@Override
-	public PackOutput getPackOutput(DataGenerator generator) {
-		return generator.getPackOutput();
-	}
-
-	@Override
-	public String getName(PackResources pack) {
+	public String getName(IPatchingPackResources pack) {
 		final Optional<? extends ModContainer> mod = findModNameFromModFile(pack);
 
 		if (mod.isPresent())
 			return "mod/" + mod.get().getModInfo().getDisplayName();
 
-		return pack.packId();
+		return pack.patched$packId();
 	}
 
-	private static Optional<? extends ModContainer> findModNameFromModFile(PackResources pack) {
-		if (pack.packId().startsWith("mod/")) {
-			final String modId = pack.packId().substring("mod/".length());
+	private static Optional<? extends ModContainer> findModNameFromModFile(IPatchingPackResources pack) {
+		if (pack.patched$packId().startsWith("mod/")) {
+			final String modId = pack.patched$packId().substring("mod/".length());
 			return ModList.get().getModContainerById(modId);
 		}
 
@@ -74,7 +66,7 @@ final class ForgePlatform implements IPlatform {
 
 	@Override
 	@Nullable
-	public PatchedMetadata deriveMetadataFromMod(PackResources pack) {
+	public PatchedMetadata deriveMetadataFromMod(IPatchingPackResources pack) {
 		final Optional<? extends ModContainer> owningMod = findModNameFromModFile(pack);
 		if (owningMod.isPresent()) {
 			final ModContainer mod = owningMod.get();
@@ -90,12 +82,12 @@ final class ForgePlatform implements IPlatform {
 	}
 
 	@Override
-	public boolean needsSwapNamespaceAndPath(PackResources pack) {
+	public boolean needsSwapNamespaceAndPath(IPatchingPackResources pack) {
 		return true;
 	}
 
 	@Override
-	public Function<Identifier, Identifier> getRenamer(PackResources pack, String namespace) {
+	public Function<Identifier, Identifier> getRenamer(IPatchingPackResources pack, String namespace) {
 		final boolean vanilla = pack instanceof VanillaPackResources;
 		final int prefixLen = 0;
 		// PathPackResources:     :minecraft/something → minecraft:something

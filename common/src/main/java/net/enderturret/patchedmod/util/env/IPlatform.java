@@ -9,17 +9,13 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
+import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 /**
  * An abstraction over the different loaders Patched supports.
@@ -54,13 +50,6 @@ public interface IPlatform {
 	 * @return {@code true} if the mod is loaded and is <i>at least</i> the specified version.
 	 */
 	public boolean isModLoaded(String modId, String version);
-
-	/**
-	 * Returns the {@link PackOutput} of the given {@link DataGenerator}.
-	 * @param generator The {@code DataGenerator} to fetch the {@code PackOutput} from.
-	 * @return The {@code PackOutput}.
-	 */
-	public PackOutput getPackOutput(DataGenerator generator);
 
 	/**
 	 * <p>
@@ -99,7 +88,7 @@ public interface IPlatform {
 	 * @param pack The pack in question.
 	 * @return The "name" of the pack.
 	 */
-	public String getName(PackResources pack);
+	public String getName(IPatchingPackResources pack);
 
 	/**
 	 * If the specified pack belongs to a mod, and no {@code pack.mcmeta} exists for it,
@@ -108,7 +97,7 @@ public interface IPlatform {
 	 * @return A derived {@link PatchedMetadata}, or {@code null} if one could not be derived.
 	 */
 	@Nullable
-	public default PatchedMetadata deriveMetadataFromMod(PackResources pack) {
+	public default PatchedMetadata deriveMetadataFromMod(IPatchingPackResources pack) {
 		return null;
 	}
 
@@ -123,16 +112,14 @@ public interface IPlatform {
 	 * @param pack The pack to check.
 	 * @return {@code true} if the pack is a group pack.
 	 */
-	@Deprecated(since = "7.4.0+1.21.1", forRemoval = true)
-	public default boolean isGroup(PackResources pack) { return false; }
+	public default boolean isGroup(IPatchingPackResources pack) { return false; }
 
 	/**
 	 * If the pack is a group, returns the children of the pack.
 	 * @param pack The pack to unpack.
 	 * @return The pack's children.
 	 */
-	@Deprecated(since = "7.4.0+1.21.1", forRemoval = true)
-	public default Collection<PackResources> getChildren(PackResources pack) { return List.of(); }
+	public default Collection<IPatchingPackResources> getChildren(IPatchingPackResources pack) { return List.of(); }
 
 	/**
 	 * <p>
@@ -145,48 +132,47 @@ public interface IPlatform {
 	 * @param pack The pack in question.
 	 * @param type The pack type.
 	 * @param file The file.
-	 * @return The list of {@link PackResources} that contain the namespace of the given file.
+	 * @return The list of {@link IPatchingPackResources} that contain the namespace of the given file.
 	 */
-	@Deprecated(since = "7.4.0+1.21.1", forRemoval = true)
-	public default Collection<PackResources> getFilteredChildren(PackResources pack, PackType type, Identifier file) { return List.of(); }
+	public default Collection<IPatchingPackResources> getFilteredChildren(IPatchingPackResources pack, PatchedPackType type, Identifier file) { return List.of(); }
 
 	/**
 	 * Determines whether the specified pack needs the namespace and path flipped in order to discover all files in a given namespace.
 	 * In short, this determines whether to ask for ":minecraft" (flipped) or "minecraft:" (normal).
-	 * This is necessary because {@link PathPackResources} throws for empty/dotted paths (so we trick it by putting the namespace in the path).
+	 * This is necessary because {@code PathPackResources} throws for empty/dotted paths (so we trick it by putting the namespace in the path).
 	 * @param pack The pack in question.
 	 * @return {@code true} if the namespace and path must be swapped.
 	 */
-	public boolean needsSwapNamespaceAndPath(PackResources pack);
+	public boolean needsSwapNamespaceAndPath(IPatchingPackResources pack);
 
 	/**
-	 * As a consequence of {@link #needsSwapNamespaceAndPath(PackResources)}, the returned {@linkplain Identifier identifiers} may need to be renamed.
+	 * As a consequence of {@link #needsSwapNamespaceAndPath(IPatchingPackResources)}, the returned {@linkplain Identifier identifiers} may need to be renamed.
 	 * This method returns the renamer function for a given pack.
 	 * @param pack The pack in question.
 	 * @param namespace The namespace being searched.
 	 * @return The renamer function.
 	 */
-	public Function<Identifier, Identifier> getRenamer(PackResources pack, String namespace);
+	public Function<Identifier, Identifier> getRenamer(IPatchingPackResources pack, String namespace);
 
 	/**
-	 * Returns a {@code Stream} over all packs in the given resource manager, expanding {@linkplain #getChildren(PackResources) group packs} as necessary.
+	 * Returns a {@code Stream} over all packs in the given resource manager, expanding {@linkplain #getChildren(IPatchingPackResources) group packs} as necessary.
 	 * @param manager The resource manager to query the packs of.
 	 * @return The stream.
 	 */
-	@Deprecated(since = "7.4.0+1.21.1", forRemoval = true)
-	public default Stream<PackResources> getExpandedPacks(ResourceManager manager) {
+	public default Stream<IPatchingPackResources> getExpandedPacks(ResourceManager manager) {
 		return manager.listPacks()
+				.map(p -> (IPatchingPackResources) p)
 				.flatMap(p -> isGroup(p) ? getChildren(p).stream() : Stream.of(p));
 	}
 
 	/**
-	 * Returns a {@code Stream} over all patching-enabled packs in the given resource manager, expanding {@linkplain #getChildren(PackResources) group packs} as necessary.
+	 * Returns a {@code Stream} over all patching-enabled packs in the given resource manager, expanding {@linkplain #getChildren(IPatchingPackResources) group packs} as necessary.
 	 * This functions like {@link #getExpandedPacks(ResourceManager)}, but additionally filtering out non-patching packs.
 	 * @param manager The resource manager to query the packs of.
 	 * @return The stream.
 	 */
-	public default Stream<PackResources> getPatchingPacks(ResourceManager manager) {
-		return manager.listPacks().filter(this::hasPatches);
+	public default Stream<IPatchingPackResources> getPatchingPacks(ResourceManager manager) {
+		return manager.listPacks().map(p -> (IPatchingPackResources) p).filter(this::hasPatches);
 	}
 
 	/**
@@ -194,7 +180,7 @@ public interface IPlatform {
 	 * @param pack The pack in question.
 	 * @return {@code true} if the pack has patching enabled.
 	 */
-	public default boolean hasPatches(PackResources pack) {
-		return pack instanceof IPatchingPackResources ppp && ppp.patchedMetadata().patchingEnabled();
+	public default boolean hasPatches(IPatchingPackResources pack) {
+		return pack.patchedMetadata().patchingEnabled();
 	}
 }

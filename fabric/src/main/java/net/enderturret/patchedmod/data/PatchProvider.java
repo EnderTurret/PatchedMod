@@ -65,7 +65,7 @@ public abstract class PatchProvider implements DataProvider {
 	}
 
 	protected PatchProvider(DataGenerator generator, PackOutput.Target target, @Nullable String modId) {
-		this(Patched.platform().getPackOutput(generator), target, modId);
+		this(generator.vanillaPackOutput, target, modId);
 	}
 
 	/**

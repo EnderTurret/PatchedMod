@@ -3,8 +3,6 @@ package net.enderturret.patchedmod.fabric;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -13,11 +11,10 @@ import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 
+import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
@@ -48,34 +45,29 @@ final class FabricPlatform implements IPlatform {
 	}
 
 	@Override
-	public PackOutput getPackOutput(DataGenerator generator) {
-		return generator.vanillaPackOutput;
-	}
-
-	@Override
-	public String getName(PackResources pack) {
+	public String getName(IPatchingPackResources pack) {
 		final ModMetadata mod = getModMetadataFromPack(pack);
 		if (mod != null) {
 			final String modId = mod.getId();
 			final String packId;
 
-			if (!modId.equals(pack.packId()))
-				if (pack.packId().startsWith(modId)) {
-					final String temp = pack.packId().substring(modId.length());
+			if (!modId.equals(pack.patched$packId()))
+				if (pack.patched$packId().startsWith(modId)) {
+					final String temp = pack.patched$packId().substring(modId.length());
 					packId = temp.startsWith(":") ? temp.substring(1) : temp;
 				} else
-					packId = pack.packId();
+					packId = pack.patched$packId();
 			else
 				packId = null;
 
 			return "mod/" + mod.getName() + (packId != null ? "/" + packId : "");
 		}
 
-		return pack.packId();
+		return pack.patched$packId();
 	}
 
 	@Nullable
-	private static ModMetadata getModMetadataFromPack(PackResources pack) {
+	private static ModMetadata getModMetadataFromPack(IPatchingPackResources pack) {
 		if (pack instanceof IFabricModPackResources mod)
 			return mod.patched$getFabricModMetadata();
 
@@ -84,7 +76,7 @@ final class FabricPlatform implements IPlatform {
 
 	@Override
 	@Nullable
-	public PatchedMetadata deriveMetadataFromMod(PackResources pack) {
+	public PatchedMetadata deriveMetadataFromMod(IPatchingPackResources pack) {
 		final ModMetadata mod = getModMetadataFromPack(pack);
 		if (mod == null) return null;
 
@@ -95,13 +87,13 @@ final class FabricPlatform implements IPlatform {
 	}
 
 	@Override
-	public boolean needsSwapNamespaceAndPath(PackResources pack) {
+	public boolean needsSwapNamespaceAndPath(IPatchingPackResources pack) {
 		// Fabric implementations surprisingly throw no errors, unlike Minecraft.
 		return !(pack instanceof IFabricModPackResources);
 	}
 
 	@Override
-	public Function<Identifier, Identifier> getRenamer(PackResources pack, String namespace) {
+	public Function<Identifier, Identifier> getRenamer(IPatchingPackResources pack, String namespace) {
 		// GroupResourcePack and ModNioResourcePack
 		if (!needsSwapNamespaceAndPath(pack)) return Function.identity();
 		// PathPackResources:      :minecraft/something → minecraft:something

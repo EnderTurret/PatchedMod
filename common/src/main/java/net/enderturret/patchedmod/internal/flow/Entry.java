@@ -6,6 +6,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.FallbackResourceManager.PackEntry;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 
 /**
  * An alternative to transforming {@link PackEntry}'s constructor public.
@@ -22,6 +23,6 @@ record Entry(String name, PackResources resources) {
 	}
 
 	Entry(PackResources resources) {
-		this(Patched.platform().getName(Objects.requireNonNull(resources, "resources")), resources);
+		this(Patched.platform().getName((IPatchingPackResources) Objects.requireNonNull(resources, "resources")), resources);
 	}
 }

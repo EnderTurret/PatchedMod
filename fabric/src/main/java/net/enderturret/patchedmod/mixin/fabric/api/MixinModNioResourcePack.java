@@ -40,9 +40,4 @@ public abstract class MixinModNioResourcePack implements IPatchingPackResources 
 	public boolean patched$initialized() {
 		return patched$meta != null;
 	}
-
-	@Override
-	public String patched$packId() {
-		return ((ModNioPackResources) (Object) this).packId();
-	}
 }

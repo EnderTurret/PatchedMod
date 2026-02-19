@@ -321,7 +321,7 @@ public final class PatchingManager {
 
 						if (!meta.patchingEnabled())
 							meta = Objects.requireNonNullElse(
-									Patched.platform().deriveMetadataFromMod(entry.resources()),
+									Patched.platform().deriveMetadataFromMod(patching),
 									meta);
 
 						patching.setPatchedMetadata(meta);

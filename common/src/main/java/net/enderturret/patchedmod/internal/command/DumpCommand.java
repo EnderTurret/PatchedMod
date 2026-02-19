@@ -28,6 +28,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;
 import net.enderturret.patchedmod.internal.VersionedPatchedInternal;
@@ -68,7 +69,7 @@ final class DumpCommand {
 		final int index = input.indexOf(':');
 		final String reqNamespace = index == -1 ? null : input.substring(0, index);
 
-		final PackResources pack = Patched.platform().getPatchingPacks(man)
+		final PackResources pack = (PackResources) Patched.platform().getPatchingPacks(man)
 				.filter(p -> packName.equals(Patched.platform().getName(p)))
 				.findFirst().orElse(null);
 
@@ -78,7 +79,7 @@ final class DumpCommand {
 					if (reqNamespace != null && !reqNamespace.equals(namespace))
 						continue;
 
-					VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch"))
+					VersionedPatchedInternal.getResources((IPatchingPackResources) pack, type, namespace, s -> s.getPath().endsWith(".patch"))
 						.stream()
 						.filter(loc -> loc.toString().startsWith(input))
 						.sorted()
@@ -113,7 +114,7 @@ final class DumpCommand {
 				.toList();
 
 		for (PackResources pack : packs)
-			VersionedPatchedInternal.getResources(pack, type, reqNamespace, s -> s.getPath().endsWith(".json"))
+			VersionedPatchedInternal.getResources((IPatchingPackResources) pack, type, reqNamespace, s -> s.getPath().endsWith(".json"))
 				.stream()
 				.filter(loc -> loc.toString().startsWith(input))
 				.map(loc -> {
@@ -137,7 +138,7 @@ final class DumpCommand {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final List<PackResources> packs = man.listPacks()
-				.filter(p -> packName.equals(Patched.platform().getName(p)))
+				.filter(p -> packName.equals(Patched.platform().getName((IPatchingPackResources) p)))
 				.toList();
 
 		if (packs.isEmpty()) {
@@ -152,7 +153,7 @@ final class DumpCommand {
 
 		final PackResources pack = packs.get(0);
 
-		if (!Patched.platform().hasPatches(pack)) {
+		if (!Patched.platform().hasPatches((IPatchingPackResources) pack)) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
@@ -186,7 +187,7 @@ final class DumpCommand {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final List<PackResources> packs = man.listPacks()
-				.filter(p -> packName.equals(Patched.platform().getName(p)))
+				.filter(p -> packName.equals(Patched.platform().getName((IPatchingPackResources) p)))
 				.toList();
 
 		if (packs.isEmpty()) {
@@ -201,7 +202,7 @@ final class DumpCommand {
 
 		final PackResources pack = packs.get(0);
 
-		if (!Patched.platform().hasPatches(pack)) {
+		if (!Patched.platform().hasPatches((IPatchingPackResources) pack)) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}

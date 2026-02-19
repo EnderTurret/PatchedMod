@@ -15,7 +15,7 @@ public interface IPatchingPackResources {
 	 * @return The {@code PatchedMetadata} associated with this pack.
 	 */
 	public default PatchedMetadata patchedMetadata() {
-		throw new UnsupportedOperationException("Method was not implemented");
+		return PatchedMetadata.DISABLED_METADATA;
 	}
 
 	/**
@@ -41,10 +41,11 @@ public interface IPatchingPackResources {
 	 * @return {@code true} if the Patched metadata has been initialized for this pack.
 	 */
 	public default boolean patched$initialized() {
-		throw new UnsupportedOperationException("Method was not implemented");
+		return true;
 	}
 
 	// ===== PackResources bindings =====
 
 	public String patched$packId();
+	public boolean patched$isVanillaPack();
 }

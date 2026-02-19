@@ -17,6 +17,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.VanillaPackResources;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 
 /**
  * Internal utilities for Patched.
@@ -35,7 +36,7 @@ public final class VersionedPatchedInternal {
 	 * @param filter A filter for filtering out undesired results.
 	 * @return The list of resources.
 	 */
-	public static List<Identifier> getResources(PackResources pack, PackType type, String namespace, Predicate<Identifier> filter) {
+	public static List<Identifier> getResources(IPatchingPackResources pack, PackType type, String namespace, Predicate<Identifier> filter) {
 		if (pack instanceof FilePackResources fpp) return fileResourcesHookWorks ? getFileResources(fpp, type, namespace, filter) : List.of();
 
 		final List<Identifier> ret = new ArrayList<>();
@@ -55,14 +56,14 @@ public final class VersionedPatchedInternal {
 
 			if (Patched.platform().needsSwapNamespaceAndPath(pack)) {
 				// The vanilla pack throws on empty paths.
-				fakeNamespace = pack instanceof VanillaPackResources ? "." : "";
+				fakeNamespace = pack.patched$isVanillaPack() ? "." : "";
 				fakePath = namespace;
 			} else {
 				fakeNamespace = namespace;
 				fakePath = "";
 			}
 
-			pack.listResources(type, fakeNamespace, fakePath, (loc, io) -> {
+			((PackResources) pack).listResources(type, fakeNamespace, fakePath, (loc, io) -> {
 				if (filter.test(loc)) {
 					final Identifier renamed = renamer.apply(loc);
 

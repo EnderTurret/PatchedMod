@@ -53,7 +53,7 @@ final class ListCommand {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final List<PackResources> packs = man.listPacks()
-				.filter(p -> packName.equals(Patched.platform().getName(p)))
+				.filter(p -> packName.equals(Patched.platform().getName((IPatchingPackResources) p)))
 				.toList();
 
 		if (packs.isEmpty()) {
@@ -68,7 +68,7 @@ final class ListCommand {
 
 		final PackResources pack = packs.get(0);
 
-		if (!Patched.platform().hasPatches(pack)) {
+		if (!Patched.platform().hasPatches((IPatchingPackResources) pack)) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
@@ -79,7 +79,7 @@ final class ListCommand {
 
 		for (PackType type : PackType.values())
 			for (String namespace : pack.getNamespaces(type))
-				for (Identifier loc : VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")))
+				for (Identifier loc : VersionedPatchedInternal.getResources((IPatchingPackResources) pack, type, namespace, s -> s.getPath().endsWith(".patch")))
 					patches.add(new Patch(loc.toString(), null, null));
 
 		if (pack instanceof IPatchingPackResources ppp)
@@ -94,12 +94,12 @@ final class ListCommand {
 
 		final MutableComponent c = translate("command.patched.list.patches." + (single ? "single" : "multi"),
 				single ? "There is 1 patch in %2$s:" : "There are %1$s patches in %2$s:",
-				patches.size(), Patched.platform().getName(pack));
+				patches.size(), Patched.platform().getName((IPatchingPackResources) pack));
 
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
 		for (Patch patch : patches) {
-			final String safePackName = StringArgumentType.escapeIfRequired(Patched.platform().getName(pack));
+			final String safePackName = StringArgumentType.escapeIfRequired(Patched.platform().getName((IPatchingPackResources) pack));
 			final boolean dynamic = patch.ns != null;
 
 			c.append("\n").append(Component.literal(patch.loc)
@@ -122,7 +122,7 @@ final class ListCommand {
 		record Entry(PackResources pack, String name, boolean patching) {}
 
 		final List<Entry> packs = man.listPacks()
-				.map(p -> new Entry(p, Patched.platform().getName(p), Patched.platform().hasPatches(p)))
+				.map(p -> new Entry(p, Patched.platform().getName((IPatchingPackResources) p), Patched.platform().hasPatches((IPatchingPackResources) p)))
 				.sorted(Comparator.comparing(Entry::name))
 				.toList();
 

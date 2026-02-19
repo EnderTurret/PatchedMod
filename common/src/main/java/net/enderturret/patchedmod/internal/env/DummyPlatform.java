@@ -4,11 +4,9 @@ import java.util.function.Function;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.PackResources;
 
+import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
 /**
@@ -41,22 +39,17 @@ public final class DummyPlatform implements IPlatform {
 	}
 
 	@Override
-	public PackOutput getPackOutput(DataGenerator generator) {
-		throw new UnsupportedOperationException();
+	public String getName(IPatchingPackResources pack) {
+		return pack.patched$packId();
 	}
 
 	@Override
-	public String getName(PackResources pack) {
-		return pack.packId();
-	}
-
-	@Override
-	public boolean needsSwapNamespaceAndPath(PackResources pack) {
+	public boolean needsSwapNamespaceAndPath(IPatchingPackResources pack) {
 		return false;
 	}
 
 	@Override
-	public Function<Identifier, Identifier> getRenamer(PackResources pack, String namespace) {
+	public Function<Identifier, Identifier> getRenamer(IPatchingPackResources pack, String namespace) {
 		return Function.identity();
 	}
 }
