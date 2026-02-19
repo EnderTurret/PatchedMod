@@ -283,8 +283,7 @@ public final class PatchingManager {
 	 * @param entry The pack to initialize.
 	 */
 	static void maybeInitialize(Entry entry) {
-		if (!(entry.resources() instanceof PatchedPackResources patching))
-			return;
+		final PatchedPackResources patching = entry.resources();
 
 		if (!patching.patched$initialized())
 			synchronized (patching) {

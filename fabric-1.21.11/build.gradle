@@ -3,21 +3,22 @@ plugins {
     id 'net.fabricmc.fabric-loom-remap' version '1.15.3'
 }
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
 configurations {
     implementation.extendsFrom shadow
 }
 
-// https://fabricmc.net/develop/
 dependencies {
-    minecraft 'com.mojang:minecraft:1.21.11'
+    minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.officialMojangMappings()
-    modImplementation 'net.fabricmc:fabric-loader:0.18.4'
-    modImplementation 'net.fabricmc.fabric-api:fabric-api:0.141.1+1.21.11'
+    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
 
-    shadow ("com.github.EnderTurret:Patched:$patchedVersion") {
+    shadow ("com.github.EnderTurret:Patched:$patched_version") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
-    sourceShadow ("com.github.EnderTurret:Patched:$patchedVersion:sources") {
+    sourceShadow ("com.github.EnderTurret:Patched:$patched_version:sources") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
@@ -25,17 +26,17 @@ dependencies {
 }
 
 loom {
-    accessWidenerPath = file("$rootDir/fabric-1.21.11/src/main/resources/patched.accesswidener")
+    accessWidenerPath = file("${rootDir}/fabric-${minecraft_version}/src/main/resources/patched.accesswidener")
 
     // Due to an incredible oversight(?) in Loom, these actually do nothing.
     // You cannot change the configuration name from the default, which is derived from the project name.
     runs {
         client {
-            configName = 'runPatchedClientFabric'
+            configName = 'runPatchedClientFabric1_21_11'
         }
 
         server {
-            configName = 'runPatchedServerFabric'
+            configName = 'runPatchedServerFabric1_21_11'
         }
     }
 

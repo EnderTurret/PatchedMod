@@ -14,27 +14,9 @@ subprojects {
         archivesName = 'Patched'
     }
 
-    version = '8.0.1+1.21.11'
     group = 'net.enderturret'
+    version = "${mod_version}+${loader}"
 
-    if (it == project(':PatchedMod.Common')) {
-        version += '-common'
-    }
-    else if (it == project(':PatchedMod.NeoForge.1.21.11')) {
-        version += '-neoforge'
-    }
-    else if (it == project(':PatchedMod.Fabric.1.21.11')) {
-        version += '-fabric'
-    }
-    else if (it == project(':PatchedMod.Quilt.1.21.11')) {
-        version += '-quilt'
-    }
-
-    ext {
-        patchedVersion = '1.5.0'
-    }
-
-    java.toolchain.languageVersion = JavaLanguageVersion.of(21)
     java.withSourcesJar()
 
     repositories {

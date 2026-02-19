@@ -4,6 +4,8 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.137'
 }
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
 configurations {
     shadow {}
     minecraftLibrary {}
@@ -13,16 +15,16 @@ configurations {
 dependencies {
     implementation (project(':PatchedMod.Common'))
 
-    shadow (minecraftLibrary("com.github.EnderTurret:Patched:$patchedVersion")) {
+    shadow (minecraftLibrary("com.github.EnderTurret:Patched:$patched_version")) {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
-    sourceShadow ("com.github.EnderTurret:Patched:$patchedVersion:sources") {
+    sourceShadow ("com.github.EnderTurret:Patched:$patched_version:sources") {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 }
 
 neoForge {
-    version = '21.11.25-beta'
+    version = "${loader_version}"
 
     mods {
         patched {
@@ -32,10 +34,8 @@ neoForge {
     }
 
     parchment {
-        // https://parchmentmc.org/docs/getting-started
-        // https://ldtteam.jfrog.io/ui/native/parchmentmc-public/org/parchmentmc/data/
-        minecraftVersion = '1.21.11'
-        mappingsVersion = '2025.12.20'
+        minecraftVersion = "${minecraft_version}"
+        mappingsVersion = "${mappings_version}"
     }
 
     runs {
@@ -45,16 +45,18 @@ neoForge {
 
         client {
             client()
-            ideName = 'runPatchedModNeoForgeClient'
-            gameDirectory = project.file('run/1.21')
+            ideName = 'runPatchedModClientNeoForge1_21_11'
+            if (rootProject.findProperty('minecraft_username') != null) {
+                programArguments.addAll('--uuid', rootProject.findProperty('minecraft_uuid'), '--username', rootProject.findProperty('minecraft_username'))
+            }
         }
         server {
             server()
-            ideName = 'runPatchedModNeoForgeServer'
+            ideName = 'runPatchedModServerNeoForge1_21_11'
         }
         clientData {
             clientData()
-            ideName = 'runPatchedModNeoForgeClientData'
+            ideName = 'runPatchedModClientDataNeoForge1_21_11'
         }
     }
 }
