@@ -16,11 +16,11 @@ import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.env.IEnvironment;
 import net.enderturret.patchedmod.common.util.meta.IPattern;
 import net.enderturret.patchedmod.common.util.meta.PatchTarget;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.internal.VersionedPatchedInternal;
 
 /**
  * Defines the '/patched list' subcommand, which handles providing lists of the packs with patches and the patches in those packs.
@@ -70,7 +70,7 @@ final class ListCommand {
 
 		for (PatchedPackType type : PatchedPackType.values())
 			for (String namespace : pack.patched$getNamespaces(type))
-				for (PatchedResourceLocation loc : VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.patched$getPath().endsWith(".patch")))
+				for (PatchedResourceLocation loc : PatchedInternal.getResources(pack, type, namespace, s -> s.patched$getPath().endsWith(".patch")))
 					patches.add(new Patch(loc.toString(), null, null));
 
 		for (PatchTarget patchTarget : pack.patchedMetadata().patchTargets())

@@ -23,7 +23,6 @@ import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.env.IEnvironment;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.internal.VersionedPatchedInternal;
 
 /**
  * Defines the '/patched dump' subcommand, which handles viewing patches and patched files.
@@ -70,7 +69,7 @@ final class DumpCommand {
 					if (reqNamespace != null && !reqNamespace.equals(namespace))
 						continue;
 
-					VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.patched$getPath().endsWith(".patch"))
+					PatchedInternal.getResources(pack, type, namespace, s -> s.patched$getPath().endsWith(".patch"))
 						.stream()
 						.filter(loc -> loc.toString().startsWith(input))
 						.sorted()
@@ -105,7 +104,7 @@ final class DumpCommand {
 				.toList();
 
 		for (PatchedPackResources pack : packs)
-			VersionedPatchedInternal.getResources(pack, type, reqNamespace, s -> s.patched$getPath().endsWith(".json"))
+			PatchedInternal.getResources(pack, type, reqNamespace, s -> s.patched$getPath().endsWith(".json"))
 				.stream()
 				.filter(loc -> loc.toString().startsWith(input))
 				.map(loc -> {
