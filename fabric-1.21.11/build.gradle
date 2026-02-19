@@ -15,15 +15,15 @@ dependencies {
 loom {
     accessWidenerPath = file("${rootDir}/fabric-${minecraft_version}/src/main/resources/patched.accesswidener")
 
-    // Due to an incredible oversight(?) in Loom, these actually do nothing.
-    // You cannot change the configuration name from the default, which is derived from the project name.
+    // Due to an incredible oversight(?) in Loom, you cannot change the configuration name from the default, which is derived from the project name.
     runs {
         client {
-            configName = 'runPatchedClientFabric1_21_11'
-        }
-
-        server {
-            configName = 'runPatchedServerFabric1_21_11'
+            if (rootProject.findProperty('minecraft_username') != null) {
+                programArg '--uuid'
+                programArg rootProject.findProperty('minecraft_uuid')
+                programArg '--username'
+                programArg rootProject.findProperty('minecraft_username')
+            }
         }
     }
 
