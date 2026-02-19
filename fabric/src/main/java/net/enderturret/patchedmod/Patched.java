@@ -10,7 +10,7 @@ import net.enderturret.patchedmod.common.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 
 /**
- * Patched's loader-agnostic entrypoint and API.
+ * Patched's loader-agnostic API.
  * @author EnderTurret
  * @see #registerDataSource(Identifier, SingleDataSource)
  * @see #registerTestCondition(Identifier, TestCondition)
