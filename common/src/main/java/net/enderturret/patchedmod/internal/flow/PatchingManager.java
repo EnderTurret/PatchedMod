@@ -15,9 +15,6 @@ import org.slf4j.event.Level;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.resources.FallbackResourceManager;
-import net.minecraft.server.packs.resources.FallbackResourceManager.PackEntry;
 import net.minecraft.server.packs.resources.IoSupplier;
 
 import net.enderturret.patched.IFileAccess;
@@ -30,6 +27,7 @@ import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.flow.BailException;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
@@ -73,8 +71,9 @@ public final class PatchingManager {
 	 * @return The new {@code IoSupplier}.
 	 */
 	@Internal
-	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, PatchedPackType type, PatchedResourceLocation name, PatchedPackResources origin, boolean singlePack) {
+	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, PatchedResourceManager manager, PatchedPackType type, PatchedResourceLocation name, PatchedPackResources origin, boolean singlePack) {
 		if (!PatchUtil.isPatchable(name.patched$getPath())) return delegate;
+		if (!manager.patched$isFallback()) throw new IllegalArgumentException("Expected fallback resource manager");
 
 		return () -> new PatchingInputStream(delegate.get(), (stream, audit) -> patch(manager, origin, type, name, stream, audit, singlePack));
 	}
@@ -90,7 +89,7 @@ public final class PatchingManager {
 	 * @param singlePack Whether or not only patches from the pack containing the resource should be applied.
 	 * @return A new stream containing the patched data.
 	 */
-	private static InputStream patch(FallbackResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, InputStream stream, @Nullable PatchAudit audit, boolean singlePack) {
+	private static InputStream patch(PatchedResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, InputStream stream, @Nullable PatchAudit audit, boolean singlePack) {
 		if (stream == null || !PatchUtil.isPatchable(name.patched$getPath())) return stream;
 
 		final LazyPatchingWrapper wrapper = new LazyPatchingWrapper(stream);
@@ -121,7 +120,7 @@ public final class PatchingManager {
 	 * @return Whether any patches were actually applied.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean patchSingle(FallbackResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
+	private static boolean patchSingle(PatchedResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
 		// Since many packs could provide this file, we cannot rely on existence checks to find the real pack.
 		// This will simply have to not work in that case.
 		//from = findTrueSource(from, type, name);
@@ -157,27 +156,27 @@ public final class PatchingManager {
 	 * @return Whether any patches were actually applied.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean patch(FallbackResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
+	private static boolean patch(PatchedResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
 		final PatchedResourceLocation patchName = name.patched$withPath(name.patched$getPath() + ".patch");
 
 		final MutableObject<PatchContext> context = new MutableObject<>();
 
-		final Map<PackResources, List<String>> targets = (Map) DynamicPatches.getTargets(
-				type, name, from);
+		final Map<PatchedPackResources, List<String>> targets = DynamicPatches.getTargets(type, name, from);
 
 		boolean seenOriginal = false;
-		for (int i = 0; i < manager.fallbacks.size(); i++) {
-			final PackEntry packEntry = manager.fallbacks.get(i);
-			if (packEntry.resources() == null) continue;
+		final int size = manager.patched$getFallbackPackCount();
+		for (int i = 0; i < size; i++) {
+			final PatchedPackResources packEntry = manager.patched$getFallbackPack(i);
+			if (packEntry == null) continue;
 
 			// Until we see the pack the file originated from, don't apply any patches.
 			if (!seenOriginal)
-				if (packEntry.resources() == from)
+				if (packEntry == from)
 					seenOriginal = true;
 				else
 					continue;
 
-			if (((PatchedPackResources) packEntry.resources()).patched$hasPatches()) {
+			if (packEntry.patched$hasPatches()) {
 				final Entry pack = new Entry(packEntry);
 
 				PatchContext ctx = null;

@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.Nullable;
+
 public interface PatchedResourceManager {
 
 	/**
@@ -20,6 +22,10 @@ public interface PatchedResourceManager {
 	 * @return The stream.
 	 */
 	public Stream<PatchedPackResources> patched$getPatchingPacks();
+
+	public boolean patched$isFallback();
+	public int patched$getFallbackPackCount();
+	public @Nullable PatchedPackResources patched$getFallbackPack(int index);
 
 	// ===== Vanilla methods =====
 

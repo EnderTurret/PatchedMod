@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.FallbackResourceManager;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -32,6 +33,23 @@ public interface MixinResourceManager extends PatchedResourceManager {
 				.map(p -> (PatchedPackResources) p)
 				.filter(p -> p.patchedMetadata().patchingEnabled());
 	}
+
+	@Override
+	public default boolean patched$isFallback() {
+		return this instanceof FallbackResourceManager;
+	}
+
+	@Override
+	public default int patched$getFallbackPackCount() {
+		return ((FallbackResourceManager) this).fallbacks.size();
+	}
+
+	@Override
+	public default PatchedPackResources patched$getFallbackPack(int index) {
+		return (PatchedPackResources) ((FallbackResourceManager) this).fallbacks.get(index).resources();
+	}
+
+	//
 
 	@Override
 	public default Set<String> patched$getNamespaces() {
