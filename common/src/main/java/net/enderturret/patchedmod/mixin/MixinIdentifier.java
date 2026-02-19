@@ -18,4 +18,9 @@ public abstract class MixinIdentifier implements PatchedResourceLocation {
 	public String patched$getPath() {
 		return ((Identifier) (Object) this).getPath();
 	}
+
+	@Override
+	public PatchedResourceLocation patched$withPath(String path) {
+		return (PatchedResourceLocation) (Object) ((Identifier) (Object) this).withPath(path);
+	}
 }

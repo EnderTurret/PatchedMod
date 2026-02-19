@@ -13,15 +13,15 @@ import net.enderturret.patchedmod.common.env.PatchedPackResources;
  * @param name The name of the pack.
  * @param resources The pack itself.
  */
-record Entry(String name, PackResources resources) {
+record Entry(String name, PatchedPackResources resources) {
 
 	Entry {}
 
 	Entry(PackEntry packEntry) {
-		this(Objects.requireNonNull(packEntry.resources(), "packEntry.resources()"));
+		this((PatchedPackResources) Objects.requireNonNull(packEntry.resources(), "packEntry.resources()"));
 	}
 
-	Entry(PackResources resources) {
-		this(((PatchedPackResources) Objects.requireNonNull(resources, "resources")).patched$getName(), resources);
+	Entry(PatchedPackResources resources) {
+		this(Objects.requireNonNull(resources, "resources").patched$getName(), resources);
 	}
 }

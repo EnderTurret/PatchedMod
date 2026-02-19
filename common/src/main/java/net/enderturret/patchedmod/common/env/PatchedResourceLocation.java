@@ -4,4 +4,6 @@ public interface PatchedResourceLocation {
 
 	public String patched$getNamespace();
 	public String patched$getPath();
+
+	public PatchedResourceLocation patched$withPath(String path);
 }

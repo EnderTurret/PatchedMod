@@ -45,11 +45,10 @@ public final class PatchUtil {
 	}
 
 	/**
-	 * @param location The location of the file to test.
+	 * @param path The location of the file to test.
 	 * @return {@code true} if the file at the given location supports being patched, based on its name.
 	 */
-	public static boolean isPatchable(Identifier location) {
-		final String path = location.getPath();
+	public static boolean isPatchable(String path) {
 		return path.endsWith(".json") || path.endsWith(".json.patch") || (path.endsWith(".mcmeta") && !path.equals("pack.mcmeta"));
 	}
 }

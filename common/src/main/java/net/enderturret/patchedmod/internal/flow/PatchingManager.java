@@ -1,5 +1,6 @@
 package net.enderturret.patchedmod.internal.flow;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +15,7 @@ import org.slf4j.event.Level;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
 import net.minecraft.server.packs.resources.FallbackResourceManager.PackEntry;
 import net.minecraft.server.packs.resources.IoSupplier;
@@ -74,8 +73,8 @@ public final class PatchingManager {
 	 * @return The new {@code IoSupplier}.
 	 */
 	@Internal
-	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, PackType type, Identifier name, PackResources origin, boolean singlePack) {
-		if (!PatchUtil.isPatchable(name)) return delegate;
+	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, PatchedPackType type, PatchedResourceLocation name, PatchedPackResources origin, boolean singlePack) {
+		if (!PatchUtil.isPatchable(name.patched$getPath())) return delegate;
 
 		return () -> new PatchingInputStream(delegate.get(), (stream, audit) -> patch(manager, origin, type, name, stream, audit, singlePack));
 	}
@@ -91,8 +90,8 @@ public final class PatchingManager {
 	 * @param singlePack Whether or not only patches from the pack containing the resource should be applied.
 	 * @return A new stream containing the patched data.
 	 */
-	private static InputStream patch(FallbackResourceManager manager, PackResources from, PackType type, Identifier name, InputStream stream, @Nullable PatchAudit audit, boolean singlePack) {
-		if (stream == null || !PatchUtil.isPatchable(name)) return stream;
+	private static InputStream patch(FallbackResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, InputStream stream, @Nullable PatchAudit audit, boolean singlePack) {
+		if (stream == null || !PatchUtil.isPatchable(name.patched$getPath())) return stream;
 
 		final LazyPatchingWrapper wrapper = new LazyPatchingWrapper(stream);
 
@@ -122,20 +121,24 @@ public final class PatchingManager {
 	 * @return Whether any patches were actually applied.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean patchSingle(FallbackResourceManager manager, PackResources from, PackType type, Identifier name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
+	private static boolean patchSingle(FallbackResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
 		// Since many packs could provide this file, we cannot rely on existence checks to find the real pack.
 		// This will simply have to not work in that case.
 		//from = findTrueSource(from, type, name);
 
-		if (hasPatches(from)) {
-			final Identifier patchName = name.withPath(name.getPath() + ".patch");
+		if (from.patched$hasPatches()) {
+			final PatchedResourceLocation patchName = name.patched$withPath(name.patched$getPath() + ".patch");
 			final MutableObject<PatchContext> context = new MutableObject<>();
 
-			applyPatch(
-					type, from.getResource(type, patchName),
-					patchName.toString(), new Entry(from), wrapper, audit, context,
-					null
-					);
+			try {
+				applyPatch(
+						type, from.patched$getResource(type, patchName),
+						patchName.toString(), new Entry(from), wrapper, audit, context,
+						null
+						);
+			} catch (IOException e) {
+				PatchedInternal.LOGGER.warn("Failed to read patch {} from {}:", patchName, from.patched$getName(), e);
+			}
 
 			return context.get() != null;
 		}
@@ -154,14 +157,13 @@ public final class PatchingManager {
 	 * @return Whether any patches were actually applied.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean patch(FallbackResourceManager manager, PackResources from, PackType type, Identifier name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
-		final Identifier patchName = name.withPath(name.getPath() + ".patch");
+	private static boolean patch(FallbackResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
+		final PatchedResourceLocation patchName = name.patched$withPath(name.patched$getPath() + ".patch");
 
 		final MutableObject<PatchContext> context = new MutableObject<>();
 
 		final Map<PackResources, List<String>> targets = (Map) DynamicPatches.getTargets(
-				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
-				(PatchedResourceLocation) (Object) name, (PatchedPackResources) from);
+				type, name, from);
 
 		boolean seenOriginal = false;
 		for (int i = 0; i < manager.fallbacks.size(); i++) {
@@ -175,20 +177,26 @@ public final class PatchingManager {
 				else
 					continue;
 
-			if (hasPatches(packEntry.resources())) {
+			if (((PatchedPackResources) packEntry.resources()).patched$hasPatches()) {
 				final Entry pack = new Entry(packEntry);
 
-				PatchContext ctx = applyPatch(
-						type, pack.resources().getResource(type, patchName),
-						patchName.toString(), pack, wrapper, audit, context,
-						null
-						);
+				PatchContext ctx = null;
+
+				try {
+					ctx = applyPatch(
+							type, pack.resources().patched$getResource(type, patchName),
+							patchName.toString(), pack, wrapper, audit, context,
+							null
+							);
+				} catch (IOException e) {
+					PatchedInternal.LOGGER.warn("Failed to read patch {} from {}:", patchName, from.patched$getName(), e);
+				}
 
 				IFileAccess access = null;
 				for (String patch : targets.getOrDefault(pack.resources(), List.of())) {
 					// We use the IFileAccess instead of grabbing it manually so that it's cached.
 					if (access == null)
-						access = ctx != null ? ctx.fileAccess() : new PatchedFileAccess((PatchedPackResources) pack.resources());
+						access = ctx != null ? ctx.fileAccess() : new PatchedFileAccess(pack.resources());
 
 					applyPatch(
 							type, access.readIncludedPatch(patch),
@@ -203,8 +211,8 @@ public final class PatchingManager {
 	}
 
 	private static PatchContext applyPatch(
-			PackType type,
-			@Nullable IoSupplier<InputStream> patchSupplier,
+			PatchedPackType type,
+			@Nullable InputStream patchSupplier,
 			String patchName,
 			Entry pack,
 			LazyPatchingWrapper wrapper,
@@ -215,7 +223,7 @@ public final class PatchingManager {
 
 		final String patchJson;
 
-		try (InputStream patchStream = patchSupplier.get()) {
+		try (InputStream patchStream = patchSupplier) {
 			patchJson = PatchedInternal.readString(patchStream);
 		} catch (Exception e) {
 			PatchedInternal.LOGGER.warn("Failed to read patch {} from {}:", patchName, pack.name(), e);
@@ -235,7 +243,7 @@ public final class PatchingManager {
 	}
 
 	private static PatchContext applyPatch(
-			PackType type,
+			PatchedPackType type,
 			JsonPatch patch,
 			String patchName,
 			Entry pack,
@@ -247,14 +255,14 @@ public final class PatchingManager {
 			if (audit != null)
 				audit.setPatchPath(pack.name());
 			if (context.get() == null)
-				context.setValue(PatchedInternal.BASE_CONTEXT.audit(audit).testEvaluator(new PatchedTestEvaluator(type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA)));
+				context.setValue(PatchedInternal.BASE_CONTEXT.audit(audit).testEvaluator(new PatchedTestEvaluator(type)));
 
 			PatchedInternal.LOGGER.atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}{}.",
 					patchName,
 					pack.name(),
 					explicitTargetName != null ? " to " + explicitTargetName : "");
 
-			final PatchContext ctx = context.get().fileAccess(new PatchedFileAccess((PatchedPackResources) pack.resources()));
+			final PatchContext ctx = context.get().fileAccess(new PatchedFileAccess(pack.resources()));
 
 			patch.patch(wrapper.get(), ctx);
 
@@ -271,29 +279,11 @@ public final class PatchingManager {
 	}
 
 	/**
-	 * Determines whether the given pack has patches enabled.
-	 * If necessary, the pack may be {@linkplain IPatchingPackResources#patched$initialized() initialized}.
-	 * @param res The pack to check.
-	 * @return {@code true} if the pack has patches enabled.
-	 */
-	private static boolean hasPatches(PackResources res) {
-		return res instanceof IPatchingPackResources ppp && ppp.patched$hasPatches();
-	}
-
-	/**
-	 * Initializes the {@code PatchedMetadata} of the specified pack, if it has not been initialized yet.
-	 * @param resources The pack to initialize.
-	 */
-	public static void maybeInitialize(PackResources resources) {
-		maybeInitialize(new Entry(resources));
-	}
-
-	/**
 	 * Initializes the {@code PatchedMetadata} of the specified pack, if it has not been initialized yet.
 	 * @param resources The pack to initialize.
 	 */
 	public static void maybeInitialize(IPatchingPackResources resources) {
-		maybeInitialize(new Entry((PackResources) resources));
+		maybeInitialize(new Entry((PatchedPackResources) resources));
 	}
 
 	/**
@@ -308,21 +298,23 @@ public final class PatchingManager {
 			synchronized (patching) {
 				if (!patching.patched$initialized()) {
 					{
-						final IoSupplier<InputStream> io = entry.resources().getRootResource("pack.mcmeta");
 						PatchedMetadata meta;
 
-						if (io != null)
-							try (InputStream is = io.get()) {
-								final String json = PatchedInternal.readString(is);
-								final JsonElement elem = JsonParser.parseString(json);
+						try {
+							final InputStream io = entry.resources().patched$getRootResource("pack.mcmeta");
+							if (io != null)
+								try (InputStream is = io) {
+									final String json = PatchedInternal.readString(is);
+									final JsonElement elem = JsonParser.parseString(json);
 
-								meta = PatchedMetadata.of(elem, entry.name());
-							} catch (Exception e) {
-								PatchedInternal.LOGGER.warn("Failed to read pack.mcmeta in {}:", entry.name(), e);
+									meta = PatchedMetadata.of(elem, entry.name());
+								}
+							else
 								meta = PatchedMetadata.DISABLED_METADATA;
-							}
-						else
+						} catch (Exception e) {
+							PatchedInternal.LOGGER.warn("Failed to read pack.mcmeta in {}:", entry.name(), e);
 							meta = PatchedMetadata.DISABLED_METADATA;
+						}
 
 						if (!meta.patchingEnabled())
 							meta = Objects.requireNonNullElse(

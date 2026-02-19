@@ -23,6 +23,9 @@ import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceMetadata;
 
+import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.FallbackResourceManagerHidingTreeMap;
 import net.enderturret.patchedmod.internal.flow.PatchingManager;
 
@@ -52,7 +55,9 @@ public abstract class MixinFallbackResourceManager {
 			PackResources pack, Identifier location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
 			Operation<Resource> downstream) {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
-		streamSupplier = PatchingManager.chain(streamSupplier, self, type, location, pack, false);
+		streamSupplier = PatchingManager.chain(streamSupplier, self,
+				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
+				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, false);
 		return downstream.call(pack, location, streamSupplier, metadataSupplier);
 	}
 
@@ -63,7 +68,9 @@ public abstract class MixinFallbackResourceManager {
 			PackResources pack, Identifier location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
 			Operation<Resource> downstream) {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
-		streamSupplier = PatchingManager.chain(streamSupplier, self, type, location, pack, true);
+		streamSupplier = PatchingManager.chain(streamSupplier, self,
+				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
+				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, true);
 		return downstream.call(pack, location, streamSupplier, metadataSupplier);
 	}
 
@@ -74,7 +81,9 @@ public abstract class MixinFallbackResourceManager {
 			PackResources pack, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
 			Operation<Resource> downstream, Identifier location) {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
-		streamSupplier = PatchingManager.chain(streamSupplier, self, type, location, pack, true);
+		streamSupplier = PatchingManager.chain(streamSupplier, self,
+				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
+				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, true);
 		return downstream.call(pack, streamSupplier, metadataSupplier);
 	}
 
@@ -108,7 +117,9 @@ public abstract class MixinFallbackResourceManager {
 		else
 			throw new IllegalStateException("Neither map is the expected type; did a mixin fail?");
 
-		final IoSupplier<InputStream> sup = PatchingManager.chain(streamSupplier, hidden.manager, hidden.type, location, pack, false);
+		final IoSupplier<InputStream> sup = PatchingManager.chain(streamSupplier, hidden.manager,
+				hidden.type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
+				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, false);
 
 		return downstream.call(pack, location, sup, metadataSupplier);
 	}
