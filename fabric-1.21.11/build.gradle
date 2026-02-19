@@ -14,8 +14,6 @@ dependencies {
     shadow (implementation("com.github.EnderTurret:Patched:$patched_version")) {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
-
-    implementation (project(':PatchedMod.Common'))
 }
 
 loom {

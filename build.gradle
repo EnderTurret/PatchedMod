@@ -85,6 +85,10 @@ subprojects {
     }
 
     if (it != project(':PatchedMod.Common')) {
+        dependencies {
+            implementation (project(':PatchedMod.Common'))
+        }
+
         tasks.named('compileJava', JavaCompile).configure {
             source project(':PatchedMod.Common').sourceSets.main.allSource
         }
