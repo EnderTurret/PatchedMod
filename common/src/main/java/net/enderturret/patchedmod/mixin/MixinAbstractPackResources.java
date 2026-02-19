@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.CompositePackResources;
 
-import net.enderturret.patchedmod.util.IPatchingPackResources;
-import net.enderturret.patchedmod.util.meta.PatchedMetadata;
+import net.enderturret.patchedmod.common.util.IPatchingPackResources;
+import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
 /**
  * Provides an {@link IPatchingPackResources} implementation for {@link AbstractPackResources}.

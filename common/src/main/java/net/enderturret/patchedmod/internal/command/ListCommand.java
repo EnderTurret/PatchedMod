@@ -24,12 +24,12 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.util.IPatchingPackResources;
+import net.enderturret.patchedmod.common.util.meta.IPattern;
+import net.enderturret.patchedmod.common.util.meta.PatchTarget;
 import net.enderturret.patchedmod.internal.PatchedInternal;
 import net.enderturret.patchedmod.internal.PatchedVersionUtil;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
-import net.enderturret.patchedmod.util.IPatchingPackResources;
-import net.enderturret.patchedmod.util.meta.IPattern;
-import net.enderturret.patchedmod.util.meta.PatchTarget;
 
 /**
  * Defines the '/patched list' subcommand, which handles providing lists of the packs with patches and the patches in those packs.

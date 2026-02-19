@@ -1,12 +1,10 @@
-package net.enderturret.patchedmod.util.meta;
+package net.enderturret.patchedmod.common.util.meta;
 
 import java.util.List;
 import java.util.Optional;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
-import net.minecraft.util.StringRepresentable;
 
 /**
  * Represents a patch target, as declared in the {@link PatchedMetadata}.
@@ -17,10 +15,8 @@ import net.minecraft.util.StringRepresentable;
  */
 public record PatchTarget(Optional<PatchedPackType> packType, String patch, List<Target> targets) {
 
-	private static final Codec<PatchedPackType> PACK_TYPE_CODEC = StringRepresentable.fromEnum(PatchedPackType::values);
-
 	public static final Codec<PatchTarget> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-			PACK_TYPE_CODEC.optionalFieldOf("pack_type").forGetter(PatchTarget::packType),
+			PatchedPackType.CODEC.optionalFieldOf("pack_type").forGetter(PatchTarget::packType),
 			Codec.STRING.fieldOf("patch").forGetter(PatchTarget::patch),
 			Target.CODEC.listOf().fieldOf("targets").forGetter(PatchTarget::targets)
 			).apply(builder, PatchTarget::new));

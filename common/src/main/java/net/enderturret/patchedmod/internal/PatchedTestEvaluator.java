@@ -14,15 +14,15 @@ import com.google.gson.JsonObject;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.RootEvaluator;
-import net.enderturret.patchedmod.TestCondition;
-import net.enderturret.patchedmod.TestCondition.Simple;
+import net.enderturret.patchedmod.common.RootEvaluator;
+import net.enderturret.patchedmod.common.TestCondition;
+import net.enderturret.patchedmod.common.TestCondition.Simple;
+import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.util.PatchUtil;
 
@@ -38,20 +38,20 @@ public final class PatchedTestEvaluator implements RootEvaluator {
 	private static final Map<String, TestCondition> CONDITIONS = new ConcurrentHashMap<>();
 
 	@Nullable
-	private final PackType type;
+	private final PatchedPackType type;
 
 	/**
 	 * Constructs a new {@code PatchedTestEvaluator}.
 	 * @param type The pack type.
 	 */
 	@Internal
-	public PatchedTestEvaluator(@Nullable PackType type) {
+	public PatchedTestEvaluator(@Nullable PatchedPackType type) {
 		this.type = type;
 	}
 
 	@Override
 	@Nullable
-	public PackType packType() {
+	public PatchedPackType packType() {
 		return type;
 	}
 
@@ -123,7 +123,7 @@ public final class PatchedTestEvaluator implements RootEvaluator {
 	}
 
 	private static boolean packEnabled(JsonElement root, JsonElement target, JsonElement value, PatchContext context) {
-		final PackType type = ((RootEvaluator) context.testEvaluator()).packType();
+		final PatchedPackType type = ((RootEvaluator) context.testEvaluator()).packType();
 		// Happens if someone uses PatchUtil.CONTEXT or INSTANCE directly (or otherwise constructs a type-agnostic evaluator).
 		if (type == null) throw new PatchingException("Cannot use patched:pack_enabled in type-agnostic context");
 		final PatchTargetManager manager = DynamicPatches.getTargetManagers().get(type);

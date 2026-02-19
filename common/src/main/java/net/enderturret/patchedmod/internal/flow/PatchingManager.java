@@ -28,13 +28,16 @@ import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.internal.flow.BailException;
+import net.enderturret.patchedmod.common.internal.flow.LazyPatchingWrapper;
+import net.enderturret.patchedmod.common.util.IPatchingPackResources;
+import net.enderturret.patchedmod.common.util.PatchingInputStream;
+import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
+import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.PatchedInternal;
 import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
-import net.enderturret.patchedmod.util.IPatchingPackResources;
 import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.PatchedFileAccess;
-import net.enderturret.patchedmod.util.PatchingInputStream;
-import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 /**
  * The {@code PatchingManager} class handles the overall management of patching files and setting up packs for patching.
@@ -71,7 +74,7 @@ public final class PatchingManager {
 	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, FallbackResourceManager manager, PackType type, Identifier name, PackResources origin, boolean singlePack) {
 		if (!PatchUtil.isPatchable(name)) return delegate;
 
-		return () -> new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, type, name, stream, audit, singlePack));
+		return () -> new PatchingInputStream(delegate.get(), (stream, audit) -> patch(manager, origin, type, name, stream, audit, singlePack));
 	}
 
 	/**
@@ -153,7 +156,7 @@ public final class PatchingManager {
 
 		final MutableObject<PatchContext> context = new MutableObject<>();
 
-		final Map<PackResources, List<String>> targets = DynamicPatches.getTargets(type, name, from);
+		final Map<PackResources, List<String>> targets = DynamicPatches.getTargets(type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA, name, from);
 
 		boolean seenOriginal = false;
 		for (int i = 0; i < manager.fallbacks.size(); i++) {
@@ -239,7 +242,7 @@ public final class PatchingManager {
 			if (audit != null)
 				audit.setPatchPath(pack.name());
 			if (context.get() == null)
-				context.setValue(PatchedInternal.BASE_CONTEXT.audit(audit).testEvaluator(new PatchedTestEvaluator(type)));
+				context.setValue(PatchedInternal.BASE_CONTEXT.audit(audit).testEvaluator(new PatchedTestEvaluator(type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA)));
 
 			Patched.platform().logger().atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}{}.",
 					patchName,
@@ -278,6 +281,14 @@ public final class PatchingManager {
 	 */
 	public static void maybeInitialize(PackResources resources) {
 		maybeInitialize(new Entry(resources));
+	}
+
+	/**
+	 * Initializes the {@code PatchedMetadata} of the specified pack, if it has not been initialized yet.
+	 * @param resources The pack to initialize.
+	 */
+	public static void maybeInitialize(IPatchingPackResources resources) {
+		maybeInitialize(new Entry((PackResources) resources));
 	}
 
 	/**

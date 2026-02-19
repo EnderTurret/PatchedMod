@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.util.meta;
+package net.enderturret.patchedmod.common.util.meta;
 
 import java.util.List;
 

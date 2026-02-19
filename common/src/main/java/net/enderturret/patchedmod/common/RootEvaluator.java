@@ -1,10 +1,9 @@
-package net.enderturret.patchedmod;
+package net.enderturret.patchedmod.common;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.server.packs.PackType;
-
 import net.enderturret.patched.ITestEvaluator;
+import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 /**
  * Represents the root test evaluator, which handles delegating to each registered condition.
@@ -18,5 +17,5 @@ public interface RootEvaluator extends ITestEvaluator {
 	 * @return The pack type.
 	 */
 	@Nullable
-	public PackType packType();
+	public PatchedPackType packType();
 }

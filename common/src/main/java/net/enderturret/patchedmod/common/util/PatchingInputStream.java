@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.util;
+package net.enderturret.patchedmod.common.util;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
@@ -7,8 +7,6 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
-
-import net.minecraft.server.packs.resources.IoSupplier;
 
 import net.enderturret.patched.audit.PatchAudit;
 
@@ -36,8 +34,8 @@ public class PatchingInputStream extends FilterInputStream {
 	 * @param patcher The patch function to apply to the stream.
 	 * @throws IOException If an I/O error occurs opening the stream.
 	 */
-	public PatchingInputStream(IoSupplier<InputStream> delegate, PatchFunction patcher) throws IOException {
-		super(delegate.get());
+	public PatchingInputStream(InputStream delegate, PatchFunction patcher) throws IOException {
+		super(delegate);
 		this.patcher = Objects.requireNonNull(patcher);
 	}
 

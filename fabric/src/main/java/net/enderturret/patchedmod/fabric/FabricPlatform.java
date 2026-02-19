@@ -18,8 +18,8 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 
+import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.util.env.IPlatform;
-import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 final class FabricPlatform implements IPlatform {
 

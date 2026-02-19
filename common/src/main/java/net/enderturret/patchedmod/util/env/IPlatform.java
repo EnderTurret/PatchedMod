@@ -17,8 +17,8 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-import net.enderturret.patchedmod.util.IPatchingPackResources;
-import net.enderturret.patchedmod.util.meta.PatchedMetadata;
+import net.enderturret.patchedmod.common.util.IPatchingPackResources;
+import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
 /**
  * An abstraction over the different loaders Patched supports.

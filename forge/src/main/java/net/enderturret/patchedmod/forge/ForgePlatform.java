@@ -22,8 +22,8 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 
+import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.util.env.IPlatform;
-import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 final class ForgePlatform implements IPlatform {
 

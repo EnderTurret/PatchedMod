@@ -29,6 +29,7 @@ import net.minecraft.server.packs.VanillaPackResources;
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.internal.PatchedDataSource;
 
 /**
  * Internal utilities for Patched.

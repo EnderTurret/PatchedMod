@@ -9,9 +9,9 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.PatchTargetManager;
 
 /**
@@ -28,9 +28,9 @@ public final class DynamicPatches {
 	@Internal
 	public static final boolean DEBUG_TARGETS = Boolean.getBoolean("patched.debugTargets");
 
-	private static final Map<PackType, PatchTargetManager> PATCH_TARGET_MANAGERS = new EnumMap<>(PackType.class);
+	private static final Map<PatchedPackType, PatchTargetManager> PATCH_TARGET_MANAGERS = new EnumMap<>(PatchedPackType.class);
 
-	static Map<PackResources, List<String>> getTargets(PackType type, Identifier name, PackResources from) {
+	static Map<PackResources, List<String>> getTargets(PatchedPackType type, Identifier name, PackResources from) {
 		final PatchTargetManager targetManager = PATCH_TARGET_MANAGERS.get(type);
 		final Map<PackResources, List<String>> targets = targetManager == null ? Map.of() : targetManager.getTargets(name, from);
 
@@ -46,7 +46,7 @@ public final class DynamicPatches {
 	 * @param packsByPriority The list of packs, ordered by priority.
 	 */
 	@Internal
-	public static void setupTargetManager(PackType type, List<PackResources> packsByPriority) {
+	public static void setupTargetManager(PatchedPackType type, List<PackResources> packsByPriority) {
 		PATCH_TARGET_MANAGERS.put(type, new PatchTargetManager(type, packsByPriority));
 	}
 
@@ -55,7 +55,7 @@ public final class DynamicPatches {
 	 * @return The available target managers.
 	 */
 	@Internal
-	public static Map<PackType, PatchTargetManager> getTargetManagers() {
+	public static Map<PatchedPackType, PatchTargetManager> getTargetManagers() {
 		return Collections.unmodifiableMap(PATCH_TARGET_MANAGERS);
 	}
 }

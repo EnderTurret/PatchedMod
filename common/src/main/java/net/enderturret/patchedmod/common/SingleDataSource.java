@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod;
+package net.enderturret.patchedmod.common;
 
 import java.util.function.BinaryOperator;
 
@@ -6,14 +6,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonElement;
 
-import net.minecraft.resources.Identifier;
-
 import net.enderturret.patched.IDataSource;
 import net.enderturret.patched.exception.PatchingException;
 
 /**
  * Represents a typeless {@link IDataSource} for use with {@code paste} patches.
- * Mods can register their own using {@link Patched#registerDataSource(Identifier, SingleDataSource)}.
  * @author EnderTurret
  */
 public interface SingleDataSource {

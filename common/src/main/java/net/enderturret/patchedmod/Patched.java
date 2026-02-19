@@ -7,10 +7,11 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import net.minecraft.resources.Identifier;
 
 import net.enderturret.patched.IDataSource;
-import net.enderturret.patchedmod.internal.PatchedDataSource;
+import net.enderturret.patchedmod.common.SingleDataSource;
+import net.enderturret.patchedmod.common.TestCondition;
+import net.enderturret.patchedmod.common.internal.PatchedDataSource;
 import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.internal.env.DummyPlatform;
-import net.enderturret.patchedmod.util.PatchUtil;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
 /**
@@ -75,21 +76,11 @@ public final class Patched {
 	}
 
 	/**
-	 * Registers a new {@linkplain TestCondition.Simple simple test condition}.
+	 * Registers a new {@linkplain net.enderturret.patchedmod.common.TestCondition.Simple simple test condition}.
 	 * @param id The name of the test condition -- what goes in the {@code type} field.
 	 * @param condition The condition to register.
 	 */
 	public static void registerSimpleTestCondition(Identifier id, TestCondition.Simple condition) {
 		PatchedTestEvaluator.register(id, condition);
-	}
-
-	/**
-	 * @deprecated Use {@link PatchUtil#isPatchable(Identifier)} instead.
-	 * @param location The location of the file to test.
-	 * @return {@code true} if the file at the given location supports being patched, based on its name.
-	 */
-	@Deprecated(forRemoval = true)
-	public static boolean canBePatched(Identifier location) {
-		return PatchUtil.isPatchable(location);
 	}
 }

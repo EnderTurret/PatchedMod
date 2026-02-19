@@ -15,7 +15,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.SingleDataSource;
+import net.enderturret.patchedmod.common.SingleDataSource;
 import net.enderturret.patchedmod.internal.command.PatchedCommand;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 

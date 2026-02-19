@@ -1,16 +1,13 @@
-package net.enderturret.patchedmod.util;
+package net.enderturret.patchedmod.common.util;
 
-import net.minecraft.server.packs.PackResources;
-
+import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.internal.flow.PatchingManager;
-import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 /**
  * Provides access to {@link PatchedMetadata} in resource/data packs.
  * @author EnderTurret
  */
 // TODO 1.20.5: Prefix initialized() and checkInitialized() so there's absolutely no chances of mixin conflicts.
-// Also yeet hasPatches() and setHasPatches().
 public interface IPatchingPackResources {
 
 	/**
@@ -36,7 +33,7 @@ public interface IPatchingPackResources {
 	 */
 	public default boolean checkInitialized() {
 		if (!initialized())
-			PatchingManager.maybeInitialize((PackResources) this);
+			PatchingManager.maybeInitialize(this);
 
 		return true;
 	}
@@ -46,28 +43,5 @@ public interface IPatchingPackResources {
 	 */
 	public default boolean initialized() {
 		throw new UnsupportedOperationException("Method was not implemented");
-	}
-
-	/**
-	 * Whether the pack has any patches.
-	 * This is an optimization for situations with a lot of mods and hardly any patches (if any).
-	 * If necessary, the pack metadata may be {@linkplain #initialized() initialized} first.
-	 * @deprecated Use {@link #patchedMetadata()} instead.
-	 * @return {@code true} if this resource/data pack has patches.
-	 */
-	@Deprecated(forRemoval = true, since = "1.20.4")
-	public default boolean hasPatches() {
-		return patchedMetadata().patchingEnabled();
-	}
-
-	/**
-	 * Sets the value of {@code hasPatches}.
-	 * @deprecated Use {@link #setPatchedMetadata(PatchedMetadata)} instead.
-	 * @implSpec Calls to this method may be ignored if the value has already been set or if the value is hard-coded.
-	 * @param value The new value.
-	 */
-	@Deprecated(forRemoval = true, since = "1.20.4")
-	public default void setHasPatches(boolean value) {
-		setPatchedMetadata(PatchedMetadata.CURRENT_VERSION);
 	}
 }

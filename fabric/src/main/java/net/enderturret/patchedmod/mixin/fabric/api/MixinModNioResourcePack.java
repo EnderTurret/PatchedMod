@@ -7,9 +7,9 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import net.fabricmc.fabric.impl.resource.pack.ModNioPackResources;
 
+import net.enderturret.patchedmod.common.util.IPatchingPackResources;
+import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.mixin.MixinAbstractPackResources;
-import net.enderturret.patchedmod.util.IPatchingPackResources;
-import net.enderturret.patchedmod.util.meta.PatchedMetadata;
 
 /**
  * Identical to {@link MixinAbstractPackResources}.

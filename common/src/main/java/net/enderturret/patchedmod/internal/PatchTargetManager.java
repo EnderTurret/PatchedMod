@@ -13,18 +13,17 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.VanillaPackResources;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.util.IPatchingPackResources;
+import net.enderturret.patchedmod.common.util.meta.IPattern;
+import net.enderturret.patchedmod.common.util.meta.PatchTarget;
+import net.enderturret.patchedmod.common.util.meta.PatchTarget.Target;
+import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
+import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.internal.flow.PatchingManager;
-import net.enderturret.patchedmod.util.IPatchingPackResources;
-import net.enderturret.patchedmod.util.meta.IPattern;
-import net.enderturret.patchedmod.util.meta.PatchTarget;
-import net.enderturret.patchedmod.util.meta.PatchTarget.Target;
-import net.enderturret.patchedmod.util.meta.PatchedMetadata;
-import net.enderturret.patchedmod.util.meta.PatchedPackType;
 
 /**
  * {@code PatchTargetManager}, as the name may suggest, manages patch targets.
@@ -35,7 +34,7 @@ import net.enderturret.patchedmod.util.meta.PatchedPackType;
 @Internal
 public final class PatchTargetManager {
 
-	private final PackType type;
+	private final PatchedPackType type;
 	@Nullable
 	private final List<PackResources> packsByPriority; // Organized by priority, exactly like the resource pack screen.
 	@Nullable
@@ -51,7 +50,7 @@ public final class PatchTargetManager {
 	 * @param packsByPriority The list of packs, ordered by priority.
 	 */
 	@Internal
-	public PatchTargetManager(PackType type, List<PackResources> packsByPriority) {
+	public PatchTargetManager(PatchedPackType type, List<PackResources> packsByPriority) {
 		this.type = type;
 
 		packsByPriority = List.copyOf(packsByPriority);
@@ -66,7 +65,7 @@ public final class PatchTargetManager {
 
 			if (pack instanceof IPatchingPackResources ppp) {
 				for (PatchTarget target : ppp.patchedMetadata().patchTargets())
-					if (target.packType().map(PatchedPackType::toVanilla).orElse(type) == type)
+					if (target.packType().orElse(type) == type)
 						for (Target subTarget : target.targets())
 							targets.add(new BakedTarget(subTarget, target.patch(), pack));
 			}

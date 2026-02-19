@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
 
+import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.PatchTargetManager;
 import net.enderturret.patchedmod.internal.flow.DynamicPatches;
 
@@ -29,7 +29,7 @@ public abstract class MixinMinecraft {
 			ordinal = 0
 	)
 	private List<PackResources> patched$setupClientPatchTargetManagerInitial(List<PackResources> packsByPriority) {
-		DynamicPatches.setupTargetManager(PackType.CLIENT_RESOURCES, packsByPriority);
+		DynamicPatches.setupTargetManager(PatchedPackType.CLIENT_RESOURCES, packsByPriority);
 		return packsByPriority;
 	}
 
@@ -42,7 +42,7 @@ public abstract class MixinMinecraft {
 			ordinal = 0
 	)
 	private List<PackResources> patched$setupClientPatchTargetManagerReload(List<PackResources> packsByPriority) {
-		DynamicPatches.setupTargetManager(PackType.CLIENT_RESOURCES, packsByPriority);
+		DynamicPatches.setupTargetManager(PatchedPackType.CLIENT_RESOURCES, packsByPriority);
 		return packsByPriority;
 	}
 }

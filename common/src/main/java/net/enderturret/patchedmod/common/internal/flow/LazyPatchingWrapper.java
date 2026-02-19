@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.internal.flow;
+package net.enderturret.patchedmod.common.internal.flow;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,7 +18,7 @@ import net.enderturret.patchedmod.internal.PatchedInternal;
  * A class that wraps an {@link InputStream} in such a way that we can avoid reading from it if no patching is performed.
  * @author EnderTurret
  */
-final class LazyPatchingWrapper {
+public final class LazyPatchingWrapper {
 
 	private InputStream stream;
 	private byte[] oldBytes;
