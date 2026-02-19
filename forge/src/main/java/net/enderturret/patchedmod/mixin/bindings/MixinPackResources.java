@@ -6,11 +6,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.zip.ZipFile;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.VanillaPackResources;
@@ -22,6 +24,8 @@ import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.forge.ForgePlatform;
+import net.enderturret.patchedmod.mixin.FilePackResourcesAccess;
+import net.enderturret.patchedmod.mixin.SharedZipFileAccessAccess;
 
 @Mixin(PackResources.class)
 public interface MixinPackResources extends PatchedPackResources {
@@ -34,6 +38,16 @@ public interface MixinPackResources extends PatchedPackResources {
 	@Override
 	public default boolean patched$isVanillaPack() {
 		return this instanceof VanillaPackResources;
+	}
+
+	@Override
+	public default boolean patched$isFilePack() {
+		return this instanceof FilePackResources;
+	}
+
+	@Override
+	public default ZipFile patched$getFilePackZipFile() {
+		return ((SharedZipFileAccessAccess) ((FilePackResourcesAccess) this).patched$getZipFileAccess()).patched$getOrCreateZipFile();
 	}
 
 	@Override

@@ -10,8 +10,6 @@ import java.util.zip.ZipFile;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import net.minecraft.server.packs.FilePackResources;
-
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
@@ -36,8 +34,8 @@ public final class VersionedPatchedInternal {
 	 * @return The list of resources.
 	 */
 	public static List<PatchedResourceLocation> getResources(PatchedPackResources pack, PatchedPackType type, String namespace, Predicate<PatchedResourceLocation> filter) {
-		if (pack instanceof FilePackResources fpp)
-			return fileResourcesHookWorks ? getFileResources(fpp, type, namespace, filter) : List.of();
+		if (pack.patched$isFilePack())
+			return fileResourcesHookWorks ? getFileResources(pack, type, namespace, filter) : List.of();
 
 		final List<PatchedResourceLocation> ret = new ArrayList<>();
 
@@ -87,10 +85,10 @@ public final class VersionedPatchedInternal {
 	 * @param filter A filter for deciding which resources to include in the returned list.
 	 * @return The list of resources under the given namespace.
 	 */
-	private static List<PatchedResourceLocation> getFileResources(FilePackResources pack, PatchedPackType type, String namespace, Predicate<PatchedResourceLocation> filter) {
+	private static List<PatchedResourceLocation> getFileResources(PatchedPackResources pack, PatchedPackType type, String namespace, Predicate<PatchedResourceLocation> filter) {
 		final ZipFile zip;
 		try {
-			zip = PatchedVersionUtil.getZipFile(pack);
+			zip = pack.patched$getFilePackZipFile();
 		} catch (Throwable e) {
 			PatchedInternal.LOGGER.error("Accessing FilePackResources ZipFile threw an exception! Listing FilePackResources contents is now disabled. Informational commands for zip packs may not work correctly!", e);
 			fileResourcesHookWorks = false;

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.zip.ZipFile;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +21,9 @@ public interface PatchedPackResources extends IPatchingPackResources {
 
 	public String patched$packId();
 	public boolean patched$isVanillaPack();
+	public boolean patched$isFilePack();
+	public ZipFile patched$getFilePackZipFile();
+
 	public Set<String> patched$getNamespaces(PatchedPackType type);
 	public @Nullable InputStream patched$getRootResource(String... path) throws IOException;
 	public @Nullable InputStream patched$getResource(PatchedPackType type, PatchedResourceLocation location) throws IOException;
