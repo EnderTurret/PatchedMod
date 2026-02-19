@@ -1,7 +1,5 @@
 package net.enderturret.patchedmod.internal.command;
 
-import static net.enderturret.patchedmod.internal.command.PatchedCommand.translate;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.NoSuchFileException;
@@ -16,8 +14,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-
-import net.minecraft.network.chat.Component;
 
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
@@ -137,19 +133,19 @@ final class DumpCommand {
 				.toList();
 
 		if (packs.isEmpty()) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.dump.pack_not_found", "That pack doesn't exist."));
+			env.sendFailure(ctx.getSource(), "command.patched.dump.pack_not_found", "That pack doesn't exist.");
 			return 0;
 		}
 
 		if (packs.size() > 1) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.list.too_many_packs", "There is more than one pack with that name."));
+			env.sendFailure(ctx.getSource(), "command.patched.list.too_many_packs", "There is more than one pack with that name.");
 			return 0;
 		}
 
 		final PatchedPackResources pack = packs.get(0);
 
 		if (!pack.patched$hasPatches()) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
+			env.sendFailure(ctx.getSource(), "command.patched.list.patching_disabled", "That pack doesn't have patches enabled.");
 			return 0;
 		}
 
@@ -157,17 +153,17 @@ final class DumpCommand {
 			final InputStream io = pack.patched$getResource(type, location);
 
 			if (io == null) {
-				env.sendFailure(ctx.getSource(), translate("command.patched.dump.patch_not_found", "That patch could not be found."));
+				env.sendFailure(ctx.getSource(), "command.patched.dump.patch_not_found", "That patch could not be found.");
 				return 0;
 			}
 
 			try (InputStream is = io) {
 				final String src = PatchedInternal.readPrettyJson(is, location.toString() + " (in " + packName + ")", true, true);
 				if (src == null) {
-					env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));
+					env.sendFailure(ctx.getSource(), "command.patched.dump.not_json", "That patch is not a json file. (See console for details.)");
 					return 0;
 				}
-				env.sendSuccess(ctx.getSource(), Component.literal(src), false);
+				env.sendSuccess(ctx.getSource(), false, null, src);
 			}
 		} catch (IOException e) {
 			PatchedInternal.LOGGER.warn("Failed to read resource '{}' from {}:", location, packName, e);
@@ -188,19 +184,19 @@ final class DumpCommand {
 				.toList();
 
 		if (packs.isEmpty()) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.dump.pack_not_found", "That pack doesn't exist."));
+			env.sendFailure(ctx.getSource(), "command.patched.dump.pack_not_found", "That pack doesn't exist.");
 			return 0;
 		}
 
 		if (packs.size() > 1) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.list.too_many_packs", "There is more than one pack with that name."));
+			env.sendFailure(ctx.getSource(), "command.patched.list.too_many_packs", "There is more than one pack with that name.");
 			return 0;
 		}
 
 		final PatchedPackResources pack = packs.get(0);
 
 		if (!pack.patched$hasPatches()) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
+			env.sendFailure(ctx.getSource(), "command.patched.list.patching_disabled", "That pack doesn't have patches enabled.");
 			return 0;
 		}
 
@@ -208,17 +204,17 @@ final class DumpCommand {
 			final InputStream io = pack.patched$getRootResource("patches", patchName + ".json.patch");
 
 			if (io == null) {
-				env.sendFailure(ctx.getSource(), translate("command.patched.dump.patch_not_found", "That patch could not be found."));
+				env.sendFailure(ctx.getSource(), "command.patched.dump.patch_not_found", "That patch could not be found.");
 				return 0;
 			}
 
 			try (InputStream is = io) {
 				final String src = PatchedInternal.readPrettyJson(is, patchName + " (in " + packName + ")", true, true);
 				if (src == null) {
-					env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));
+					env.sendFailure(ctx.getSource(), "command.patched.dump.not_json", "That patch is not a json file. (See console for details.)");
 					return 0;
 				}
-				env.sendSuccess(ctx.getSource(), Component.literal(src), false);
+				env.sendSuccess(ctx.getSource(), false, null, src);
 			}
 		} catch (IOException e) {
 			PatchedInternal.LOGGER.warn("Failed to read resource '{}' from {}:", patchName, packName, e);
@@ -237,7 +233,7 @@ final class DumpCommand {
 			final Optional<InputStream> op = man.patched$getResource(location);
 
 			if (op.isEmpty()) {
-				env.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
+				env.sendFailure(ctx.getSource(), "command.patched.dump.file_not_found", "That file could not be found.");
 				return 0;
 			}
 
@@ -253,14 +249,14 @@ final class DumpCommand {
 				final JsonElement src = PatchedInternal.readJson(is, location.toString(), false);
 
 				if (src == null) {
-					env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That file is not a json file."));
+					env.sendFailure(ctx.getSource(), "command.patched.dump.not_json", "That file is not a json file.");
 					return 0;
 				}
 
-				env.sendSuccess(ctx.getSource(), Component.literal(audit != null ? audit.toString(src) : PatchedInternal.GSON.toJson(src)), false);
+				env.sendSuccess(ctx.getSource(), false, null, audit != null ? audit.toString(src) : PatchedInternal.GSON.toJson(src));
 			}
 		} catch (NoSuchFileException e) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.dump.file_not_found", "That file could not be found."));
+			env.sendFailure(ctx.getSource(), "command.patched.dump.file_not_found", "That file could not be found.");
 			return 0;
 		} catch (IOException e) {
 			PatchedInternal.LOGGER.warn("Failed to read resource '{}':", location, e);

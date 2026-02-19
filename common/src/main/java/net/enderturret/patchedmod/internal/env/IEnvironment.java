@@ -6,8 +6,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
-import net.minecraft.network.chat.Component;
-
+import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 
 /**
@@ -36,20 +35,46 @@ public interface IEnvironment<T> {
 	 */
 	public PatchedResourceManager getResourceManager(T source);
 
+	public PatchedMutableComponent translate(String languageKey, String message, Object... args);
+	public PatchedMutableComponent literalText(String text);
+
 	/**
 	 * Sends a success message to the command source, and optionally logs the message to operators and the console.
 	 * @param source The command source.
-	 * @param message The message.
 	 * @param allowLogging Whether or not to log the message to operators and the server console.
+	 * @param languageKey The translation key, for clients with the mod.
+	 * @param message The literal message (in English), for vanilla clients.
+	 * @param args Arguments to apply to the messages.
 	 */
-	public void sendSuccess(T source, Component message, boolean allowLogging);
+	public default void sendSuccess(T source, boolean allowLogging, String languageKey, String message, Object... args) {
+		sendSuccess(source, allowLogging, translate(languageKey, message, args));
+	}
+
+	/**
+	 * Sends a success message to the command source, and optionally logs the message to operators and the console.
+	 * @param source The command source.
+	 * @param allowLogging Whether or not to log the message to operators and the server console.
+	 * @param message The message.
+	 */
+	public void sendSuccess(T source, boolean allowLogging, PatchedMutableComponent message);
+
+	/**
+	 * Sends an error message to the command source.
+	 * @param source The command source.
+	 * @param languageKey The translation key, for clients with the mod.
+	 * @param message The literal message (in English), for vanilla clients.
+	 * @param args Arguments to apply to the messages.
+	 */
+	public default void sendFailure(T source, String languageKey, String message, Object... args) {
+		sendFailure(source, translate(languageKey, message, args));
+	}
 
 	/**
 	 * Sends an error message to the command source.
 	 * @param source The command source.
 	 * @param message The message.
 	 */
-	public void sendFailure(T source, Component message);
+	public void sendFailure(T source, PatchedMutableComponent message);
 
 	/**
 	 * Determines whether the command source has the specified permission.

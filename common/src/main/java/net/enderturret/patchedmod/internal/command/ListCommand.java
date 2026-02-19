@@ -1,7 +1,5 @@
 package net.enderturret.patchedmod.internal.command;
 
-import static net.enderturret.patchedmod.internal.command.PatchedCommand.translate;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -14,18 +12,14 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 
+import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.util.meta.IPattern;
 import net.enderturret.patchedmod.common.util.meta.PatchTarget;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.internal.PatchedVersionUtil;
 import net.enderturret.patchedmod.internal.VersionedPatchedInternal;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 
@@ -55,19 +49,19 @@ final class ListCommand {
 				.toList();
 
 		if (packs.isEmpty()) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.list.pack_not_found", "That pack doesn't exist."));
+			env.sendFailure(ctx.getSource(), "command.patched.list.pack_not_found", "That pack doesn't exist.");
 			return 0;
 		}
 
 		if (packs.size() > 1) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.list.too_many_packs", "There is more than one pack with that name."));
+			env.sendFailure(ctx.getSource(), "command.patched.list.too_many_packs", "There is more than one pack with that name.");
 			return 0;
 		}
 
 		final PatchedPackResources pack = packs.get(0);
 
 		if (!pack.patched$hasPatches()) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
+			env.sendFailure(ctx.getSource(), "command.patched.list.patching_disabled", "That pack doesn't have patches enabled.");
 			return 0;
 		}
 
@@ -89,7 +83,7 @@ final class ListCommand {
 
 		final boolean single = patches.size() == 1;
 
-		final MutableComponent c = translate("command.patched.list.patches." + (single ? "single" : "multi"),
+		final PatchedMutableComponent c = env.translate("command.patched.list.patches." + (single ? "single" : "multi"),
 				single ? "There is 1 patch in %2$s:" : "There are %1$s patches in %2$s:",
 				patches.size(), pack.patched$getName());
 
@@ -99,16 +93,15 @@ final class ListCommand {
 			final String safePackName = StringArgumentType.escapeIfRequired(pack.patched$getName());
 			final boolean dynamic = patch.ns != null;
 
-			c.append("\n").append(Component.literal(patch.loc)
-					.setStyle(PatchedCommand.suggestCommand("/" + command + " dump patch " + safePackName + (dynamic ? " dynamic" : "") + " " + patch.loc)));
+			c.append("\n").appendWithCommand(patch.loc, "/" + command + " dump patch " + safePackName + (dynamic ? " dynamic" : "") + " " + patch.loc);
 
 			if (dynamic)
-				c.append(translate("command.patched.list.patches.dynamic",
+				c.append("command.patched.list.patches.dynamic",
 						" (applying to namespaces %1$s and paths %2$s)",
-						patch.ns, patch.paths));
+						patch.ns, patch.paths);
 		}
 
-		env.sendSuccess(ctx.getSource(), c, false);
+		env.sendSuccess(ctx.getSource(), false, c);
 
 		return Command.SINGLE_SUCCESS;
 	}
@@ -129,34 +122,27 @@ final class ListCommand {
 
 		final boolean single = patching.size() == 1;
 
-		final MutableComponent c = translate("command.patched.list.packs." + (single ? "single" : "multi"),
+		final PatchedMutableComponent c = env.translate("command.patched.list.packs." + (single ? "single" : "multi"),
 				single ? "There is 1 pack with patching enabled:" : "There are %1$s packs with patching enabled:",
 				patching.size());
 
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
-		for (Entry pack : patching) {
-			final HoverEvent hover = listAll ? PatchedVersionUtil.showText(
-					Component.literal(pack.pack.patched$packId() + " (" + pack.pack.getClass().getSimpleName() + ")")) : null;
-
-			c.append("\n  ").append(Component.literal(pack.name)
-					.setStyle(PatchedCommand.suggestCommand("/" + command + " list patches " + pack.name)
-							.withHoverEvent(hover)));
-		}
+		for (Entry pack : patching)
+			c.append("\n  ").appendWithCommandHover(pack.name, "/" + command + " list patches " + pack.name,
+					listAll ? pack.pack.patched$packId() + " (" + pack.pack.getClass().getSimpleName() + ")" : null);
 
 		final List<Entry> notPatching = packs.stream()
 				.filter(e -> !e.patching)
 				.toList();
 
 		if (listAll && !notPatching.isEmpty()) {
-			c.append("\n\n").append(translate("command.patched.list.packs.verbose", "Additionally, the following packs do not have patching enabled:"));
+			c.append("\n\n").append("command.patched.list.packs.verbose", "Additionally, the following packs do not have patching enabled:");
 			for (Entry pack : notPatching)
-				c.append("\n  ").append(Component.literal(pack.name)
-						.setStyle(Style.EMPTY.withHoverEvent(PatchedVersionUtil.showText(
-								Component.literal(pack.pack.patched$packId() + " (" + pack.pack.getClass().getSimpleName() + ")")))));
+				c.append("\n  ").appendWithHover(pack.name, pack.pack.patched$packId() + " (" + pack.pack.getClass().getSimpleName() + ")");
 		}
 
-		env.sendSuccess(ctx.getSource(), c, false);
+		env.sendSuccess(ctx.getSource(), false, c);
 
 		return Command.SINGLE_SUCCESS;
 	}

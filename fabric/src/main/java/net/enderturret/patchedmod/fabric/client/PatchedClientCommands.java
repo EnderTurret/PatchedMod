@@ -1,19 +1,15 @@
 package net.enderturret.patchedmod.fabric.client;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.commands.arguments.IdentifierArgument;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.server.permissions.Permission;
 
+import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.internal.command.PatchedCommand;
-import net.enderturret.patchedmod.internal.env.IEnvironment;
+import net.enderturret.patchedmod.internal.env.AbstractEnvironment;
+import net.enderturret.patchedmod.internal.env.ComponentWrapper;
 
 /**
  * Manages the registration of Patched's client commands on Fabric.
@@ -28,21 +24,11 @@ final class PatchedClientCommands {
 		});
 	}
 
-	private static final class ClientEnvironment implements IEnvironment<FabricClientCommandSource> {
+	private static final class ClientEnvironment extends AbstractEnvironment<FabricClientCommandSource> {
 
 		@Override
 		public boolean client() {
 			return true;
-		}
-
-		@Override
-		public Class<?> getResourceLocationClass() {
-			return Identifier.class;
-		}
-
-		@Override
-		public ArgumentType<?> getResourceLocationArgumentType() {
-			return IdentifierArgument.id();
 		}
 
 		@Override
@@ -51,13 +37,13 @@ final class PatchedClientCommands {
 		}
 
 		@Override
-		public void sendSuccess(FabricClientCommandSource source, Component message, boolean allowLogging) {
-			source.sendFeedback(message);
+		public void sendSuccess(FabricClientCommandSource source, boolean allowLogging, PatchedMutableComponent message) {
+			source.sendFeedback(((ComponentWrapper) message).message());
 		}
 
 		@Override
-		public void sendFailure(FabricClientCommandSource source, Component message) {
-			source.sendError(message);
+		public void sendFailure(FabricClientCommandSource source, PatchedMutableComponent message) {
+			source.sendError(((ComponentWrapper) message).message());
 		}
 
 		@Override

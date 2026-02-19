@@ -2,14 +2,9 @@ package net.enderturret.patchedmod.forge.client;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.server.permissions.Permission;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -17,9 +12,11 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.internal.command.PatchedCommand;
-import net.enderturret.patchedmod.internal.env.IEnvironment;
+import net.enderturret.patchedmod.internal.env.AbstractEnvironment;
+import net.enderturret.patchedmod.internal.env.ComponentWrapper;
 
 /**
  * Various client-side event handlers.
@@ -34,21 +31,11 @@ public final class ClientEvents {
 		e.getDispatcher().register(PatchedCommand.create(new ClientEnvironment()));
 	}
 
-	private static final class ClientEnvironment implements IEnvironment<CommandSourceStack> {
+	private static final class ClientEnvironment extends AbstractEnvironment<CommandSourceStack> {
 
 		@Override
 		public boolean client() {
 			return true;
-		}
-
-		@Override
-		public Class<?> getResourceLocationClass() {
-			return Identifier.class;
-		}
-
-		@Override
-		public ArgumentType<?> getResourceLocationArgumentType() {
-			return IdentifierArgument.id();
 		}
 
 		@Override
@@ -57,13 +44,14 @@ public final class ClientEvents {
 		}
 
 		@Override
-		public void sendSuccess(CommandSourceStack source, Component message, boolean allowLogging) {
-			source.sendSuccess(() -> message, allowLogging);
+		public void sendSuccess(CommandSourceStack source, boolean allowLogging, PatchedMutableComponent message) {
+			final Component msg = ((ComponentWrapper) message).message();
+			source.sendSuccess(() -> msg, allowLogging);
 		}
 
 		@Override
-		public void sendFailure(CommandSourceStack source, Component message) {
-			source.sendFailure(message);
+		public void sendFailure(CommandSourceStack source, PatchedMutableComponent message) {
+			source.sendFailure(((ComponentWrapper) message).message());
 		}
 
 		@Override

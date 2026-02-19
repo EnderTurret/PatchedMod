@@ -6,8 +6,6 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
-import net.minecraft.network.chat.Component;
-
 import net.enderturret.patchedmod.common.internal.PatchTargetManager;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
@@ -26,9 +24,8 @@ final class DebugCommand {
 
 		for (PatchedPackType type : PatchedPackType.values())
 			env.sendSuccess(
-					ctx.getSource(),
-					Component.literal(type.name() + " : " + managers.get(type) + "\n"),
-					false);
+					ctx.getSource(), false,
+					null, "%s : %s\n", type.name(), managers.get(type));
 
 		return Command.SINGLE_SUCCESS;
 	}

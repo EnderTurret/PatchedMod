@@ -2,16 +2,11 @@ package net.enderturret.patchedmod.internal.env;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.server.permissions.Permission;
-import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.server.permissions.Permissions;
 
+import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 
 /**
@@ -19,21 +14,11 @@ import net.enderturret.patchedmod.common.env.PatchedResourceManager;
  * @author EnderTurret
  */
 @Internal
-public final class ServerEnvironment implements IEnvironment<CommandSourceStack> {
+public final class ServerEnvironment extends AbstractEnvironment<CommandSourceStack> {
 
 	@Override
 	public boolean client() {
 		return false;
-	}
-
-	@Override
-	public Class<?> getResourceLocationClass() {
-		return Identifier.class;
-	}
-
-	@Override
-	public ArgumentType<?> getResourceLocationArgumentType() {
-		return IdentifierArgument.id();
 	}
 
 	@Override
@@ -42,13 +27,14 @@ public final class ServerEnvironment implements IEnvironment<CommandSourceStack>
 	}
 
 	@Override
-	public void sendSuccess(CommandSourceStack source, Component message, boolean allowLogging) {
-		source.sendSuccess(() -> message, allowLogging);
+	public void sendSuccess(CommandSourceStack source, boolean allowLogging, PatchedMutableComponent message) {
+		final Component msg = ((ComponentWrapper) message).message();
+		source.sendSuccess(() -> msg, allowLogging);
 	}
 
 	@Override
-	public void sendFailure(CommandSourceStack source, Component message) {
-		source.sendFailure(message);
+	public void sendFailure(CommandSourceStack source, PatchedMutableComponent message) {
+		source.sendFailure(((ComponentWrapper) message).message());
 	}
 
 	@Override
