@@ -17,16 +17,16 @@ subprojects {
     version = '8.0.1+1.21.11'
     group = 'net.enderturret'
 
-    if (it == project(':PatchedModCommon')) {
+    if (it == project(':PatchedMod.Common')) {
         version += '-common'
     }
-    else if (it == project(':PatchedModForge')) {
+    else if (it == project(':PatchedMod.NeoForge.1.21.11')) {
         version += '-neoforge'
     }
-    else if (it == project(':PatchedModFabric')) {
+    else if (it == project(':PatchedMod.Fabric.1.21.11')) {
         version += '-fabric'
     }
-    else if (it == project(':PatchedModQuilt')) {
+    else if (it == project(':PatchedMod.Quilt.1.21.11')) {
         version += '-quilt'
     }
 
@@ -96,17 +96,17 @@ subprojects {
         }
     }
 
-    if (it != project(':PatchedModCommon')) {
+    if (it != project(':PatchedMod.Common')) {
         tasks.named('compileJava', JavaCompile).configure {
-            source project(':PatchedModCommon').sourceSets.main.allSource
+            source project(':PatchedMod.Common').sourceSets.main.allSource
         }
 
         tasks.named('sourcesJar', Jar).configure {
-            from project(':PatchedModCommon').sourceSets.main.allJava
+            from project(':PatchedMod.Common').sourceSets.main.allJava
         }
 
         tasks.named('processResources', ProcessResources).configure {
-            from project(':PatchedModCommon').sourceSets.main.resources
+            from project(':PatchedMod.Common').sourceSets.main.resources
         }
     }
 }
