@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.internal.env;
+package net.enderturret.patchedmod.fabric.env;
 
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;

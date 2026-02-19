@@ -18,7 +18,7 @@ import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.SingleDataSource;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.command.PatchedCommand;
-import net.enderturret.patchedmod.internal.env.ServerEnvironment;
+import net.enderturret.patchedmod.forge.env.ServerEnvironment;
 
 @Internal
 @Mod(Patched.MOD_ID)

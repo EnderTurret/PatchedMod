@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.internal.env;
+package net.enderturret.patchedmod.fabric.env;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 

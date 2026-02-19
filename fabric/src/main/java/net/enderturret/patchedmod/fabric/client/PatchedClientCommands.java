@@ -8,8 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.command.PatchedCommand;
-import net.enderturret.patchedmod.internal.env.AbstractEnvironment;
-import net.enderturret.patchedmod.internal.env.ComponentWrapper;
+import net.enderturret.patchedmod.fabric.env.AbstractEnvironment;
+import net.enderturret.patchedmod.fabric.env.ComponentWrapper;
 
 /**
  * Manages the registration of Patched's client commands on Fabric.
