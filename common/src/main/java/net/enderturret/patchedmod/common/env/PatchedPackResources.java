@@ -11,8 +11,6 @@ import java.util.zip.ZipFile;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.resources.Identifier;
-
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 public interface PatchedPackResources extends IPatchingPackResources {
@@ -106,7 +104,7 @@ public interface PatchedPackResources extends IPatchingPackResources {
 	public boolean patched$needsSwapNamespaceAndPath();
 
 	/**
-	 * As a consequence of {@link #patched$needsSwapNamespaceAndPath()}, the returned {@linkplain Identifier identifiers} may need to be renamed.
+	 * As a consequence of {@link #patched$needsSwapNamespaceAndPath()}, the returned {@linkplain PatchedResourceLocation locations} may need to be renamed.
 	 * This method returns the renamer function for the pack.
 	 * @param namespace The namespace being searched.
 	 * @return The renamer function.
