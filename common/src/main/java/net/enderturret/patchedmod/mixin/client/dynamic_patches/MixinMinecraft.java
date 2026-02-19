@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.mixin.client;
+package net.enderturret.patchedmod.mixin.client.dynamic_patches;
 
 import java.util.List;
 

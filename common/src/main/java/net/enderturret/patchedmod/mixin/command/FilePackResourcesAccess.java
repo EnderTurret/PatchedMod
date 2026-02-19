@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.mixin;
+package net.enderturret.patchedmod.mixin.command;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;

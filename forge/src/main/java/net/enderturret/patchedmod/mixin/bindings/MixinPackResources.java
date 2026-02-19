@@ -24,8 +24,8 @@ import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.forge.ForgePlatform;
-import net.enderturret.patchedmod.mixin.FilePackResourcesAccess;
-import net.enderturret.patchedmod.mixin.SharedZipFileAccessAccess;
+import net.enderturret.patchedmod.mixin.command.FilePackResourcesAccess;
+import net.enderturret.patchedmod.mixin.command.SharedZipFileAccessAccess;
 
 @Mixin(PackResources.class)
 public interface MixinPackResources extends PatchedPackResources {

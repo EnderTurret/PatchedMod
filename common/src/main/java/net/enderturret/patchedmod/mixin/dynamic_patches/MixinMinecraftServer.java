@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.mixin;
+package net.enderturret.patchedmod.mixin.dynamic_patches;
 
 import java.util.List;
 

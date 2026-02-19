@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.mixin;
+package net.enderturret.patchedmod.mixin.impl;
 
 import java.util.Objects;
 

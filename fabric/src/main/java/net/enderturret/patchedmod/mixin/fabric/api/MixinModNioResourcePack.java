@@ -9,7 +9,7 @@ import net.fabricmc.fabric.impl.resource.pack.ModNioPackResources;
 
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
-import net.enderturret.patchedmod.mixin.MixinAbstractPackResources;
+import net.enderturret.patchedmod.mixin.impl.MixinAbstractPackResources;
 
 /**
  * Identical to {@link MixinAbstractPackResources}.

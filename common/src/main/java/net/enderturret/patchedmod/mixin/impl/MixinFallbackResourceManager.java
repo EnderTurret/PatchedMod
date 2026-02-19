@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.mixin;
+package net.enderturret.patchedmod.mixin.impl;
 
 import java.io.InputStream;
 import java.util.Map;
