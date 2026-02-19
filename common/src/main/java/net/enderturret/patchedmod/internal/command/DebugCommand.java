@@ -7,9 +7,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
 import net.enderturret.patchedmod.common.internal.PatchTargetManager;
+import net.enderturret.patchedmod.common.internal.env.IEnvironment;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.internal.env.IEnvironment;
 
 final class DebugCommand {
 

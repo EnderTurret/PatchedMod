@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
+import net.enderturret.patchedmod.common.internal.env.IEnvironment;
 
 public abstract class AbstractEnvironment<T> implements IEnvironment<T> {
 

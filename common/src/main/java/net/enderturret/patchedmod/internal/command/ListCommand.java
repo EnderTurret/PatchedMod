@@ -17,11 +17,11 @@ import net.minecraft.resources.Identifier;
 import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
+import net.enderturret.patchedmod.common.internal.env.IEnvironment;
 import net.enderturret.patchedmod.common.util.meta.IPattern;
 import net.enderturret.patchedmod.common.util.meta.PatchTarget;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.VersionedPatchedInternal;
-import net.enderturret.patchedmod.internal.env.IEnvironment;
 
 /**
  * Defines the '/patched list' subcommand, which handles providing lists of the packs with patches and the patches in those packs.

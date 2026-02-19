@@ -16,8 +16,8 @@ import net.minecraft.network.chat.Style;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
+import net.enderturret.patchedmod.common.internal.env.IEnvironment;
 import net.enderturret.patchedmod.internal.PatchedVersionUtil;
-import net.enderturret.patchedmod.internal.env.IEnvironment;
 import net.enderturret.patchedmod.internal.flow.PatchingManager;
 
 /**

@@ -20,10 +20,10 @@ import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
+import net.enderturret.patchedmod.common.internal.env.IEnvironment;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.VersionedPatchedInternal;
-import net.enderturret.patchedmod.internal.env.IEnvironment;
 
 /**
  * Defines the '/patched dump' subcommand, which handles viewing patches and patched files.
