@@ -53,7 +53,7 @@ final class ListCommand {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final List<PackResources> packs = man.listPacks()
-				.filter(p -> packName.equals(Patched.platform().getName((IPatchingPackResources) p)))
+				.filter(p -> packName.equals(((IPatchingPackResources) p).patched$getName()))
 				.toList();
 
 		if (packs.isEmpty()) {
@@ -94,12 +94,12 @@ final class ListCommand {
 
 		final MutableComponent c = translate("command.patched.list.patches." + (single ? "single" : "multi"),
 				single ? "There is 1 patch in %2$s:" : "There are %1$s patches in %2$s:",
-				patches.size(), Patched.platform().getName((IPatchingPackResources) pack));
+				patches.size(), ((IPatchingPackResources) pack).patched$getName());
 
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
 		for (Patch patch : patches) {
-			final String safePackName = StringArgumentType.escapeIfRequired(Patched.platform().getName((IPatchingPackResources) pack));
+			final String safePackName = StringArgumentType.escapeIfRequired(((IPatchingPackResources) pack).patched$getName());
 			final boolean dynamic = patch.ns != null;
 
 			c.append("\n").append(Component.literal(patch.loc)
@@ -122,7 +122,7 @@ final class ListCommand {
 		record Entry(PackResources pack, String name, boolean patching) {}
 
 		final List<Entry> packs = man.listPacks()
-				.map(p -> new Entry(p, Patched.platform().getName((IPatchingPackResources) p), Patched.platform().hasPatches((IPatchingPackResources) p)))
+				.map(p -> new Entry(p, ((IPatchingPackResources) p).patched$getName(), ((IPatchingPackResources) p).patchedMetadata().patchingEnabled()))
 				.sorted(Comparator.comparing(Entry::name))
 				.toList();
 

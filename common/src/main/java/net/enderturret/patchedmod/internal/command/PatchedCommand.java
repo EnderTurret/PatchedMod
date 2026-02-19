@@ -18,6 +18,7 @@ import net.minecraft.server.permissions.Permission;
 import net.minecraft.server.permissions.PermissionLevel;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.internal.PatchedVersionUtil;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 import net.enderturret.patchedmod.internal.flow.PatchingManager;
@@ -52,7 +53,7 @@ public final class PatchedCommand {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		Patched.platform().getPatchingPacks(man)
-			.map(Patched.platform()::getName)
+			.map(IPatchingPackResources::patched$getName)
 			.filter(s -> s.startsWith(input))
 			.sorted()
 			.map(s -> quoted ? StringArgumentType.escapeIfRequired(s) : s)

@@ -5,7 +5,6 @@ import java.util.Objects;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.FallbackResourceManager.PackEntry;
 
-import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 
 /**
@@ -23,6 +22,6 @@ record Entry(String name, PackResources resources) {
 	}
 
 	Entry(PackResources resources) {
-		this(Patched.platform().getName((IPatchingPackResources) Objects.requireNonNull(resources, "resources")), resources);
+		this(((IPatchingPackResources) Objects.requireNonNull(resources, "resources")).patched$getName(), resources);
 	}
 }

@@ -70,7 +70,7 @@ final class DumpCommand {
 		final String reqNamespace = index == -1 ? null : input.substring(0, index);
 
 		final PackResources pack = (PackResources) Patched.platform().getPatchingPacks(man)
-				.filter(p -> packName.equals(Patched.platform().getName(p)))
+				.filter(p -> packName.equals(p.patched$getName()))
 				.findFirst().orElse(null);
 
 		if (pack != null)
@@ -138,7 +138,7 @@ final class DumpCommand {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final List<PackResources> packs = man.listPacks()
-				.filter(p -> packName.equals(Patched.platform().getName((IPatchingPackResources) p)))
+				.filter(p -> packName.equals(((IPatchingPackResources) p).patched$getName()))
 				.toList();
 
 		if (packs.isEmpty()) {
@@ -187,7 +187,7 @@ final class DumpCommand {
 		final ResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final List<PackResources> packs = man.listPacks()
-				.filter(p -> packName.equals(Patched.platform().getName((IPatchingPackResources) p)))
+				.filter(p -> packName.equals(((IPatchingPackResources) p).patched$getName()))
 				.toList();
 
 		if (packs.isEmpty()) {

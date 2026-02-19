@@ -14,7 +14,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.VanillaPackResources;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
@@ -50,11 +49,11 @@ public final class VersionedPatchedInternal {
 		// resolves the same directory and then resolves the namespace directory.
 		// We must use a dot for VanillaPackResources because otherwise LinkFileSystem throws.
 		try {
-			final Function<Identifier, Identifier> renamer = Patched.platform().getRenamer(pack, namespace);
+			final Function<Identifier, Identifier> renamer = pack.patched$getRenamer(namespace);
 			final String fakeNamespace;
 			final String fakePath;
 
-			if (Patched.platform().needsSwapNamespaceAndPath(pack)) {
+			if (pack.patched$needsSwapNamespaceAndPath()) {
 				// The vanilla pack throws on empty paths.
 				fakeNamespace = pack.patched$isVanillaPack() ? "." : "";
 				fakePath = namespace;

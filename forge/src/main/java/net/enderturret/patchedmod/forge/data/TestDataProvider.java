@@ -1,7 +1,5 @@
 package net.enderturret.patchedmod.forge.data;
 
-import java.util.Map;
-
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.data.PackOutput;

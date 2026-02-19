@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.CompositePackResources;
-import net.minecraft.server.packs.PackResources;
 
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;

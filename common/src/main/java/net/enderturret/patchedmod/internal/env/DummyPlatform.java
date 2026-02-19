@@ -1,12 +1,7 @@
 package net.enderturret.patchedmod.internal.env;
 
-import java.util.function.Function;
-
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import net.minecraft.resources.Identifier;
-
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.util.env.IPlatform;
 
 /**
@@ -36,20 +31,5 @@ public final class DummyPlatform implements IPlatform {
 	@Override
 	public boolean isModLoaded(String modId, String version) {
 		return false;
-	}
-
-	@Override
-	public String getName(IPatchingPackResources pack) {
-		return pack.patched$packId();
-	}
-
-	@Override
-	public boolean needsSwapNamespaceAndPath(IPatchingPackResources pack) {
-		return false;
-	}
-
-	@Override
-	public Function<Identifier, Identifier> getRenamer(IPatchingPackResources pack, String namespace) {
-		return Function.identity();
 	}
 }
