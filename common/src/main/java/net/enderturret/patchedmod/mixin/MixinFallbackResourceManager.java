@@ -25,8 +25,8 @@ import net.minecraft.server.packs.resources.ResourceMetadata;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
+import net.enderturret.patchedmod.common.internal.FallbackResourceManagerHidingTreeMap;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.internal.FallbackResourceManagerHidingTreeMap;
 import net.enderturret.patchedmod.internal.flow.PatchingManager;
 
 /**
@@ -101,7 +101,8 @@ public abstract class MixinFallbackResourceManager {
 			method = "listResources",
 			require = 1) // We'll crash and burn later if this fails, so may as well explode earlier.
 	private TreeMap<?, ?> patched$hideThisInTreeMap() {
-		return new FallbackResourceManagerHidingTreeMap<>((FallbackResourceManager) (Object) this, type);
+		return new FallbackResourceManagerHidingTreeMap<>((PatchedResourceManager) this,
+				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA);
 	}
 
 	@WrapOperation(
@@ -128,8 +129,7 @@ public abstract class MixinFallbackResourceManager {
 			throw new IllegalStateException("Neither map is the expected type; did a mixin fail?");
 
 		final IoSupplier<InputStream> sup = PatchingManager.chain(streamSupplier,
-				(PatchedResourceManager) hidden.manager,
-				hidden.type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
+				hidden.manager, hidden.type,
 				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, false);
 
 		return downstream.call(pack, location, sup, metadataSupplier);
