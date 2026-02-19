@@ -4,6 +4,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
 /**
@@ -44,4 +45,8 @@ public interface IPlatform {
 	public default PatchedMetadata deriveMetadataFromMod(PatchedPackResources pack) {
 		return null;
 	}
+
+	public PatchedResourceLocation tryParse(String input);
+	public boolean isThingRegistered(PatchedResourceLocation registry, PatchedResourceLocation id);
+	public boolean isItemRegistered(PatchedResourceLocation id);
 }

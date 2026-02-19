@@ -9,8 +9,13 @@ import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.env.IPlatform;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
@@ -58,5 +63,21 @@ public final class FabricPlatform implements IPlatform {
 		if (cv == null) return null;
 
 		return PatchedMetadata.of(cv, CustomValueOps.INSTANCE, mod.getName() + " (" + mod.getId() + ")");
+	}
+
+	@Override
+	public PatchedResourceLocation tryParse(String input) {
+		return (PatchedResourceLocation) (Object) Identifier.parse(input);
+	}
+
+	@Override
+	public boolean isThingRegistered(PatchedResourceLocation registry, PatchedResourceLocation id) {
+		final Registry<?> reg = BuiltInRegistries.REGISTRY.getValue((Identifier) (Object) registry);
+		return reg != null && reg.containsKey((Identifier) (Object) id);
+	}
+
+	@Override
+	public boolean isItemRegistered(PatchedResourceLocation id) {
+		return BuiltInRegistries.ITEM.containsKey((Identifier) (Object) id);
 	}
 }

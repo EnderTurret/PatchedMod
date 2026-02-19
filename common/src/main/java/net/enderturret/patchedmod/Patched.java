@@ -10,10 +10,8 @@ import net.enderturret.patched.IDataSource;
 import net.enderturret.patchedmod.common.SingleDataSource;
 import net.enderturret.patchedmod.common.TestCondition;
 import net.enderturret.patchedmod.common.internal.PatchedDataSource;
-import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.env.IPlatform;
 import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
-import net.enderturret.patchedmod.internal.env.DummyPlatform;
 
 /**
  * Patched's loader-agnostic entrypoint and API.
@@ -39,12 +37,6 @@ public final class Patched {
 	 */
 	@Internal
 	public static IPlatform platform() {
-		if (platform == null) {
-			platform = new DummyPlatform();
-			PatchedInternal.LOGGER.error("Constructed dummy platform instance! If you're reading this, Patched was not loaded correctly!");
-			// Or someone called this method way too early, but no one would do that, right?
-		}
-
 		return platform;
 	}
 
@@ -73,7 +65,7 @@ public final class Patched {
 	 * @param condition The condition to register.
 	 */
 	public static void registerTestCondition(Identifier id, TestCondition condition) {
-		PatchedTestEvaluator.register(id, condition);
+		PatchedTestEvaluator.register(id.toString(), condition);
 	}
 
 	/**
@@ -82,6 +74,6 @@ public final class Patched {
 	 * @param condition The condition to register.
 	 */
 	public static void registerSimpleTestCondition(Identifier id, TestCondition.Simple condition) {
-		PatchedTestEvaluator.register(id, condition);
+		registerTestCondition(id, condition);
 	}
 }

@@ -2,9 +2,9 @@ package net.enderturret.patchedmod.util;
 
 import com.google.gson.JsonElement;
 
-import net.minecraft.resources.Identifier;
-
 import net.enderturret.patched.exception.PatchingException;
+import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 
 /**
  * An assortment of utilities related to patching Json data.
@@ -28,17 +28,17 @@ public final class PatchUtil {
 	}
 
 	/**
-	 * If the given value is a valid {@link Identifier}, returns it. Otherwise, throws an exception.
+	 * If the given value is a valid {@link PatchedResourceLocation}, returns it. Otherwise, throws an exception.
 	 * @param name Some extra context for the message. Used to identify the test condition.
 	 * @param field The name that the given value is associated with.
 	 * @param value The given value.
-	 * @return The given value as a {@link Identifier}.
+	 * @return The given value as a {@link PatchedResourceLocation}.
 	 * @throws PatchingException
 	 */
-	public static Identifier assertIsResourceLocation(String name, String field, JsonElement value) throws PatchingException {
+	public static PatchedResourceLocation assertIsResourceLocation(String name, String field, JsonElement value) throws PatchingException {
 		final String str = assertIsString(name, field, value);
 
-		final Identifier loc = Identifier.tryParse(str);
+		final PatchedResourceLocation loc = Patched.platform().tryParse(str);
 		if (loc == null) throw new PatchingException(name + ": " + field + " must be a valid resource location, was \"" + value + "\"");
 
 		return loc;

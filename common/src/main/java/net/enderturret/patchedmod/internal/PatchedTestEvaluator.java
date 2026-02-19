@@ -11,17 +11,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
-
 import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.RootEvaluator;
 import net.enderturret.patchedmod.common.TestCondition;
-import net.enderturret.patchedmod.common.TestCondition.Simple;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.PatchTargetManager;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
@@ -29,8 +25,6 @@ import net.enderturret.patchedmod.util.PatchUtil;
 
 /**
  * Patched's implementation of {@link ITestEvaluator}.
- * Mods can register their own test conditions using {@link Patched#registerTestCondition(Identifier, TestCondition)}
- * and {@link Patched#registerSimpleTestCondition(Identifier, Simple)}.
  * @author EnderTurret
  */
 @Internal
@@ -69,8 +63,8 @@ public final class PatchedTestEvaluator implements RootEvaluator {
 	 * @param value The condition to register.
 	 */
 	@Internal
-	public static void register(Identifier key, TestCondition value) {
-		CONDITIONS.put(key.toString(), Objects.requireNonNull(value, "value"));
+	public static void register(String key, TestCondition value) {
+		CONDITIONS.put(key, Objects.requireNonNull(value, "value"));
 	}
 
 	/**
@@ -79,10 +73,9 @@ public final class PatchedTestEvaluator implements RootEvaluator {
 	 * @param value The condition to register.
 	 */
 	@Internal
-	public static void registerLegacy(Identifier key, ITestEvaluator value) {
+	public static void registerLegacy(String key, ITestEvaluator value) {
 		Objects.requireNonNull(value);
-		final String str = key.toString();
-		register(key, (root, target, _value, context) -> value.test(root, str, target, _value, context));
+		register(key, (root, target, _value, context) -> value.test(root, key, target, _value, context));
 	}
 
 	/**
@@ -109,18 +102,16 @@ public final class PatchedTestEvaluator implements RootEvaluator {
 
 	private static boolean registered(JsonElement value) {
 		if (value instanceof JsonObject obj) {
-			final Identifier registry = PatchUtil.assertIsResourceLocation("patched:registered", "registry", obj.get("registry"));
-			final Identifier id = PatchUtil.assertIsResourceLocation("patched:registered", "id", obj.get("id"));
-
-			final Registry<?> reg = PatchedVersionUtil.get(BuiltInRegistries.REGISTRY, registry);
-			return reg != null && reg.containsKey(id);
+			final PatchedResourceLocation registry = PatchUtil.assertIsResourceLocation("patched:registered", "registry", obj.get("registry"));
+			final PatchedResourceLocation id = PatchUtil.assertIsResourceLocation("patched:registered", "id", obj.get("id"));
+			return Patched.platform().isThingRegistered(registry, id);
 		}
 
 		throw new PatchingException("patched:registered: value must be an object, was \"" + value + "\"");
 	}
 
 	private static boolean itemRegistered(JsonElement value) {
-		return BuiltInRegistries.ITEM.containsKey(PatchUtil.assertIsResourceLocation("patched:item_registered", "value", value));
+		return Patched.platform().isItemRegistered(PatchUtil.assertIsResourceLocation("patched:item_registered", "value", value));
 	}
 
 	private static boolean packEnabled(JsonElement root, JsonElement target, JsonElement value, PatchContext context) {
