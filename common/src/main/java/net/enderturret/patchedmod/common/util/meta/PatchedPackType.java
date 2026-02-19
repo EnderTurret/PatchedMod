@@ -34,6 +34,10 @@ public enum PatchedPackType {
 		};
 	}
 
+	public <T> T toVanilla(T client, T server) {
+		return this == CLIENT_RESOURCES ? client : server;
+	}
+
 	public String getSerializedName() {
 		return name;
 	}

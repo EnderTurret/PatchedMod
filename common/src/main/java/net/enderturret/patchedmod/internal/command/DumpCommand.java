@@ -20,17 +20,17 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;
+import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.VersionedPatchedInternal;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 
@@ -41,7 +41,7 @@ import net.enderturret.patchedmod.internal.env.IEnvironment;
 final class DumpCommand {
 
 	static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
-		final PackType type = env.client() ? PackType.CLIENT_RESOURCES : PackType.SERVER_DATA;
+		final PatchedPackType type = env.client() ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA;
 		return env.literal("dump")
 				.then(env.literal("patch")
 						.then(env.argument("pack", StringArgumentType.string())
@@ -64,22 +64,22 @@ final class DumpCommand {
 	private static <T> CompletableFuture<Suggestions> suggestPatch(CommandContext<T> ctx, String packArg, SuggestionsBuilder builder, IEnvironment<T> env) {
 		final String packName = StringArgumentType.getString(ctx, packArg);
 		final String input = builder.getRemaining();
-		final ResourceManager man = env.getResourceManager(ctx.getSource());
+		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final int index = input.indexOf(':');
 		final String reqNamespace = index == -1 ? null : input.substring(0, index);
 
-		final PackResources pack = (PackResources) Patched.platform().getPatchingPacks(man)
+		final IPatchingPackResources pack = man.patched$getPatchingPacks()
 				.filter(p -> packName.equals(p.patched$getName()))
 				.findFirst().orElse(null);
 
 		if (pack != null)
-			for (PackType type : PackType.values())
-				for (String namespace : pack.getNamespaces(type)) {
+			for (PatchedPackType type : PatchedPackType.values())
+				for (String namespace : pack.patched$getNamespaces(type)) {
 					if (reqNamespace != null && !reqNamespace.equals(namespace))
 						continue;
 
-					VersionedPatchedInternal.getResources((IPatchingPackResources) pack, type, namespace, s -> s.getPath().endsWith(".patch"))
+					VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch"))
 						.stream()
 						.filter(loc -> loc.toString().startsWith(input))
 						.sorted()
@@ -90,12 +90,12 @@ final class DumpCommand {
 		return builder.buildFuture();
 	}
 
-	private static <T> CompletableFuture<Suggestions> suggestResource(CommandContext<T> ctx, PackType type, SuggestionsBuilder builder, IEnvironment<T> env) {
+	private static <T> CompletableFuture<Suggestions> suggestResource(CommandContext<T> ctx, PatchedPackType type, SuggestionsBuilder builder, IEnvironment<T> env) {
 		final String input = builder.getRemaining();
-		final ResourceManager man = env.getResourceManager(ctx.getSource());
+		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
 		if (!input.contains(":")) {
-			man.getNamespaces().stream()
+			man.patched$getNamespaces().stream()
 				.filter(ns -> ns.startsWith(input))
 				.sorted()
 				.forEach(builder::suggest);
@@ -109,12 +109,12 @@ final class DumpCommand {
 		// There's a lot of files here, so narrowing them down is a requirement.
 		if (reqNamespace == null) return builder.buildFuture();
 
-		final List<PackResources> packs = man.listPacks()
-				.filter(p -> p.getNamespaces(type).contains(reqNamespace))
+		final List<IPatchingPackResources> packs = man.patched$listPacks()
+				.filter(p -> p.patched$getNamespaces(type).contains(reqNamespace))
 				.toList();
 
-		for (PackResources pack : packs)
-			VersionedPatchedInternal.getResources((IPatchingPackResources) pack, type, reqNamespace, s -> s.getPath().endsWith(".json"))
+		for (IPatchingPackResources pack : packs)
+			VersionedPatchedInternal.getResources(pack, type, reqNamespace, s -> s.getPath().endsWith(".json"))
 				.stream()
 				.filter(loc -> loc.toString().startsWith(input))
 				.map(loc -> {
@@ -132,13 +132,13 @@ final class DumpCommand {
 	}
 
 	@SuppressWarnings("resource")
-	private static <T> int dumpPatch(CommandContext<T> ctx, PackType type, IEnvironment<T> env) {
+	private static <T> int dumpPatch(CommandContext<T> ctx, PatchedPackType type, IEnvironment<T> env) {
 		final String packName = StringArgumentType.getString(ctx, "pack");
 		final Identifier location = ctx.getArgument("location", Identifier.class);
-		final ResourceManager man = env.getResourceManager(ctx.getSource());
+		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final List<PackResources> packs = man.listPacks()
-				.filter(p -> packName.equals(((IPatchingPackResources) p).patched$getName()))
+		final List<IPatchingPackResources> packs = man.patched$listPacks()
+				.filter(p -> packName.equals(p.patched$getName()))
 				.toList();
 
 		if (packs.isEmpty()) {
@@ -151,9 +151,9 @@ final class DumpCommand {
 			return 0;
 		}
 
-		final PackResources pack = packs.get(0);
+		final IPatchingPackResources pack = packs.get(0);
 
-		if (!Patched.platform().hasPatches((IPatchingPackResources) pack)) {
+		if (!Patched.platform().hasPatches(pack)) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
@@ -181,13 +181,13 @@ final class DumpCommand {
 	}
 
 	@SuppressWarnings("resource")
-	private static <T> int dumpLocalPatch(CommandContext<T> ctx, PackType type, IEnvironment<T> env) {
+	private static <T> int dumpLocalPatch(CommandContext<T> ctx, PatchedPackType type, IEnvironment<T> env) {
 		final String packName = StringArgumentType.getString(ctx, "pack");
 		final String patchName = ctx.getArgument("patch", String.class);
-		final ResourceManager man = env.getResourceManager(ctx.getSource());
+		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final List<PackResources> packs = man.listPacks()
-				.filter(p -> packName.equals(((IPatchingPackResources) p).patched$getName()))
+		final List<IPatchingPackResources> packs = man.patched$listPacks()
+				.filter(p -> packName.equals(p.patched$getName()))
 				.toList();
 
 		if (packs.isEmpty()) {
@@ -200,27 +200,29 @@ final class DumpCommand {
 			return 0;
 		}
 
-		final PackResources pack = packs.get(0);
+		final IPatchingPackResources pack = packs.get(0);
 
-		if (!Patched.platform().hasPatches((IPatchingPackResources) pack)) {
+		if (!Patched.platform().hasPatches(pack)) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
 
-		final IoSupplier<InputStream> io = pack.getRootResource("patches", patchName + ".json.patch");
+		try {
+			final InputStream io = pack.patched$getRootResource("patches", patchName + ".json.patch");
 
-		if (io == null) {
-			env.sendFailure(ctx.getSource(), translate("command.patched.dump.patch_not_found", "That patch could not be found."));
-			return 0;
-		}
-
-		try (InputStream is = io.get()) {
-			final String src = PatchedInternal.readPrettyJson(is, patchName + " (in " + packName + ")", true, true);
-			if (src == null) {
-				env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));
+			if (io == null) {
+				env.sendFailure(ctx.getSource(), translate("command.patched.dump.patch_not_found", "That patch could not be found."));
 				return 0;
 			}
-			env.sendSuccess(ctx.getSource(), Component.literal(src), false);
+
+			try (InputStream is = io) {
+				final String src = PatchedInternal.readPrettyJson(is, patchName + " (in " + packName + ")", true, true);
+				if (src == null) {
+					env.sendFailure(ctx.getSource(), translate("command.patched.dump.not_json", "That patch is not a json file. (See console for details.)"));
+					return 0;
+				}
+				env.sendSuccess(ctx.getSource(), Component.literal(src), false);
+			}
 		} catch (IOException e) {
 			Patched.platform().logger().warn("Failed to read resource '{}' from {}:", patchName, packName, e);
 			return 0;
@@ -232,7 +234,7 @@ final class DumpCommand {
 	@SuppressWarnings("deprecation")
 	private static <T> int dumpFile(CommandContext<T> ctx, IEnvironment<T> env, boolean useAudit, boolean usePatches) {
 		final Identifier location = ctx.getArgument("location", Identifier.class);
-		final ResourceManager man = env.getResourceManager(ctx.getSource());
+		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
 		final Optional<Resource> op = man.getResource(location);
 

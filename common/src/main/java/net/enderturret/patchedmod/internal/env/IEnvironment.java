@@ -8,8 +8,9 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.permissions.Permission;
+
+import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 
 /**
  * An abstraction over the client and server command APIs.
@@ -35,7 +36,7 @@ public interface IEnvironment<T> {
 	 * @param source The command source.
 	 * @return The corresponding resource manager.
 	 */
-	public ResourceManager getResourceManager(T source);
+	public PatchedResourceManager getResourceManager(T source);
 
 	/**
 	 * Sends a success message to the command source, and optionally logs the message to operators and the console.
@@ -93,8 +94,8 @@ public interface IEnvironment<T> {
 		}
 
 		@Override
-		public ResourceManager getResourceManager(CommandSourceStack source) {
-			return source.getServer().getResourceManager();
+		public PatchedResourceManager getResourceManager(CommandSourceStack source) {
+			return (PatchedResourceManager) source.getServer().getResourceManager();
 		}
 
 		@Override

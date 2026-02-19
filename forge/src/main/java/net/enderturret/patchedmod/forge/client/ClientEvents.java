@@ -14,6 +14,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.internal.command.PatchedCommand;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 
@@ -38,8 +39,8 @@ public final class ClientEvents {
 		}
 
 		@Override
-		public ResourceManager getResourceManager(CommandSourceStack source) {
-			return Minecraft.getInstance().getResourceManager();
+		public PatchedResourceManager getResourceManager(CommandSourceStack source) {
+			return (PatchedResourceManager) Minecraft.getInstance().getResourceManager();
 		}
 
 		@Override

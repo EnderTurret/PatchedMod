@@ -1,8 +1,13 @@
 package net.enderturret.patchedmod.common.env;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
+
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.resources.Identifier;
 
@@ -55,6 +60,10 @@ public interface IPatchingPackResources {
 
 	public String patched$packId();
 	public boolean patched$isVanillaPack();
+	public Set<String> patched$getNamespaces(PatchedPackType type);
+	public @Nullable InputStream patched$getRootResource(String... path) throws IOException;
+
+	// ===== Non-API Patched-specific junk =====
 
 	/**
 	 * <p>

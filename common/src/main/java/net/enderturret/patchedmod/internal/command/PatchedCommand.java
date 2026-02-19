@@ -13,12 +13,11 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.permissions.Permission;
 import net.minecraft.server.permissions.PermissionLevel;
 
-import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.internal.PatchedVersionUtil;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 import net.enderturret.patchedmod.internal.flow.PatchingManager;
@@ -50,9 +49,9 @@ public final class PatchedCommand {
 
 	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, IEnvironment<T> env, boolean quoted) {
 		final String input = builder.getRemaining();
-		final ResourceManager man = env.getResourceManager(ctx.getSource());
+		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
-		Patched.platform().getPatchingPacks(man)
+		man.patched$getPatchingPacks()
 			.map(IPatchingPackResources::patched$getName)
 			.filter(s -> s.startsWith(input))
 			.sorted()

@@ -1,12 +1,8 @@
 package net.enderturret.patchedmod.util.env;
 
-import java.util.stream.Stream;
-
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-
-import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
@@ -55,27 +51,6 @@ public interface IPlatform {
 	@Nullable
 	public default PatchedMetadata deriveMetadataFromMod(IPatchingPackResources pack) {
 		return null;
-	}
-
-	/**
-	 * Returns a {@code Stream} over all packs in the given resource manager, expanding {@linkplain IPatchingPackResources#patched$getChildren() group packs} as necessary.
-	 * @param manager The resource manager to query the packs of.
-	 * @return The stream.
-	 */
-	public default Stream<IPatchingPackResources> getExpandedPacks(ResourceManager manager) {
-		return manager.listPacks()
-				.map(p -> (IPatchingPackResources) p)
-				.flatMap(p -> p.patched$isGroupPack() ? p.patched$getChildren().stream() : Stream.of(p));
-	}
-
-	/**
-	 * Returns a {@code Stream} over all patching-enabled packs in the given resource manager, expanding {@linkplain IPatchingPackResources#patched$getChildren() group packs} as necessary.
-	 * This functions like {@link #getExpandedPacks(ResourceManager)}, but additionally filtering out non-patching packs.
-	 * @param manager The resource manager to query the packs of.
-	 * @return The stream.
-	 */
-	public default Stream<IPatchingPackResources> getPatchingPacks(ResourceManager manager) {
-		return manager.listPacks().map(p -> (IPatchingPackResources) p).filter(this::hasPatches);
 	}
 
 	/**

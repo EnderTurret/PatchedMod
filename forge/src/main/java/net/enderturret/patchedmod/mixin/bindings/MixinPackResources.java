@@ -1,17 +1,24 @@
 package net.enderturret.patchedmod.mixin.bindings;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.VanillaPackResources;
+import net.minecraft.server.packs.resources.IoSupplier;
 
 import net.neoforged.fml.ModContainer;
 
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.forge.ForgePlatform;
 
 @Mixin(PackResources.class)
@@ -25,6 +32,17 @@ public interface MixinPackResources extends IPatchingPackResources {
 	@Override
 	public default boolean patched$isVanillaPack() {
 		return this instanceof VanillaPackResources;
+	}
+
+	@Override
+	public default Set<String> patched$getNamespaces(PatchedPackType type) {
+		return ((PackResources) this).getNamespaces(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA));
+	}
+
+	@Override
+	public default @Nullable InputStream patched$getRootResource(String... path) throws IOException {
+		final IoSupplier<InputStream> ret = ((PackResources) this).getRootResource(path);
+		return ret != null ? ret.get() : null;
 	}
 
 	@Override

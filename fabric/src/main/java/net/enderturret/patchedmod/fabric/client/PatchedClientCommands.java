@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.permissions.Permission;
 
+import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.internal.command.PatchedCommand;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 
@@ -32,8 +33,8 @@ final class PatchedClientCommands {
 		}
 
 		@Override
-		public ResourceManager getResourceManager(FabricClientCommandSource source) {
-			return Minecraft.getInstance().getResourceManager();
+		public PatchedResourceManager getResourceManager(FabricClientCommandSource source) {
+			return (PatchedResourceManager) Minecraft.getInstance().getResourceManager();
 		}
 
 		@Override

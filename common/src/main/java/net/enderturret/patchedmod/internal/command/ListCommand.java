@@ -19,14 +19,13 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.util.meta.IPattern;
 import net.enderturret.patchedmod.common.util.meta.PatchTarget;
+import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.PatchedVersionUtil;
 import net.enderturret.patchedmod.internal.VersionedPatchedInternal;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
@@ -50,10 +49,10 @@ final class ListCommand {
 	@SuppressWarnings("resource")
 	private static <T> int listPatches(CommandContext<T> ctx, IEnvironment<T> env) {
 		final String packName = StringArgumentType.getString(ctx, "pack");
-		final ResourceManager man = env.getResourceManager(ctx.getSource());
+		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
-		final List<PackResources> packs = man.listPacks()
-				.filter(p -> packName.equals(((IPatchingPackResources) p).patched$getName()))
+		final List<IPatchingPackResources> packs = man.patched$listPacks()
+				.filter(p -> packName.equals(p.patched$getName()))
 				.toList();
 
 		if (packs.isEmpty()) {
@@ -66,9 +65,9 @@ final class ListCommand {
 			return 0;
 		}
 
-		final PackResources pack = packs.get(0);
+		final IPatchingPackResources pack = packs.get(0);
 
-		if (!Patched.platform().hasPatches((IPatchingPackResources) pack)) {
+		if (!Patched.platform().hasPatches(pack)) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
@@ -77,9 +76,9 @@ final class ListCommand {
 
 		final List<Patch> patches = new ArrayList<>();
 
-		for (PackType type : PackType.values())
-			for (String namespace : pack.getNamespaces(type))
-				for (Identifier loc : VersionedPatchedInternal.getResources((IPatchingPackResources) pack, type, namespace, s -> s.getPath().endsWith(".patch")))
+		for (PatchedPackType type : PatchedPackType.values())
+			for (String namespace : pack.patched$getNamespaces(type))
+				for (Identifier loc : VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")))
 					patches.add(new Patch(loc.toString(), null, null));
 
 		if (pack instanceof IPatchingPackResources ppp)
@@ -94,12 +93,12 @@ final class ListCommand {
 
 		final MutableComponent c = translate("command.patched.list.patches." + (single ? "single" : "multi"),
 				single ? "There is 1 patch in %2$s:" : "There are %1$s patches in %2$s:",
-				patches.size(), ((IPatchingPackResources) pack).patched$getName());
+				patches.size(), pack.patched$getName());
 
 		final String command = ctx.getNodes().get(0).getNode().getName();
 
 		for (Patch patch : patches) {
-			final String safePackName = StringArgumentType.escapeIfRequired(((IPatchingPackResources) pack).patched$getName());
+			final String safePackName = StringArgumentType.escapeIfRequired(pack.patched$getName());
 			final boolean dynamic = patch.ns != null;
 
 			c.append("\n").append(Component.literal(patch.loc)
@@ -117,12 +116,12 @@ final class ListCommand {
 	}
 
 	private static <T> int listPacks(CommandContext<T> ctx, IEnvironment<T> env, boolean listAll) {
-		final ResourceManager man = env.getResourceManager(ctx.getSource());
+		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
-		record Entry(PackResources pack, String name, boolean patching) {}
+		record Entry(IPatchingPackResources pack, String name, boolean patching) {}
 
-		final List<Entry> packs = man.listPacks()
-				.map(p -> new Entry(p, ((IPatchingPackResources) p).patched$getName(), ((IPatchingPackResources) p).patchedMetadata().patchingEnabled()))
+		final List<Entry> packs = man.patched$listPacks()
+				.map(p -> new Entry(p, p.patched$getName(), p.patchedMetadata().patchingEnabled()))
 				.sorted(Comparator.comparing(Entry::name))
 				.toList();
 
@@ -140,7 +139,7 @@ final class ListCommand {
 
 		for (Entry pack : patching) {
 			final HoverEvent hover = listAll ? PatchedVersionUtil.showText(
-					Component.literal(pack.pack.packId() + " (" + pack.pack.getClass().getSimpleName() + ")")) : null;
+					Component.literal(pack.pack.patched$packId() + " (" + pack.pack.getClass().getSimpleName() + ")")) : null;
 
 			c.append("\n  ").append(Component.literal(pack.name)
 					.setStyle(PatchedCommand.suggestCommand("/" + command + " list patches " + pack.name)
@@ -156,7 +155,7 @@ final class ListCommand {
 			for (Entry pack : notPatching)
 				c.append("\n  ").append(Component.literal(pack.name)
 						.setStyle(Style.EMPTY.withHoverEvent(PatchedVersionUtil.showText(
-								Component.literal(pack.pack.packId() + " (" + pack.pack.getClass().getSimpleName() + ")")))));
+								Component.literal(pack.pack.patched$packId() + " (" + pack.pack.getClass().getSimpleName() + ")")))));
 		}
 
 		env.sendSuccess(ctx.getSource(), c, false);
