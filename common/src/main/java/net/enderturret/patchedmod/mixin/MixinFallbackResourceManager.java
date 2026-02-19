@@ -27,9 +27,9 @@ import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.FallbackResourceManagerHidingTreeMap;
+import net.enderturret.patchedmod.common.internal.flow.PatchingManager;
 import net.enderturret.patchedmod.common.util.PatchUtil;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.internal.flow.PatchingManager;
 
 /**
  * This mixin implements the functionality for actually patching resources.

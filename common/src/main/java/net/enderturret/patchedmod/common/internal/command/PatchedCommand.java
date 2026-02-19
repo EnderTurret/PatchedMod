@@ -13,7 +13,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.env.IEnvironment;
-import net.enderturret.patchedmod.internal.flow.PatchingManager;
+import net.enderturret.patchedmod.common.internal.flow.PatchingManager;
 
 /**
  * Defines the root '/patched' command and provides a few utility methods for the subcommands to use.

@@ -1,7 +1,7 @@
 package net.enderturret.patchedmod.common.env;
 
+import net.enderturret.patchedmod.common.internal.flow.PatchingManager;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
-import net.enderturret.patchedmod.internal.flow.PatchingManager;
 
 /**
  * Provides access to {@link PatchedMetadata} in resource/data packs.

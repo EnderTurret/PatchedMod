@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.internal.flow;
+package net.enderturret.patchedmod.common.internal.flow;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,9 +27,6 @@ import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
-import net.enderturret.patchedmod.common.internal.flow.BailException;
-import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
-import net.enderturret.patchedmod.common.internal.flow.LazyPatchingWrapper;
 import net.enderturret.patchedmod.common.util.PatchUtil;
 import net.enderturret.patchedmod.common.util.PatchedFileAccess;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;

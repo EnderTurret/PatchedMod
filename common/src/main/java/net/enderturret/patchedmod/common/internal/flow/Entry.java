@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.internal.flow;
+package net.enderturret.patchedmod.common.internal.flow;
 
 import java.util.Objects;
 
