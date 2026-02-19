@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +23,7 @@ public interface PatchedPackResources extends IPatchingPackResources {
 	public Set<String> patched$getNamespaces(PatchedPackType type);
 	public @Nullable InputStream patched$getRootResource(String... path) throws IOException;
 	public @Nullable InputStream patched$getResource(PatchedPackType type, PatchedResourceLocation location) throws IOException;
+	public void patched$listResources(PatchedPackType type, String namespace, String path, Consumer<PatchedResourceLocation> consumer);
 
 	// ===== Non-API Patched-specific junk =====
 
@@ -105,5 +107,5 @@ public interface PatchedPackResources extends IPatchingPackResources {
 	 * @param namespace The namespace being searched.
 	 * @return The renamer function.
 	 */
-	public Function<Identifier, Identifier> patched$getRenamer(String namespace);
+	public Function<PatchedResourceLocation, PatchedResourceLocation> patched$getRenamer(String namespace);
 }

@@ -70,7 +70,7 @@ final class DumpCommand {
 					if (reqNamespace != null && !reqNamespace.equals(namespace))
 						continue;
 
-					VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch"))
+					VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.patched$getPath().endsWith(".patch"))
 						.stream()
 						.filter(loc -> loc.toString().startsWith(input))
 						.sorted()
@@ -105,7 +105,7 @@ final class DumpCommand {
 				.toList();
 
 		for (PatchedPackResources pack : packs)
-			VersionedPatchedInternal.getResources(pack, type, reqNamespace, s -> s.getPath().endsWith(".json"))
+			VersionedPatchedInternal.getResources(pack, type, reqNamespace, s -> s.patched$getPath().endsWith(".json"))
 				.stream()
 				.filter(loc -> loc.toString().startsWith(input))
 				.map(loc -> {

@@ -12,10 +12,9 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
-import net.minecraft.resources.Identifier;
-
 import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.env.IEnvironment;
 import net.enderturret.patchedmod.common.util.meta.IPattern;
@@ -71,7 +70,7 @@ final class ListCommand {
 
 		for (PatchedPackType type : PatchedPackType.values())
 			for (String namespace : pack.patched$getNamespaces(type))
-				for (Identifier loc : VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")))
+				for (PatchedResourceLocation loc : VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.patched$getPath().endsWith(".patch")))
 					patches.add(new Patch(loc.toString(), null, null));
 
 		for (PatchTarget patchTarget : pack.patchedMetadata().patchTargets())

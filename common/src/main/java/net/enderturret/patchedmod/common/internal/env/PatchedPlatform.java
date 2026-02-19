@@ -65,6 +65,7 @@ public interface PatchedPlatform {
 	}
 
 	public PatchedResourceLocation tryParse(String input);
+	public PatchedResourceLocation tryBuild(String namespace, String path);
 	public boolean isThingRegistered(PatchedResourceLocation registry, PatchedResourceLocation id);
 	public boolean isItemRegistered(PatchedResourceLocation id);
 }

@@ -3,6 +3,7 @@ package net.enderturret.patchedmod.mixin.bindings;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
@@ -53,6 +54,15 @@ public interface MixinPackResources extends PatchedPackResources {
 	}
 
 	@Override
+	public default void patched$listResources(PatchedPackType type, String namespace, String path, Consumer<PatchedResourceLocation> consumer) {
+		((PackResources) this).listResources(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA),
+				namespace, path,
+				(loc, io) -> consumer.accept((PatchedResourceLocation) (Object) loc));
+	}
+
+	//
+
+	@Override
 	public default String patched$getName() {
 		final ModMetadata mod = FabricPlatform.getModMetadataFromPack(this);
 		if (mod != null) {
@@ -81,12 +91,13 @@ public interface MixinPackResources extends PatchedPackResources {
 	}
 
 	@Override
-	public default Function<Identifier, Identifier> patched$getRenamer(String namespace) {
+	public default Function<PatchedResourceLocation, PatchedResourceLocation> patched$getRenamer(String namespace) {
 		// GroupResourcePack and ModNioResourcePack
 		if (!patched$needsSwapNamespaceAndPath()) return Function.identity();
 		// PathPackResources:      :minecraft/something → minecraft:something
 		// FilePackResources is handled separately.
 		// VanillaPackResources:  .:minecraft/something → minecraft:something
-		return rl -> Identifier.fromNamespaceAndPath(namespace, rl.getPath().substring(namespace.length() + 1));
+		return rl -> (PatchedResourceLocation) (Object) Identifier.fromNamespaceAndPath(
+				namespace, rl.patched$getPath().substring(namespace.length() + 1));
 	}
 }

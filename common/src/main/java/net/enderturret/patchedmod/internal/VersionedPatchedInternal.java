@@ -10,13 +10,12 @@ import java.util.zip.ZipFile;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.FilePackResources;
-import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 /**
@@ -36,11 +35,11 @@ public final class VersionedPatchedInternal {
 	 * @param filter A filter for filtering out undesired results.
 	 * @return The list of resources.
 	 */
-	public static List<Identifier> getResources(PatchedPackResources pack, PatchedPackType type, String namespace, Predicate<Identifier> filter) {
+	public static List<PatchedResourceLocation> getResources(PatchedPackResources pack, PatchedPackType type, String namespace, Predicate<PatchedResourceLocation> filter) {
 		if (pack instanceof FilePackResources fpp)
-			return fileResourcesHookWorks ? getFileResources(fpp, type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), namespace, filter) : List.of();
+			return fileResourcesHookWorks ? getFileResources(fpp, type, namespace, filter) : List.of();
 
-		final List<Identifier> ret = new ArrayList<>();
+		final List<PatchedResourceLocation> ret = new ArrayList<>();
 
 		// This one's gonna require some explaining:
 		// Basically, we want to look at all resources in the pack.
@@ -51,7 +50,7 @@ public final class VersionedPatchedInternal {
 		// resolves the same directory and then resolves the namespace directory.
 		// We must use a dot for VanillaPackResources because otherwise LinkFileSystem throws.
 		try {
-			final Function<Identifier, Identifier> renamer = pack.patched$getRenamer(namespace);
+			final Function<PatchedResourceLocation, PatchedResourceLocation> renamer = pack.patched$getRenamer(namespace);
 			final String fakeNamespace;
 			final String fakePath;
 
@@ -64,9 +63,9 @@ public final class VersionedPatchedInternal {
 				fakePath = "";
 			}
 
-			((PackResources) pack).listResources(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), fakeNamespace, fakePath, (loc, io) -> {
+			pack.patched$listResources(type, fakeNamespace, fakePath, loc -> {
 				if (filter.test(loc)) {
-					final Identifier renamed = renamer.apply(loc);
+					final PatchedResourceLocation renamed = renamer.apply(loc);
 
 					ret.add(renamed);
 				}
@@ -80,7 +79,7 @@ public final class VersionedPatchedInternal {
 
 	/**
 	 * This method is a better implementation of
-	 * {@link FilePackResources#listResources(PackType, String, String, net.minecraft.server.packs.PackResources.ResourceOutput)}
+	 * {@code FilePackResources#listResources(PackType, String, String, ResourceOutput)}
 	 * that actually works for what we need -- getting all resources under a particular namespace.
 	 * @param pack The pack in question.
 	 * @param type The pack type.
@@ -88,7 +87,7 @@ public final class VersionedPatchedInternal {
 	 * @param filter A filter for deciding which resources to include in the returned list.
 	 * @return The list of resources under the given namespace.
 	 */
-	private static List<Identifier> getFileResources(FilePackResources pack, PackType type, String namespace, Predicate<Identifier> filter) {
+	private static List<PatchedResourceLocation> getFileResources(FilePackResources pack, PatchedPackType type, String namespace, Predicate<PatchedResourceLocation> filter) {
 		final ZipFile zip;
 		try {
 			zip = PatchedVersionUtil.getZipFile(pack);
@@ -100,16 +99,16 @@ public final class VersionedPatchedInternal {
 
 		if (zip == null) return List.of();
 
-		final List<Identifier> ret = new ArrayList<>();
+		final List<PatchedResourceLocation> ret = new ArrayList<>();
 
-		final String root = type.getDirectory() + "/" + namespace + "/";
+		final String root = type.directory + "/" + namespace + "/";
 
 		for (Enumeration<? extends ZipEntry> it = zip.entries(); it.hasMoreElements(); ) {
 			final ZipEntry entry = it.nextElement();
 			if (entry.isDirectory() || !entry.getName().startsWith(root)) continue;
 
 			final String path = entry.getName().substring(root.length());
-			final Identifier loc = Identifier.tryBuild(namespace, path);
+			final PatchedResourceLocation loc = PatchedPlatform.get().tryBuild(namespace, path);
 
 			if (filter.test(loc))
 				ret.add(loc);

@@ -15,16 +15,21 @@ public enum PatchedPackType {
 	/**
 	 * See {@code PackType.CLIENT_RESOURCES}.
 	 */
-	CLIENT_RESOURCES,
+	CLIENT_RESOURCES("assets"),
 
 	/**
 	 * See {@code PackType.SERVER_DATA}.
 	 */
-	SERVER_DATA;
+	SERVER_DATA("data");
 
 	public static final Codec<PatchedPackType> CODEC = Codec.STRING.comapFlatMap(PatchedPackType::forName, PatchedPackType::getSerializedName);
 
 	public final String name = name().toLowerCase(Locale.ENGLISH);
+	public final String directory;
+
+	private PatchedPackType(String directory) {
+		this.directory = directory;
+	}
 
 	public static DataResult<PatchedPackType> forName(String name) {
 		return switch (name) {

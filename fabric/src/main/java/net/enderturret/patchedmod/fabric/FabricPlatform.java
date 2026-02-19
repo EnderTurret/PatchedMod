@@ -71,6 +71,11 @@ public final class FabricPlatform implements PatchedPlatform {
 	}
 
 	@Override
+	public PatchedResourceLocation tryBuild(String namespace, String path) {
+		return (PatchedResourceLocation) (Object) Identifier.tryBuild(namespace, path);
+	}
+
+	@Override
 	public boolean isThingRegistered(PatchedResourceLocation registry, PatchedResourceLocation id) {
 		final Registry<?> reg = BuiltInRegistries.REGISTRY.getValue((Identifier) (Object) registry);
 		return reg != null && reg.containsKey((Identifier) (Object) id);
