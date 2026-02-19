@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.event.Level;
@@ -127,7 +126,7 @@ public final class PatchingManager {
 
 		if (from.patched$hasPatches()) {
 			final PatchedResourceLocation patchName = name.patched$withPath(name.patched$getPath() + ".patch");
-			final MutableObject<PatchContext> context = new MutableObject<>();
+			final PatchContext[] context = new PatchContext[1];
 
 			try {
 				applyPatch(
@@ -139,7 +138,7 @@ public final class PatchingManager {
 				PatchedInternal.LOGGER.warn("Failed to read patch {} from {}:", patchName, from.patched$getName(), e);
 			}
 
-			return context.get() != null;
+			return context[0] != null;
 		}
 
 		return false;
@@ -159,7 +158,7 @@ public final class PatchingManager {
 	private static boolean patch(PatchedResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
 		final PatchedResourceLocation patchName = name.patched$withPath(name.patched$getPath() + ".patch");
 
-		final MutableObject<PatchContext> context = new MutableObject<>();
+		final PatchContext[] context = new PatchContext[1];
 
 		final Map<PatchedPackResources, List<String>> targets = DynamicPatches.getTargets(type, name, from);
 
@@ -206,7 +205,7 @@ public final class PatchingManager {
 			}
 		}
 
-		return context.get() != null;
+		return context[0] != null;
 	}
 
 	private static PatchContext applyPatch(
@@ -216,7 +215,7 @@ public final class PatchingManager {
 			Entry pack,
 			LazyPatchingWrapper wrapper,
 			@Nullable PatchAudit audit,
-			MutableObject<PatchContext> context,
+			PatchContext[] context,
 			String explicitTargetName) {
 		if (patchSupplier == null) return null;
 
@@ -248,20 +247,20 @@ public final class PatchingManager {
 			Entry pack,
 			LazyPatchingWrapper wrapper,
 			@Nullable PatchAudit audit,
-			MutableObject<PatchContext> context,
+			PatchContext[] context,
 			String explicitTargetName) {
 		try {
 			if (audit != null)
 				audit.setPatchPath(pack.name());
-			if (context.get() == null)
-				context.setValue(PatchedInternal.BASE_CONTEXT.audit(audit).testEvaluator(new PatchedTestEvaluator(type)));
+			if (context[0] == null)
+				context[0] = PatchedInternal.BASE_CONTEXT.audit(audit).testEvaluator(new PatchedTestEvaluator(type));
 
 			PatchedInternal.LOGGER.atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}{}.",
 					patchName,
 					pack.name(),
 					explicitTargetName != null ? " to " + explicitTargetName : "");
 
-			final PatchContext ctx = context.get().fileAccess(new PatchedFileAccess(pack.resources()));
+			final PatchContext ctx = context[0].fileAccess(new PatchedFileAccess(pack.resources()));
 
 			patch.patch(wrapper.get(), ctx);
 
