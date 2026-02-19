@@ -7,8 +7,11 @@ plugins {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'eclipse'
-    apply plugin: 'com.gradleup.shadow'
     apply plugin: 'com.diffplug.eclipse.apt'
+
+    if (it != project(':PatchedMod.Common')) {
+        apply plugin: 'com.gradleup.shadow'
+    }
 
     base {
         archivesName = 'Patched'

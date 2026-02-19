@@ -26,7 +26,3 @@ tasks.named('jar', Jar).configure {
         include 'LICENSE.txt'
     }
 }
-
-tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
-    enabled = false
-}
