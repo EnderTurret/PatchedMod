@@ -14,8 +14,6 @@ import org.slf4j.event.Level;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import net.minecraft.server.packs.resources.IoSupplier;
-
 import net.enderturret.patched.IFileAccess;
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.audit.PatchAudit;
@@ -60,21 +58,20 @@ public final class PatchingManager {
 	private static final AtomicBoolean LOG_EXCEPTIONS = new AtomicBoolean(true);
 
 	/**
-	 * "Chains" the given {@code IoSupplier}, returning an {@code IoSupplier} that patches the data returned by it.
-	 * @param delegate The delegate {@code IoSupplier}.
+	 * Creates a new {@link PatchingInputStream} from the specified {@link InputStream}.
+	 * @param delegate The delegate {@code InputStream}.
 	 * @param manager The resource manager that the data is from.
+	 * @param origin The resource or data pack that the data originated from.
 	 * @param type The type of pack this data is from.
 	 * @param name The location of the data.
-	 * @param origin The resource or data pack that the data originated from.
 	 * @param singlePack Whether or not only patches from the pack containing the resource should be applied.
-	 * @return The new {@code IoSupplier}.
+	 * @return The new {@code PatchingInputStream}.
+	 * @throws IOException If an I/O error occurs.
 	 */
 	@Internal
-	public static IoSupplier<InputStream> chain(IoSupplier<InputStream> delegate, PatchedResourceManager manager, PatchedPackType type, PatchedResourceLocation name, PatchedPackResources origin, boolean singlePack) {
-		if (!PatchUtil.isPatchable(name.patched$getPath())) return delegate;
+	public static PatchingInputStream newPatchingStream(InputStream delegate, PatchedResourceManager manager, PatchedPackResources origin, PatchedPackType type, PatchedResourceLocation name, boolean singlePack) throws IOException {
 		if (!manager.patched$isFallback()) throw new IllegalArgumentException("Expected fallback resource manager");
-
-		return () -> new PatchingInputStream(delegate.get(), (stream, audit) -> patch(manager, origin, type, name, stream, audit, singlePack));
+		return new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, type, name, stream, audit, singlePack));
 	}
 
 	/**
@@ -88,6 +85,7 @@ public final class PatchingManager {
 	 * @param singlePack Whether or not only patches from the pack containing the resource should be applied.
 	 * @return A new stream containing the patched data.
 	 */
+	@Internal
 	private static InputStream patch(PatchedResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, InputStream stream, @Nullable PatchAudit audit, boolean singlePack) {
 		if (stream == null || !PatchUtil.isPatchable(name.patched$getPath())) return stream;
 

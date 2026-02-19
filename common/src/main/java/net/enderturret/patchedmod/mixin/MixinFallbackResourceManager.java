@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -26,6 +27,7 @@ import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.FallbackResourceManagerHidingTreeMap;
+import net.enderturret.patchedmod.common.util.PatchUtil;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.flow.PatchingManager;
 
@@ -52,7 +54,7 @@ public abstract class MixinFallbackResourceManager {
 			PackResources pack, Identifier location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
 			Operation<Resource> downstream) {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
-		streamSupplier = PatchingManager.chain(streamSupplier,
+		streamSupplier = patched$chain(streamSupplier,
 				(PatchedResourceManager) self,
 				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
 				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, false);
@@ -71,7 +73,7 @@ public abstract class MixinFallbackResourceManager {
 			PackResources pack, Identifier location, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
 			Operation<Resource> downstream) {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
-		streamSupplier = PatchingManager.chain(streamSupplier,
+		streamSupplier = patched$chain(streamSupplier,
 				(PatchedResourceManager) self,
 				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
 				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, true);
@@ -85,7 +87,7 @@ public abstract class MixinFallbackResourceManager {
 			PackResources pack, IoSupplier<InputStream> streamSupplier, IoSupplier<ResourceMetadata> metadataSupplier,
 			Operation<Resource> downstream, Identifier location) {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
-		streamSupplier = PatchingManager.chain(streamSupplier,
+		streamSupplier = patched$chain(streamSupplier,
 				(PatchedResourceManager) self,
 				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
 				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, true);
@@ -128,10 +130,26 @@ public abstract class MixinFallbackResourceManager {
 		else
 			throw new IllegalStateException("Neither map is the expected type; did a mixin fail?");
 
-		final IoSupplier<InputStream> sup = PatchingManager.chain(streamSupplier,
+		final IoSupplier<InputStream> sup = patched$chain(streamSupplier,
 				hidden.manager, hidden.type,
 				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, false);
 
 		return downstream.call(pack, location, sup, metadataSupplier);
+	}
+
+	/**
+	 * "Chains" the given {@code IoSupplier}, returning an {@code IoSupplier} that patches the data returned by it.
+	 * @param delegate The delegate {@code IoSupplier}.
+	 * @param manager The resource manager that the data is from.
+	 * @param type The type of pack this data is from.
+	 * @param name The location of the data.
+	 * @param origin The resource or data pack that the data originated from.
+	 * @param singlePack Whether or not only patches from the pack containing the resource should be applied.
+	 * @return The new {@code IoSupplier}.
+	 */
+	@Unique
+	private static IoSupplier<InputStream> patched$chain(IoSupplier<InputStream> delegate, PatchedResourceManager manager, PatchedPackType type, PatchedResourceLocation name, PatchedPackResources origin, boolean singlePack) {
+		if (!PatchUtil.isPatchable(name.patched$getPath())) return delegate;
+		return () -> PatchingManager.newPatchingStream(delegate.get(), manager, origin, type, name, singlePack);
 	}
 }
