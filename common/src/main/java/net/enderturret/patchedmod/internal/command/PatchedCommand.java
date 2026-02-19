@@ -10,14 +10,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.env.IEnvironment;
-import net.enderturret.patchedmod.internal.PatchedVersionUtil;
 import net.enderturret.patchedmod.internal.flow.PatchingManager;
 
 /**
@@ -55,16 +50,5 @@ public final class PatchedCommand {
 			.forEach(builder::suggest);
 
 		return builder.buildFuture();
-	}
-
-	static MutableComponent translate(String key, String text, Object... args) {
-		// Make sure we have a fallback for vanilla clients.
-		return Component.translatableWithFallback(key, text.formatted(args), args);
-	}
-
-	static Style suggestCommand(String command) {
-		return Style.EMPTY
-				.withClickEvent(PatchedVersionUtil.suggestCommand(command))
-				.withUnderlined(true);
 	}
 }

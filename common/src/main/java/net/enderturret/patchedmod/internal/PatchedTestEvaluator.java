@@ -14,7 +14,6 @@ import com.google.gson.JsonObject;
 import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.PatchContext;
-import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.RootEvaluator;
 import net.enderturret.patchedmod.common.TestCondition;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
@@ -84,11 +83,11 @@ public final class PatchedTestEvaluator implements RootEvaluator {
 	 */
 	@Internal
 	public static void registerDefaults() {
-		Patched.registerSimpleTestCondition(PatchedVersionUtil.id("mod_loaded"), PatchedTestEvaluator::modLoaded);
-		Patched.registerSimpleTestCondition(PatchedVersionUtil.id("registered"), PatchedTestEvaluator::registered);
+		register("patched:mod_loaded", (TestCondition.Simple) PatchedTestEvaluator::modLoaded);
+		register("patched:registered", (TestCondition.Simple) PatchedTestEvaluator::registered);
 		// Simpler version of "registered" specifically for items.
-		Patched.registerSimpleTestCondition(PatchedVersionUtil.id("item_registered"), PatchedTestEvaluator::itemRegistered);
-		Patched.registerTestCondition(PatchedVersionUtil.id("pack_enabled"), PatchedTestEvaluator::packEnabled);
+		register("patched:item_registered", (TestCondition.Simple) PatchedTestEvaluator::itemRegistered);
+		register("patched:pack_enabled", PatchedTestEvaluator::packEnabled);
 	}
 
 	private static boolean modLoaded(JsonElement value) {
