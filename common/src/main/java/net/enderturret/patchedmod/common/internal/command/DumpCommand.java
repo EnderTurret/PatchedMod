@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.internal.command;
+package net.enderturret.patchedmod.common.internal.command;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -12,7 +12,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
-import net.enderturret.patchedmod.internal.command.PatchedCommand;
+import net.enderturret.patchedmod.common.internal.command.PatchedCommand;
 import net.enderturret.patchedmod.internal.env.ServerEnvironment;
 
 @Mixin(Commands.class)
