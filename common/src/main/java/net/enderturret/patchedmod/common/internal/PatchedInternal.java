@@ -18,7 +18,6 @@ import com.google.gson.JsonParser;
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
-import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 
 /**
  * Internal utilities for Patched.

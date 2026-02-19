@@ -28,6 +28,7 @@ import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
+import net.enderturret.patchedmod.common.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.flow.BailException;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
@@ -37,7 +38,6 @@ import net.enderturret.patchedmod.common.util.PatchedFileAccess;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 
 /**
  * The {@code PatchingManager} class handles the overall management of patching files and setting up packs for patching.

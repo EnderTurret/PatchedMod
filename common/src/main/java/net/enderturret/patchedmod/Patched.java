@@ -6,7 +6,7 @@ import net.enderturret.patched.IDataSource;
 import net.enderturret.patchedmod.common.SingleDataSource;
 import net.enderturret.patchedmod.common.TestCondition;
 import net.enderturret.patchedmod.common.internal.PatchedDataSource;
-import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
+import net.enderturret.patchedmod.common.internal.PatchedTestEvaluator;
 
 /**
  * Patched's loader-agnostic entrypoint and API.

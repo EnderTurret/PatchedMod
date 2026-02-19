@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
+import net.enderturret.patchedmod.common.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
-import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 
 /**
  * An abstraction over the different loaders Patched supports.

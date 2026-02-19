@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.internal;
+package net.enderturret.patchedmod.common.internal;
 
 import java.util.Map;
 import java.util.Objects;
@@ -17,7 +17,6 @@ import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.common.RootEvaluator;
 import net.enderturret.patchedmod.common.TestCondition;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
-import net.enderturret.patchedmod.common.internal.PatchTargetManager;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.util.PatchUtil;
