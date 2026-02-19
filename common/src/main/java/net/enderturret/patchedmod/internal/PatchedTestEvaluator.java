@@ -19,9 +19,10 @@ import net.enderturret.patchedmod.common.RootEvaluator;
 import net.enderturret.patchedmod.common.TestCondition;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.PatchTargetManager;
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
+import net.enderturret.patchedmod.common.util.PatchUtil;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.util.PatchUtil;
 
 /**
  * Patched's implementation of {@link ITestEvaluator}.
@@ -94,24 +95,24 @@ public final class PatchedTestEvaluator implements RootEvaluator {
 		if (value instanceof JsonObject obj) {
 			final String modId = PatchUtil.assertIsString("patched:mod_loaded", "mod", obj.get("mod"));
 			final String version = PatchUtil.assertIsString("patched:mod_loaded", "version", obj.get("version"));
-			return Patched.platform().isModLoaded(modId, version);
+			return PatchedPlatform.get().isModLoaded(modId, version);
 		}
 
-		return Patched.platform().isModLoaded(PatchUtil.assertIsString("patched:mod_loaded", "value", value));
+		return PatchedPlatform.get().isModLoaded(PatchUtil.assertIsString("patched:mod_loaded", "value", value));
 	}
 
 	private static boolean registered(JsonElement value) {
 		if (value instanceof JsonObject obj) {
 			final PatchedResourceLocation registry = PatchUtil.assertIsResourceLocation("patched:registered", "registry", obj.get("registry"));
 			final PatchedResourceLocation id = PatchUtil.assertIsResourceLocation("patched:registered", "id", obj.get("id"));
-			return Patched.platform().isThingRegistered(registry, id);
+			return PatchedPlatform.get().isThingRegistered(registry, id);
 		}
 
 		throw new PatchingException("patched:registered: value must be an object, was \"" + value + "\"");
 	}
 
 	private static boolean itemRegistered(JsonElement value) {
-		return Patched.platform().isItemRegistered(PatchUtil.assertIsResourceLocation("patched:item_registered", "value", value));
+		return PatchedPlatform.get().isItemRegistered(PatchUtil.assertIsResourceLocation("patched:item_registered", "value", value));
 	}
 
 	private static boolean packEnabled(JsonElement root, JsonElement target, JsonElement value, PatchContext context) {

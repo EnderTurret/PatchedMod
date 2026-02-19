@@ -17,6 +17,7 @@ import com.google.gson.JsonParser;
 
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.patch.PatchContext;
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 
 /**
@@ -27,6 +28,8 @@ import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 public final class PatchedInternal {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("Patched");
+
+	public static PatchedPlatform platform;
 
 	/**
 	 * The context used for patching json. This context has all extensions enabled by default.

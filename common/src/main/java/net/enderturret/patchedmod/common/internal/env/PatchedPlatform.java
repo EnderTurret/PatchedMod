@@ -1,18 +1,36 @@
 package net.enderturret.patchedmod.common.internal.env;
 
+import java.util.ServiceLoader;
+
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
+import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 
 /**
  * An abstraction over the different loaders Patched supports.
  * @author EnderTurret
  */
 @Internal
-public interface IPlatform {
+public interface PatchedPlatform {
+
+	/**
+	 * Returns Patched's platform instance.
+	 * @return The platform.
+	 */
+	public static PatchedPlatform get() {
+		if (PatchedInternal.platform == null) {
+			PatchedInternal.platform = ServiceLoader.load(PatchedPlatform.class)
+					.iterator().next();
+			PatchedTestEvaluator.registerDefaults();
+		}
+
+		return PatchedInternal.platform;
+	}
 
 	/**
 	 * Returns whether or not Patched is running on the (physical) client.

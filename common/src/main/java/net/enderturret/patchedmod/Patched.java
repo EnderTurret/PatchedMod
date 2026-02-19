@@ -1,16 +1,11 @@
 package net.enderturret.patchedmod;
 
-import java.util.Objects;
-
-import org.jetbrains.annotations.ApiStatus.Internal;
-
 import net.minecraft.resources.Identifier;
 
 import net.enderturret.patched.IDataSource;
 import net.enderturret.patchedmod.common.SingleDataSource;
 import net.enderturret.patchedmod.common.TestCondition;
 import net.enderturret.patchedmod.common.internal.PatchedDataSource;
-import net.enderturret.patchedmod.common.internal.env.IPlatform;
 import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 
 /**
@@ -27,28 +22,7 @@ public final class Patched {
 	 */
 	public static final String MOD_ID = "patched";
 
-	private static IPlatform platform;
-
 	private Patched() {}
-
-	/**
-	 * Returns Patched's platform instance.
-	 * @return The platform.
-	 */
-	@Internal
-	public static IPlatform platform() {
-		return platform;
-	}
-
-	/**
-	 * Sets Patched's platform instance.
-	 * @param value The new value.
-	 */
-	@Internal
-	public static void setPlatform(IPlatform value) {
-		platform = Objects.requireNonNull(value);
-		PatchedTestEvaluator.registerDefaults();
-	}
 
 	/**
 	 * Registers a new {@linkplain IDataSource data source}.

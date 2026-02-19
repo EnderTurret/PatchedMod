@@ -23,21 +23,21 @@ import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
-import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.flow.BailException;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.internal.flow.LazyPatchingWrapper;
+import net.enderturret.patchedmod.common.util.PatchUtil;
 import net.enderturret.patchedmod.common.util.PatchedFileAccess;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
-import net.enderturret.patchedmod.util.PatchUtil;
 
 /**
  * The {@code PatchingManager} class handles the overall management of patching files and setting up packs for patching.
@@ -317,7 +317,7 @@ public final class PatchingManager {
 
 						if (!meta.patchingEnabled())
 							meta = Objects.requireNonNullElse(
-									Patched.platform().deriveMetadataFromMod(patching),
+									PatchedPlatform.get().deriveMetadataFromMod(patching),
 									meta);
 
 						patching.setPatchedMetadata(meta);

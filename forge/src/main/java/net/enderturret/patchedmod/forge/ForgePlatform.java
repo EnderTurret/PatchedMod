@@ -19,10 +19,10 @@ import net.neoforged.fml.loading.FMLEnvironment;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
-import net.enderturret.patchedmod.common.internal.env.IPlatform;
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
-public final class ForgePlatform implements IPlatform {
+public final class ForgePlatform implements PatchedPlatform {
 
 	@Override
 	public boolean isPhysicalClient() {

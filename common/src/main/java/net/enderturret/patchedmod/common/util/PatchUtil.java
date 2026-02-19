@@ -1,10 +1,10 @@
-package net.enderturret.patchedmod.util;
+package net.enderturret.patchedmod.common.util;
 
 import com.google.gson.JsonElement;
 
 import net.enderturret.patched.exception.PatchingException;
-import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 
 /**
  * An assortment of utilities related to patching Json data.
@@ -38,7 +38,7 @@ public final class PatchUtil {
 	public static PatchedResourceLocation assertIsResourceLocation(String name, String field, JsonElement value) throws PatchingException {
 		final String str = assertIsString(name, field, value);
 
-		final PatchedResourceLocation loc = Patched.platform().tryParse(str);
+		final PatchedResourceLocation loc = PatchedPlatform.get().tryParse(str);
 		if (loc == null) throw new PatchingException(name + ": " + field + " must be a valid resource location, was \"" + value + "\"");
 
 		return loc;

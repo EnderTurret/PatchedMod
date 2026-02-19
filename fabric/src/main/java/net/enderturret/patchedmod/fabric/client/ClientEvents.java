@@ -4,8 +4,8 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.fabricmc.api.ClientModInitializer;
 
-import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 
 /**
  * Various client-side event handlers.
@@ -16,7 +16,7 @@ public final class ClientEvents implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		if (Patched.platform().isModLoaded("fabric-command-api-v2"))
+		if (PatchedPlatform.get().isModLoaded("fabric-command-api-v2"))
 			try {
 				PatchedClientCommands.init();
 			} catch (Throwable e) {

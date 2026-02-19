@@ -27,7 +27,6 @@ public final class PatchedForge {
 	public PatchedForge(IEventBus modBus) {
 		NeoForge.EVENT_BUS.addListener(this::registerCommands);
 		modBus.addListener(this::handleIMC);
-		Patched.setPlatform(new ForgePlatform());
 	}
 
 	private void registerCommands(RegisterCommandsEvent e) {
