@@ -12,7 +12,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import net.enderturret.patched.JsonDocument;
-import net.enderturret.patchedmod.internal.PatchedInternal;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 
 /**
  * A class that wraps an {@link InputStream} in such a way that we can avoid reading from it if no patching is performed.

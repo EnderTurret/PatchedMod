@@ -5,10 +5,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import net.minecraft.server.packs.FilePackResources;
 
-import net.enderturret.patchedmod.internal.PatchedInternal;
+import net.enderturret.patchedmod.internal.VersionedPatchedInternal;
 
 /**
- * See {@link PatchedInternal#getFileResources}.
+ * See {@link VersionedPatchedInternal#getFileResources}.
  * @author EnderTurret
  */
 @Mixin(FilePackResources.class)

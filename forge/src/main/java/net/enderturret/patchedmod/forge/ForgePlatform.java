@@ -27,13 +27,6 @@ import net.enderturret.patchedmod.util.env.IPlatform;
 
 final class ForgePlatform implements IPlatform {
 
-	private final Logger logger = LoggerFactory.getLogger("Patched");
-
-	@Override
-	public Logger logger() {
-		return logger;
-	}
-
 	@Override
 	public boolean isPhysicalClient() {
 		return FMLEnvironment.getDist() == Dist.CLIENT;

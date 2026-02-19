@@ -17,6 +17,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
@@ -31,7 +32,7 @@ public interface IPlatform {
 	 * Returns Patched's {@code Logger} instance.
 	 * @return Patched's {@code Logger} instance.
 	 */
-	public Logger logger();
+	public default Logger logger() { return PatchedInternal.LOGGER; }
 
 	/**
 	 * Returns whether or not Patched is running on the (physical) client.

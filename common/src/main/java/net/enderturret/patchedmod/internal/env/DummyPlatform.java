@@ -3,8 +3,6 @@ package net.enderturret.patchedmod.internal.env;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -26,13 +24,6 @@ import net.enderturret.patchedmod.util.env.IPlatform;
  */
 @Internal
 public final class DummyPlatform implements IPlatform {
-
-	private final Logger logger = LoggerFactory.getLogger("Patched");
-
-	@Override
-	public Logger logger() {
-		return logger;
-	}
 
 	@Override
 	public boolean isPhysicalClient() {

@@ -28,8 +28,9 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;
-import net.enderturret.patchedmod.internal.PatchedInternal;
+import net.enderturret.patchedmod.internal.VersionedPatchedInternal;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 
 /**
@@ -77,7 +78,7 @@ final class DumpCommand {
 					if (reqNamespace != null && !reqNamespace.equals(namespace))
 						continue;
 
-					PatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch"))
+					VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch"))
 						.stream()
 						.filter(loc -> loc.toString().startsWith(input))
 						.sorted()
@@ -112,7 +113,7 @@ final class DumpCommand {
 				.toList();
 
 		for (PackResources pack : packs)
-			PatchedInternal.getResources(pack, type, reqNamespace, s -> s.getPath().endsWith(".json"))
+			VersionedPatchedInternal.getResources(pack, type, reqNamespace, s -> s.getPath().endsWith(".json"))
 				.stream()
 				.filter(loc -> loc.toString().startsWith(input))
 				.map(loc -> {

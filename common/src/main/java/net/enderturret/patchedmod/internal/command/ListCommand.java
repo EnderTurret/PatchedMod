@@ -27,8 +27,8 @@ import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.util.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.IPattern;
 import net.enderturret.patchedmod.common.util.meta.PatchTarget;
-import net.enderturret.patchedmod.internal.PatchedInternal;
 import net.enderturret.patchedmod.internal.PatchedVersionUtil;
+import net.enderturret.patchedmod.internal.VersionedPatchedInternal;
 import net.enderturret.patchedmod.internal.env.IEnvironment;
 
 /**
@@ -79,7 +79,7 @@ final class ListCommand {
 
 		for (PackType type : PackType.values())
 			for (String namespace : pack.getNamespaces(type))
-				for (Identifier loc : PatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")))
+				for (Identifier loc : VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")))
 					patches.add(new Patch(loc.toString(), null, null));
 
 		if (pack instanceof IPatchingPackResources ppp)
