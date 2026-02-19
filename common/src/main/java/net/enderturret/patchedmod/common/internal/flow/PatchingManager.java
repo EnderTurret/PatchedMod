@@ -250,7 +250,7 @@ public final class PatchingManager {
 			if (context[0] == null)
 				context[0] = PatchedInternal.BASE_CONTEXT.audit(audit).testEvaluator(new PatchedTestEvaluator(type));
 
-			PatchedInternal.LOGGER.atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Applying patch {} from {}{}.",
+			loudDebug("Applying patch {} from {}{}.",
 					patchName,
 					pack.name(),
 					explicitTargetName != null ? " to " + explicitTargetName : "");
@@ -322,11 +322,18 @@ public final class PatchingManager {
 							if (HASPATCHES_WARNING)
 								PatchedInternal.LOGGER.warn("Loaded legacy PatchedMetadata from {}. This behavior is deprecated and will be removed in Minecraft 26.1.", entry.name());
 							else
-								PatchedInternal.LOGGER.atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Loaded legacy PatchedMetadata from {}.", entry.name());
+								loudDebug("Loaded legacy PatchedMetadata from {}.", entry.name());
 						} else
-							PatchedInternal.LOGGER.atLevel(DEBUG ? Level.INFO : Level.DEBUG).log("Loaded PatchedMetadata from {} with format version {}.", entry.name(), patching.patchedMetadata().formatVersion());
+							loudDebug("Loaded PatchedMetadata from {} with format version {}.", entry.name(), patching.patchedMetadata().formatVersion());
 					}
 				}
 			}
+	}
+
+	private static void loudDebug(String message, Object... args) {
+		if (DEBUG)
+			PatchedInternal.LOGGER.info(message, args);
+		else
+			PatchedInternal.LOGGER.debug(message, args);
 	}
 }

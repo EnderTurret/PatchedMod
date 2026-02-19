@@ -1,6 +1,10 @@
 package net.enderturret.patchedmod.fabric;
 
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.Nullable;
+
+import com.mojang.serialization.DataResult;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -63,6 +67,11 @@ public final class FabricPlatform implements PatchedPlatform {
 		if (cv == null) return null;
 
 		return PatchedMetadata.of(cv, CustomValueOps.INSTANCE, mod.getName() + " (" + mod.getId() + ")");
+	}
+
+	@Override
+	public <T> DataResult<T> error(Supplier<String> message) {
+		return DataResult.error(message);
 	}
 
 	@Override

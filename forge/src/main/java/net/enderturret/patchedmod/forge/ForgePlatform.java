@@ -1,12 +1,14 @@
 package net.enderturret.patchedmod.forge;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.Nullable;
 
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
+import com.mojang.serialization.DataResult;
 
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -69,6 +71,11 @@ public final class ForgePlatform implements PatchedPlatform {
 		}
 
 		return null;
+	}
+
+	@Override
+	public <T> DataResult<T> error(Supplier<String> message) {
+		return DataResult.error(message);
 	}
 
 	@Override

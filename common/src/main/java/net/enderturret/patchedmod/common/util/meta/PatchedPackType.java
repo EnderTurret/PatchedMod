@@ -5,6 +5,8 @@ import java.util.Locale;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
+
 /**
  * Like {@code PackType}, but serializable.
  * This avoids annoying issues posed by obfuscation at runtime.
@@ -35,7 +37,7 @@ public enum PatchedPackType {
 		return switch (name) {
 			case "client_resources" -> DataResult.success(CLIENT_RESOURCES);
 			case "server_data" -> DataResult.success(SERVER_DATA);
-			default -> DataResult.error(() -> "Unknown pack type '" + name + "'");
+			default -> PatchedPlatform.get().error(() -> "Unknown pack type '" + name + "'");
 		};
 	}
 

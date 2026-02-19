@@ -1,9 +1,12 @@
 package net.enderturret.patchedmod.common.internal.env;
 
 import java.util.ServiceLoader;
+import java.util.function.Supplier;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
+
+import com.mojang.serialization.DataResult;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
@@ -65,6 +68,8 @@ public interface PatchedPlatform {
 	public default PatchedMetadata deriveMetadataFromMod(PatchedPackResources pack) {
 		return null;
 	}
+
+	public <T> DataResult<T> error(Supplier<String> message);
 
 	public PatchedResourceLocation tryParse(String input);
 	public PatchedResourceLocation tryBuild(String namespace, String path);
