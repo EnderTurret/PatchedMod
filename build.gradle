@@ -32,6 +32,12 @@ subprojects {
         sourceShadow
     }
 
+    dependencies {
+        sourceShadow ("com.github.EnderTurret:Patched:$patched_version:sources") {
+            exclude group: 'com.google.code.gson', module: 'gson'
+        }
+    }
+
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
     }
