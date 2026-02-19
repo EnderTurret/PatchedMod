@@ -4,7 +4,6 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
@@ -52,14 +51,5 @@ public interface IPlatform {
 	@Nullable
 	public default PatchedMetadata deriveMetadataFromMod(PatchedPackResources pack) {
 		return null;
-	}
-
-	/**
-	 * A convenience method to check whether or not the specified pack has patching enabled.
-	 * @param pack The pack in question.
-	 * @return {@code true} if the pack has patching enabled.
-	 */
-	public default boolean hasPatches(IPatchingPackResources pack) {
-		return pack.patchedMetadata().patchingEnabled();
 	}
 }

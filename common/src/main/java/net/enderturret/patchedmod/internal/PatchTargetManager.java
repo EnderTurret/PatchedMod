@@ -12,18 +12,16 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.VanillaPackResources;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.util.meta.IPattern;
 import net.enderturret.patchedmod.common.util.meta.PatchTarget;
 import net.enderturret.patchedmod.common.util.meta.PatchTarget.Target;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.internal.flow.DynamicPatches;
-import net.enderturret.patchedmod.internal.flow.PatchingManager;
 
 /**
  * {@code PatchTargetManager}, as the name may suggest, manages patch targets.
@@ -36,7 +34,7 @@ public final class PatchTargetManager {
 
 	private final PatchedPackType type;
 	@Nullable
-	private final List<PackResources> packsByPriority; // Organized by priority, exactly like the resource pack screen.
+	private final List<PatchedPackResources> packsByPriority; // Organized by priority, exactly like the resource pack screen.
 	@Nullable
 	private final Map<String, Integer> priorityByPack;
 
@@ -50,7 +48,7 @@ public final class PatchTargetManager {
 	 * @param packsByPriority The list of packs, ordered by priority.
 	 */
 	@Internal
-	public PatchTargetManager(PatchedPackType type, List<PackResources> packsByPriority) {
+	public PatchTargetManager(PatchedPackType type, List<PatchedPackResources> packsByPriority) {
 		this.type = type;
 
 		packsByPriority = List.copyOf(packsByPriority);
@@ -59,18 +57,14 @@ public final class PatchTargetManager {
 		final List<BakedTarget> targets = new ArrayList<>();
 
 		for (int i = 0; i < packsByPriority.size(); i++) {
-			final PackResources pack = packsByPriority.get(i);
+			final PatchedPackResources pack = packsByPriority.get(i);
 
-			priorityByPack.put(pack.packId().intern(), i);
+			priorityByPack.put(pack.patched$packId().intern(), i);
 
-			if (pack instanceof IPatchingPackResources ppp) {
-				for (PatchTarget target : ppp.patchedMetadata().patchTargets())
-					if (target.packType().orElse(type) == type)
-						for (Target subTarget : target.targets())
-							targets.add(new BakedTarget(subTarget, target.patch(), pack));
-			}
-			else if (PatchingManager.DEBUG && !(pack instanceof VanillaPackResources))
-				Patched.platform().logger().info("Note: {} does not implement IPatchingPackResources (it is a {})", pack, pack.getClass().getName());
+			for (PatchTarget target : pack.patchedMetadata().patchTargets())
+				if (target.packType().orElse(type) == type)
+					for (Target subTarget : target.targets())
+						targets.add(new BakedTarget(subTarget, target.patch(), pack));
 		}
 
 		this.targets = List.copyOf(targets);
@@ -80,7 +74,7 @@ public final class PatchTargetManager {
 		this.priorityByPack = empty ? null : priorityByPack;
 
 		Patched.platform().logger().debug("Built PatchTargetManager {} with {}", type.name(), packsByPriority.stream()
-				.map(pr -> pr.toString() + " (" + pr.packId() + ")").collect(Collectors.joining(", ")));
+				.map(pr -> pr.toString() + " (" + pr.patched$packId() + ")").collect(Collectors.joining(", ")));
 
 		bakeNamespace("minecraft"); // This is the single-most likely filled namespace.
 	}
@@ -108,18 +102,19 @@ public final class PatchTargetManager {
 	 * @return The list of all applicable patches, paired with their owning packs (for priority handling).
 	 */
 	@Internal
-	public Map<PackResources, List<String>> getTargets(Identifier loc, PackResources from) {
+	public Map<PatchedPackResources, List<String>> getTargets(PatchedResourceLocation loc, PatchedPackResources from) {
 		if (targetsByNamespace == null) return Map.of();
 
-		bakeNamespace(loc.getNamespace());
+		bakeNamespace(loc.patched$getNamespace());
 
-		final int fromIndex = Objects.requireNonNull(priorityByPack.get(from.packId().intern()), "Priority for pack " + from + " (" + from.packId() + ") doesn't exist, was the pack registered?");
+		final int fromIndex = Objects.requireNonNull(priorityByPack.get(from.patched$packId().intern()),
+				"Priority for pack " + from + " (" + from.patched$packId() + ") doesn't exist, was the pack registered?");
 
-		final List<BakedTarget> targets = targetsByNamespace.get(loc.getNamespace());
-		final Map<PackResources, List<String>> ret = new IdentityHashMap<>(targets.size());
+		final List<BakedTarget> targets = targetsByNamespace.get(loc.patched$getNamespace());
+		final Map<PatchedPackResources, List<String>> ret = new IdentityHashMap<>(targets.size());
 
 		// Cache the last list used in the loop so we don't need to perform 40 lookups.
-		PackResources lastPack = null;
+		PatchedPackResources lastPack = null;
 		int lastIdx = -1;
 		List<String> lastList = null;
 
@@ -127,7 +122,7 @@ public final class PatchTargetManager {
 		for (BakedTarget target : targets) {
 			if (lastPack != target.from) {
 				lastPack = target.from;
-				lastIdx = priorityByPack.get(lastPack.packId().intern());
+				lastIdx = priorityByPack.get(lastPack.patched$packId().intern());
 				lastList = null; // Here we avoid creating hundreds of ArrayLists in the event there's no relevant targets.
 			}
 
@@ -135,7 +130,7 @@ public final class PatchTargetManager {
 				Patched.platform().logger().info("Processing {} with last values {}, {}, {}...", target, lastPack, lastIdx, lastList);
 
 			// Don't allow patches from lower packs to affect a replacement from a higher one.
-			final int idx = priorityByPack.get(target.from.packId().intern());
+			final int idx = priorityByPack.get(target.from.patched$packId().intern());
 
 			if (DynamicPatches.DEBUG_TARGETS)
 				Patched.platform().logger().info("  Priority check: {} < {}?", idx, fromIndex);
@@ -143,13 +138,13 @@ public final class PatchTargetManager {
 			if (idx < fromIndex) break;
 
 			if (DynamicPatches.DEBUG_TARGETS)
-				Patched.platform().logger().info("  Trying patterns {} on {}", target.target().path(), loc.getPath());
+				Patched.platform().logger().info("  Trying patterns {} on {}", target.target().path(), loc.patched$getPath());
 
 			for (IPattern pattern : target.target().path()) {
 				if (DynamicPatches.DEBUG_TARGETS)
-					Patched.platform().logger().info("    Trying pattern {} ({}) on {}", pattern, pattern.getClass().getSimpleName(), loc.getPath());
+					Patched.platform().logger().info("    Trying pattern {} ({}) on {}", pattern, pattern.getClass().getSimpleName(), loc.patched$getPath());
 
-				if (pattern.test(loc.getPath())) {
+				if (pattern.test(loc.patched$getPath())) {
 					if (lastList == null)
 						lastList = ret.computeIfAbsent(lastPack, k -> new ArrayList<>(5));
 
@@ -190,5 +185,5 @@ public final class PatchTargetManager {
 				+ "\n}").formatted(type, packsByPriority, priorityByPack, targets, targetsByNamespace);
 	}
 
-	static record BakedTarget(Target target, String patch, PackResources from) {}
+	static record BakedTarget(Target target, String patch, PatchedPackResources from) {}
 }

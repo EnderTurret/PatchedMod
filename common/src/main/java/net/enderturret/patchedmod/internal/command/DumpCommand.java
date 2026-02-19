@@ -149,7 +149,7 @@ final class DumpCommand {
 
 		final PatchedPackResources pack = packs.get(0);
 
-		if (!Patched.platform().hasPatches(pack)) {
+		if (!pack.patched$hasPatches()) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
@@ -200,7 +200,7 @@ final class DumpCommand {
 
 		final PatchedPackResources pack = packs.get(0);
 
-		if (!Patched.platform().hasPatches(pack)) {
+		if (!pack.patched$hasPatches()) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}

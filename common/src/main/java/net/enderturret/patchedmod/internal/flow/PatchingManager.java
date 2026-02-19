@@ -30,15 +30,17 @@ import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.flow.BailException;
+import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.internal.flow.LazyPatchingWrapper;
+import net.enderturret.patchedmod.common.util.PatchedFileAccess;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.util.PatchUtil;
-import net.enderturret.patchedmod.util.PatchedFileAccess;
 
 /**
  * The {@code PatchingManager} class handles the overall management of patching files and setting up packs for patching.
@@ -157,7 +159,9 @@ public final class PatchingManager {
 
 		final MutableObject<PatchContext> context = new MutableObject<>();
 
-		final Map<PackResources, List<String>> targets = DynamicPatches.getTargets(type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA, name, from);
+		final Map<PackResources, List<String>> targets = (Map) DynamicPatches.getTargets(
+				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
+				(PatchedResourceLocation) (Object) name, (PatchedPackResources) from);
 
 		boolean seenOriginal = false;
 		for (int i = 0; i < manager.fallbacks.size(); i++) {
@@ -184,7 +188,7 @@ public final class PatchingManager {
 				for (String patch : targets.getOrDefault(pack.resources(), List.of())) {
 					// We use the IFileAccess instead of grabbing it manually so that it's cached.
 					if (access == null)
-						access = ctx != null ? ctx.fileAccess() : new PatchedFileAccess(pack.resources());
+						access = ctx != null ? ctx.fileAccess() : new PatchedFileAccess((PatchedPackResources) pack.resources());
 
 					applyPatch(
 							type, access.readIncludedPatch(patch),
@@ -250,7 +254,7 @@ public final class PatchingManager {
 					pack.name(),
 					explicitTargetName != null ? " to " + explicitTargetName : "");
 
-			final PatchContext ctx = context.get().fileAccess(new PatchedFileAccess(pack.resources()));
+			final PatchContext ctx = context.get().fileAccess(new PatchedFileAccess((PatchedPackResources) pack.resources()));
 
 			patch.patch(wrapper.get(), ctx);
 
@@ -273,7 +277,7 @@ public final class PatchingManager {
 	 * @return {@code true} if the pack has patches enabled.
 	 */
 	private static boolean hasPatches(PackResources res) {
-		return res instanceof IPatchingPackResources ppp && ppp.patchedMetadata().patchingEnabled();
+		return res instanceof IPatchingPackResources ppp && ppp.patched$hasPatches();
 	}
 
 	/**

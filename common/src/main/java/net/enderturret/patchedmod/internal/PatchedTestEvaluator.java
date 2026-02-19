@@ -22,8 +22,8 @@ import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.RootEvaluator;
 import net.enderturret.patchedmod.common.TestCondition;
 import net.enderturret.patchedmod.common.TestCondition.Simple;
+import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.util.PatchUtil;
 
 /**

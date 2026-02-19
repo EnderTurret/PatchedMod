@@ -20,7 +20,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 
-import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.util.meta.IPattern;
@@ -67,7 +66,7 @@ final class ListCommand {
 
 		final PatchedPackResources pack = packs.get(0);
 
-		if (!Patched.platform().hasPatches(pack)) {
+		if (!pack.patched$hasPatches()) {
 			env.sendFailure(ctx.getSource(), translate("command.patched.list.patching_disabled", "That pack doesn't have patches enabled."));
 			return 0;
 		}
@@ -81,13 +80,12 @@ final class ListCommand {
 				for (Identifier loc : VersionedPatchedInternal.getResources(pack, type, namespace, s -> s.getPath().endsWith(".patch")))
 					patches.add(new Patch(loc.toString(), null, null));
 
-		if (pack.patchedMetadata() != null)
-			for (PatchTarget patchTarget : pack.patchedMetadata().patchTargets())
-				for (PatchTarget.Target target : patchTarget.targets()) {
-					final String ns = target.namespace().stream().map(IPattern::toString).collect(Collectors.joining("\", \"", "\"", "\""));
-					final String paths = target.path().stream().map(IPattern::toString).collect(Collectors.joining("\", \"", "\"", "\""));
-					patches.add(new Patch(patchTarget.patch(), ns, paths));
-				}
+		for (PatchTarget patchTarget : pack.patchedMetadata().patchTargets())
+			for (PatchTarget.Target target : patchTarget.targets()) {
+				final String ns = target.namespace().stream().map(IPattern::toString).collect(Collectors.joining("\", \"", "\"", "\""));
+				final String paths = target.path().stream().map(IPattern::toString).collect(Collectors.joining("\", \"", "\"", "\""));
+				patches.add(new Patch(patchTarget.patch(), ns, paths));
+			}
 
 		final boolean single = patches.size() == 1;
 

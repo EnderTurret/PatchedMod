@@ -13,9 +13,9 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 
+import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.PatchTargetManager;
-import net.enderturret.patchedmod.internal.flow.DynamicPatches;
 
 /**
  * Handles setting up the data pack {@link PatchTargetManager} when running /reload.
@@ -33,7 +33,7 @@ public abstract class MixinMinecraftServer {
 	)
 	private MultiPackResourceManager patched$setupServerPatchTargetManager(
 			PackType type, List<PackResources> packs, Operation<MultiPackResourceManager> original) {
-		DynamicPatches.setupTargetManager(type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA, packs);
+		DynamicPatches.setupTargetManager(type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA, (List) packs);
 		return original.call(type, packs);
 	}
 }

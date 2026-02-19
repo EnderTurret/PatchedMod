@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.internal.flow;
+package net.enderturret.patchedmod.common.internal.flow;
 
 import java.util.Collections;
 import java.util.EnumMap;
@@ -7,10 +7,9 @@ import java.util.Map;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.PackResources;
-
-import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.internal.PatchTargetManager;
 
@@ -30,12 +29,12 @@ public final class DynamicPatches {
 
 	private static final Map<PatchedPackType, PatchTargetManager> PATCH_TARGET_MANAGERS = new EnumMap<>(PatchedPackType.class);
 
-	static Map<PackResources, List<String>> getTargets(PatchedPackType type, Identifier name, PackResources from) {
+	public static Map<PatchedPackResources, List<String>> getTargets(PatchedPackType type, PatchedResourceLocation name, PatchedPackResources from) {
 		final PatchTargetManager targetManager = PATCH_TARGET_MANAGERS.get(type);
-		final Map<PackResources, List<String>> targets = targetManager == null ? Map.of() : targetManager.getTargets(name, from);
+		final Map<PatchedPackResources, List<String>> targets = targetManager == null ? Map.of() : targetManager.getTargets(name, from);
 
 		if (DEBUG_TARGETS && !targets.isEmpty())
-			Patched.platform().logger().info("Targets for {} (from {}): {}", name, from, targets);
+			PatchedInternal.LOGGER.info("Targets for {} (from {}): {}", name, from, targets);
 
 		return targets;
 	}
@@ -46,7 +45,7 @@ public final class DynamicPatches {
 	 * @param packsByPriority The list of packs, ordered by priority.
 	 */
 	@Internal
-	public static void setupTargetManager(PatchedPackType type, List<PackResources> packsByPriority) {
+	public static void setupTargetManager(PatchedPackType type, List<PatchedPackResources> packsByPriority) {
 		PATCH_TARGET_MANAGERS.put(type, new PatchTargetManager(type, packsByPriority));
 	}
 

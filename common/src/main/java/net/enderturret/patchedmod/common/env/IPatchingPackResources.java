@@ -26,6 +26,10 @@ public interface IPatchingPackResources {
 		throw new UnsupportedOperationException();
 	}
 
+	public default boolean patched$hasPatches() {
+		return patchedMetadata().patchingEnabled();
+	}
+
 	/**
 	 * Checks if this pack has had its metadata initialized yet, and if not tries to initialize it.
 	 * @return {@code true}.
