@@ -18,6 +18,8 @@ import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 @Internal
 public interface PatchedPlatform {
 
+	public static final String MOD_ID = "patched";
+
 	/**
 	 * Returns Patched's platform instance.
 	 * @return The platform.

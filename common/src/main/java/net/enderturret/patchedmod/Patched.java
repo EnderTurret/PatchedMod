@@ -7,6 +7,7 @@ import net.enderturret.patchedmod.common.SingleDataSource;
 import net.enderturret.patchedmod.common.TestCondition;
 import net.enderturret.patchedmod.common.internal.PatchedDataSource;
 import net.enderturret.patchedmod.common.internal.PatchedTestEvaluator;
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 
 /**
  * Patched's loader-agnostic entrypoint and API.
@@ -20,7 +21,7 @@ public final class Patched {
 	/**
 	 * Patched's mod ID.
 	 */
-	public static final String MOD_ID = "patched";
+	public static final String MOD_ID = PatchedPlatform.MOD_ID;
 
 	private Patched() {}
 
