@@ -17,8 +17,8 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
+import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
-import net.enderturret.patchedmod.common.util.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
 /**
@@ -54,40 +54,6 @@ public interface IPlatform {
 	 * @return {@code true} if the mod is loaded and is <i>at least</i> the specified version.
 	 */
 	public boolean isModLoaded(String modId, String version);
-
-	/**
-	 * Remaps the given field name.
-	 * @param moj The name in Mojang mappings.
-	 * @param intermediaryOwner The owner class in Intermediary mappings.
-	 * @param intermediaryName The field name in Intermediary mappings.
-	 * @param intermediaryDescriptor The field descriptor in Intermediary mappings.
-	 * @return The remapped name.
-	 */
-	public default String remapField(String moj, String intermediaryOwner, String intermediaryName, String intermediaryDescriptor) {
-		return moj;
-	}
-
-	/**
-	 * Remaps the given method name.
-	 * @param moj The name in Mojang mappings.
-	 * @param intermediaryOwner The owner class in Intermediary mappings.
-	 * @param intermediaryName The method name in Intermediary mappings.
-	 * @param intermediaryDescriptor The method descriptor in Intermediary mappings.
-	 * @return The remapped name.
-	 */
-	public default String remapMethod(String moj, String intermediaryOwner, String intermediaryName, String intermediaryDescriptor) {
-		return moj;
-	}
-
-	/**
-	 * Remaps the given class name.
-	 * @param moj The name in Mojang mappings.
-	 * @param intermediary The name in Intermediary mappings.
-	 * @return The remapped name.
-	 */
-	public default String remapClass(String moj, String intermediary) {
-		return moj;
-	}
 
 	/**
 	 * Returns the {@link PackOutput} of the given {@link DataGenerator}.

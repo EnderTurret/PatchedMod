@@ -167,6 +167,18 @@ public abstract class PatchProvider implements DataProvider {
 		return new RootOperationBuilder(location);
 	}
 
+	private static <T> JsonElement serializeUnchecked(@Nullable T value, Codec<T> codec, @Nullable HolderLookup.Provider provider) {
+		if (value == null) return JsonNull.INSTANCE;
+
+		DynamicOps<JsonElement> ops = JsonOps.INSTANCE;
+		if (provider != null)
+			ops = provider.createSerializationContext(JsonOps.INSTANCE);
+
+		final DataResult<JsonElement> result = codec.encodeStart(ops, value);
+
+		return result.getOrThrow(PatchingException::new);
+	}
+
 	/**
 	 * Represents a builder for a {@link CompoundPatch}.
 	 * The patch in question may be either the root {@code CompoundPatch} of a json patch file,
@@ -194,18 +206,6 @@ public abstract class PatchProvider implements DataProvider {
 
 		// Simple path/value patches
 
-		private static <T> JsonElement serializeUnchecked(@Nullable T value, Codec<T> codec, @Nullable HolderLookup.Provider provider) {
-			if (value == null) return JsonNull.INSTANCE;
-
-			DynamicOps<JsonElement> ops = JsonOps.INSTANCE;
-			if (provider != null)
-				ops = provider.createSerializationContext(JsonOps.INSTANCE);
-
-			final DataResult<JsonElement> result = codec.encodeStart(ops, value);
-
-			return result.getOrThrow(PatchingException::new);
-		}
-
 		/**
 		 * Creates and adds a new {@code add} patch.
 		 * @param path The location the element will be placed.
@@ -217,14 +217,12 @@ public abstract class PatchProvider implements DataProvider {
 		}
 
 		/**
-		 * Creates and adds a new {@code add} patch.
+		 * Non-registry-aware version of {@link #add(String, Object, Codec, net.minecraft.core.HolderLookup.Provider)}.
 		 * @param path The location the element will be placed.
 		 * @param value The element that will be added.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
 		 * @return {@code this}.
-		 * @deprecated Use {@link #add(String, Object, Codec, net.minecraft.core.HolderLookup.Provider)} instead.
 		 */
-		@Deprecated(forRemoval = true, since = "7.1.1+1.21.1")
 		public <T> OperationBuilder add(String path, T value, Codec<T> valueCodec) {
 			return add(path, value, valueCodec, null);
 		}
@@ -252,14 +250,12 @@ public abstract class PatchProvider implements DataProvider {
 		}
 
 		/**
-		 * Creates and adds a new {@code replace} patch.
+		 * Non-registry-aware version of {@link #replace(String, Object, Codec, net.minecraft.core.HolderLookup.Provider)}.
 		 * @param path The path to the element to replace.
 		 * @param value The value to replace the element with.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
 		 * @return {@code this}.
-		 * @deprecated Use {@link #replace(String, Object, Codec, net.minecraft.core.HolderLookup.Provider)} instead.
 		 */
-		@Deprecated(forRemoval = true, since = "7.1.1+1.21.1")
 		public <T> OperationBuilder replace(String path, T value, Codec<T> valueCodec) {
 			return replace(path, value, valueCodec, null);
 		}
@@ -354,43 +350,37 @@ public abstract class PatchProvider implements DataProvider {
 		// Test (Codecs)
 
 		/**
-		 * Creates and adds a new {@code test} patch.
+		 * Non-registry-aware version of {@link #test(String, String, Object, Codec, net.minecraft.core.HolderLookup.Provider, boolean)}.
 		 * @param type A custom type for {@link ITestEvaluator}.
 		 * @param path The path to the element to test. May be {@code null}.
 		 * @param value The test element. May be {@code null}.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
 		 * @param inverse Whether the check is inverted, i.e checking to see if something doesn't exist.
 		 * @return {@code this}.
-		 * @deprecated Use {@link #test(String, String, Object, Codec, net.minecraft.core.HolderLookup.Provider, boolean)} instead.
 		 */
-		@Deprecated(forRemoval = true, since = "7.1.1+1.21.1")
 		public <T> OperationBuilder test(String type, @Nullable String path, @Nullable T value, Codec<T> valueCodec, boolean inverse) {
 			return test(type, path, value, valueCodec, null, inverse);
 		}
 
 		/**
-		 * Creates and adds a new {@code test} patch.
+		 * Non-registry-aware version of {@link #test(String, Object, Codec, net.minecraft.core.HolderLookup.Provider)}.
 		 * @param type A custom type for {@link ITestEvaluator}.
 		 * @param value The test element.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
 		 * @return {@code this}.
-		 * @deprecated Use {@link #test(String, Object, Codec, net.minecraft.core.HolderLookup.Provider)} instead.
 		 */
-		@Deprecated(forRemoval = true, since = "7.1.1+1.21.1")
 		public <T> OperationBuilder test(String type, T value, Codec<T> valueCodec) {
 			return test(type, value, valueCodec, null);
 		}
 
 		/**
-		 * Creates and adds a new {@code test} patch.
+		 * Non-registry-aware version of {@link #test(String, Object, Codec, net.minecraft.core.HolderLookup.Provider, boolean)}.
 		 * @param path The path to the element to test.
 		 * @param value The test element. May be {@code null}.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
 		 * @param inverse Whether the check is inverted, i.e checking to see if something doesn't exist.
 		 * @return {@code this}.
-		 * @deprecated Use {@link #test(String, Object, Codec, net.minecraft.core.HolderLookup.Provider, boolean)} instead.
 		 */
-		@Deprecated(forRemoval = true, since = "7.1.1+1.21.1")
 		public <T> OperationBuilder test(String path, @Nullable T value, Codec<T> valueCodec, boolean inverse) {
 			return test(path, value, valueCodec, null, inverse);
 		}

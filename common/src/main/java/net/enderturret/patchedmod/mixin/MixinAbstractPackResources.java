@@ -7,8 +7,9 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.CompositePackResources;
+import net.minecraft.server.packs.PackResources;
 
-import net.enderturret.patchedmod.common.util.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
 /**
@@ -23,7 +24,7 @@ public abstract class MixinAbstractPackResources implements IPatchingPackResourc
 
 	@Override
 	public PatchedMetadata patchedMetadata() {
-		checkInitialized();
+		patched$checkInitialized();
 		return patched$meta;
 	}
 
@@ -37,7 +38,12 @@ public abstract class MixinAbstractPackResources implements IPatchingPackResourc
 	}
 
 	@Override
-	public boolean initialized() {
+	public boolean patched$initialized() {
 		return patched$meta != null;
+	}
+
+	@Override
+	public String patched$packId() {
+		return ((PackResources) this).packId();
 	}
 }

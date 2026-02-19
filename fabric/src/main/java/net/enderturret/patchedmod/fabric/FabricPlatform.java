@@ -48,21 +48,6 @@ final class FabricPlatform implements IPlatform {
 	}
 
 	@Override
-	public String remapField(String moj, String intermediaryOwner, String intermediaryName, String intermediaryDescriptor) {
-		return FabricLoader.getInstance().getMappingResolver().mapFieldName("intermediary", intermediaryOwner, intermediaryName, intermediaryDescriptor);
-	}
-
-	@Override
-	public String remapMethod(String moj, String intermediaryOwner, String intermediaryName, String intermediaryDescriptor) {
-		return FabricLoader.getInstance().getMappingResolver().mapMethodName("intermediary", intermediaryOwner, intermediaryName, intermediaryDescriptor);
-	}
-
-	@Override
-	public String remapClass(String moj, String intermediary) {
-		return FabricLoader.getInstance().getMappingResolver().mapClassName("intermediary", intermediary);
-	}
-
-	@Override
 	public PackOutput getPackOutput(DataGenerator generator) {
 		return generator.vanillaPackOutput;
 	}

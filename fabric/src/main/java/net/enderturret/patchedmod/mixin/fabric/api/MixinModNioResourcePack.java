@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import net.fabricmc.fabric.impl.resource.pack.ModNioPackResources;
 
-import net.enderturret.patchedmod.common.util.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.mixin.MixinAbstractPackResources;
 
@@ -23,7 +23,7 @@ public abstract class MixinModNioResourcePack implements IPatchingPackResources 
 
 	@Override
 	public PatchedMetadata patchedMetadata() {
-		checkInitialized();
+		patched$checkInitialized();
 		return patched$meta;
 	}
 
@@ -37,7 +37,12 @@ public abstract class MixinModNioResourcePack implements IPatchingPackResources 
 	}
 
 	@Override
-	public boolean initialized() {
+	public boolean patched$initialized() {
 		return patched$meta != null;
+	}
+
+	@Override
+	public String patched$packId() {
+		return ((ModNioPackResources) (Object) this).packId();
 	}
 }

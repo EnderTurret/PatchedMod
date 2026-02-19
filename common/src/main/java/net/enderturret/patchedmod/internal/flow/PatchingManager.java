@@ -28,10 +28,10 @@ import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
 import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.flow.BailException;
 import net.enderturret.patchedmod.common.internal.flow.LazyPatchingWrapper;
-import net.enderturret.patchedmod.common.util.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
@@ -267,7 +267,7 @@ public final class PatchingManager {
 
 	/**
 	 * Determines whether the given pack has patches enabled.
-	 * If necessary, the pack may be {@linkplain IPatchingPackResources#initialized() initialized}.
+	 * If necessary, the pack may be {@linkplain IPatchingPackResources#patched$initialized() initialized}.
 	 * @param res The pack to check.
 	 * @return {@code true} if the pack has patches enabled.
 	 */
@@ -299,9 +299,9 @@ public final class PatchingManager {
 		if (!(entry.resources() instanceof IPatchingPackResources patching))
 			return;
 
-		if (!patching.initialized())
+		if (!patching.patched$initialized())
 			synchronized (patching) {
-				if (!patching.initialized()) {
+				if (!patching.patched$initialized()) {
 					{
 						final IoSupplier<InputStream> io = entry.resources().getRootResource("pack.mcmeta");
 						PatchedMetadata meta;
