@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import net.fabricmc.loader.api.metadata.ModMetadata;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -63,7 +63,7 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default @Nullable InputStream patched$getResource(PatchedPackType type, PatchedResourceLocation location) throws IOException {
-		final IoSupplier<InputStream> ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (Identifier) (Object) location);
+		final IoSupplier<InputStream> ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (ResourceLocation) (Object) location);
 		return ret != null ? ret.get() : null;
 	}
 
@@ -81,7 +81,7 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default boolean patched$hasResource(PatchedPackType type, PatchedResourceLocation location) {
-		final IoSupplier<InputStream> ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (Identifier) (Object) location);
+		final IoSupplier<InputStream> ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (ResourceLocation) (Object) location);
 		return ret != null;
 	}
 
@@ -122,7 +122,7 @@ public interface MixinPackResources extends PatchedPackResources {
 		// PathPackResources:      :minecraft/something → minecraft:something
 		// FilePackResources is handled separately.
 		// VanillaPackResources:  .:minecraft/something → minecraft:something
-		return rl -> (PatchedResourceLocation) (Object) Identifier.fromNamespaceAndPath(
+		return rl -> (PatchedResourceLocation) (Object) ResourceLocation.fromNamespaceAndPath(
 				namespace, rl.patched$getPath().substring(namespace.length() + 1));
 	}
 }

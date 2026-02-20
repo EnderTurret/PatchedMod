@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -47,8 +47,8 @@ public final class PatchedForge {
 	}
 
 	private static void handleDataSource(Object obj, String sender) {
-		if (!(obj instanceof Pair<?, ?> pair) || !(pair.getLeft() instanceof Identifier rl) || !(pair.getRight() instanceof BinaryOperator op)) {
-			PatchedInternal.LOGGER.warn("Expected Pair<Identifier, BinaryOperator<JsonElement>> from IMC sent by {}, got {}!", sender, obj);
+		if (!(obj instanceof Pair<?, ?> pair) || !(pair.getLeft() instanceof ResourceLocation rl) || !(pair.getRight() instanceof BinaryOperator op)) {
+			PatchedInternal.LOGGER.warn("Expected Pair<ResourceLocation, BinaryOperator<JsonElement>> from IMC sent by {}, got {}!", sender, obj);
 			return;
 		}
 
@@ -56,8 +56,8 @@ public final class PatchedForge {
 	}
 
 	private static void handleTestCondition(Object obj, String sender) {
-		if (!(obj instanceof Pair<?, ?> pair) || !(pair.getLeft() instanceof Identifier rl) || !(pair.getRight() instanceof Predicate con)) {
-			PatchedInternal.LOGGER.warn("Expected Pair<Identifier, Predicate<JsonElement>> from IMC sent by {}, got {}!", sender, obj);
+		if (!(obj instanceof Pair<?, ?> pair) || !(pair.getLeft() instanceof ResourceLocation rl) || !(pair.getRight() instanceof Predicate con)) {
+			PatchedInternal.LOGGER.warn("Expected Pair<ResourceLocation, Predicate<JsonElement>> from IMC sent by {}, got {}!", sender, obj);
 			return;
 		}
 

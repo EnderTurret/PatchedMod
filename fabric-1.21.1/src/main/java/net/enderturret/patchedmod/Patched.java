@@ -1,6 +1,6 @@
 package net.enderturret.patchedmod;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import net.enderturret.patched.IDataSource;
 import net.enderturret.patchedmod.common.SingleDataSource;
@@ -12,9 +12,9 @@ import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 /**
  * Patched's loader-agnostic API.
  * @author EnderTurret
- * @see #registerDataSource(Identifier, SingleDataSource)
- * @see #registerTestCondition(Identifier, TestCondition)
- * @see #registerSimpleTestCondition(Identifier, TestCondition.Simple)
+ * @see #registerDataSource(ResourceLocation, SingleDataSource)
+ * @see #registerTestCondition(ResourceLocation, TestCondition)
+ * @see #registerSimpleTestCondition(ResourceLocation, TestCondition.Simple)
  */
 public final class Patched {
 
@@ -30,7 +30,7 @@ public final class Patched {
 	 * @param id The name of the data source -- what goes in the {@code type} field.
 	 * @param source The data source to register.
 	 */
-	public static void registerDataSource(Identifier id, SingleDataSource source) {
+	public static void registerDataSource(ResourceLocation id, SingleDataSource source) {
 		PatchedDataSource.register(id.toString(), source);
 	}
 
@@ -39,7 +39,7 @@ public final class Patched {
 	 * @param id The name of the test condition -- what goes in the {@code type} field.
 	 * @param condition The condition to register.
 	 */
-	public static void registerTestCondition(Identifier id, TestCondition condition) {
+	public static void registerTestCondition(ResourceLocation id, TestCondition condition) {
 		PatchedTestEvaluator.register(id.toString(), condition);
 	}
 
@@ -48,7 +48,7 @@ public final class Patched {
 	 * @param id The name of the test condition -- what goes in the {@code type} field.
 	 * @param condition The condition to register.
 	 */
-	public static void registerSimpleTestCondition(Identifier id, TestCondition.Simple condition) {
+	public static void registerSimpleTestCondition(ResourceLocation id, TestCondition.Simple condition) {
 		registerTestCondition(id, condition);
 	}
 }

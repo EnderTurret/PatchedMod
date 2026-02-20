@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 import org.spongepowered.asm.mixin.Mixin;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -63,7 +63,7 @@ public interface MixinResourceManager extends PatchedResourceManager {
 
 	@Override
 	public default Optional<InputStream> patched$getResource(PatchedResourceLocation location) throws IOException {
-		final Optional<Resource> optional = ((ResourceManager) this).getResource((Identifier) (Object) location);
+		final Optional<Resource> optional = ((ResourceManager) this).getResource((ResourceLocation) (Object) location);
 		if (optional.isEmpty()) return Optional.empty();
 		return Optional.of(optional.get().open());
 	}
