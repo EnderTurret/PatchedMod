@@ -164,7 +164,7 @@ final class DumpCommand {
 					env.sendFailure(ctx.getSource(), "command.patched.dump.not_json", "That patch is not a json file. (See console for details.)");
 					return 0;
 				}
-				env.sendSuccess(ctx.getSource(), false, null, src);
+				env.sendSuccess(ctx.getSource(), false, env.literalText(src));
 			}
 		} catch (IOException e) {
 			PatchedInternal.LOGGER.warn("Failed to read resource '{}' from {}:", location, packName, e);
@@ -215,7 +215,7 @@ final class DumpCommand {
 					env.sendFailure(ctx.getSource(), "command.patched.dump.not_json", "That patch is not a json file. (See console for details.)");
 					return 0;
 				}
-				env.sendSuccess(ctx.getSource(), false, null, src);
+				env.sendSuccess(ctx.getSource(), false, env.literalText(src));
 			}
 		} catch (IOException e) {
 			PatchedInternal.LOGGER.warn("Failed to read resource '{}' from {}:", patchName, packName, e);
@@ -254,7 +254,7 @@ final class DumpCommand {
 					return 0;
 				}
 
-				env.sendSuccess(ctx.getSource(), false, null, audit != null ? audit.toString(src) : PatchedInternal.GSON.toJson(src));
+				env.sendSuccess(ctx.getSource(), false, env.literalText(audit != null ? audit.toString(src) : PatchedInternal.GSON.toJson(src)));
 			}
 		} catch (NoSuchFileException e) {
 			env.sendFailure(ctx.getSource(), "command.patched.dump.file_not_found", "That file could not be found.");
