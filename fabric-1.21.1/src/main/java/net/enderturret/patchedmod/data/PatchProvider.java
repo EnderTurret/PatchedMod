@@ -32,7 +32,6 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.util.Util;
 
 import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.exception.PatchingException;
@@ -41,6 +40,7 @@ import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchUtil;
 import net.enderturret.patched.patch.TestPatch;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
+import net.enderturret.patchedmod.fabric.PatchedVersionHacks;
 
 /**
  * A data provider for patches.
@@ -137,7 +137,7 @@ public abstract class PatchProvider implements DataProvider {
 		final Path to = root.resolve(path.getNamespace()).resolve(path.getPath() + ".json.patch");
 		// The ordering is guaranteed to be stable, as patches are serialized manually.
 		// Using this method prevents the "type" field of test patches from jumping to the top of the json object.
-		return CompletableFuture.runAsync(() -> write(cache, GSON.toJsonTree(patch), to), Util.backgroundExecutor().forName("writePatch"));
+		return CompletableFuture.runAsync(() -> write(cache, GSON.toJsonTree(patch), to), PatchedVersionHacks.getBackgroundExecutor("writePatch"));
 	}
 
 	@SuppressWarnings("deprecation")

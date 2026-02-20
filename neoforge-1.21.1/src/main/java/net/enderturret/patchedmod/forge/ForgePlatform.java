@@ -104,7 +104,7 @@ public final class ForgePlatform implements PatchedPlatform {
 
 	@Override
 	public boolean isThingRegistered(PatchedResourceLocation registry, PatchedResourceLocation id) {
-		final Registry<?> reg = BuiltInRegistries.REGISTRY.getValue((ResourceLocation) (Object) registry);
+		final Registry<?> reg = PatchedVersionHacks.get(BuiltInRegistries.REGISTRY, (ResourceLocation) (Object) registry);
 		return reg != null && reg.containsKey((ResourceLocation) (Object) id);
 	}
 

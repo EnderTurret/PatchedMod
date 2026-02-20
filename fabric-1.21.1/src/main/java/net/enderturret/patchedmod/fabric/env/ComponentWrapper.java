@@ -9,6 +9,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 
 import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
+import net.enderturret.patchedmod.fabric.PatchedVersionHacks;
 
 public record ComponentWrapper(MutableComponent message) implements PatchedMutableComponent {
 
@@ -32,10 +33,10 @@ public record ComponentWrapper(MutableComponent message) implements PatchedMutab
 	public PatchedMutableComponent appendWithCommandHover(String literal, String command, @Nullable String hoverText) {
 		Style style = Style.EMPTY
 				.withUnderlined(true)
-				.withClickEvent(new ClickEvent.SuggestCommand(command));
+				.withClickEvent(PatchedVersionHacks.suggestCommand(command));
 
 		if (hoverText != null)
-			style = style.withHoverEvent(new HoverEvent.ShowText(Component.literal(hoverText)));
+			style = style.withHoverEvent(PatchedVersionHacks.showText(Component.literal(hoverText)));
 
 		message.append(Component.literal(literal).withStyle(style));
 		return this;
@@ -45,14 +46,14 @@ public record ComponentWrapper(MutableComponent message) implements PatchedMutab
 	public PatchedMutableComponent appendWithCommand(String literal, String command) {
 		message.append(Component.literal(literal).withStyle(Style.EMPTY
 				.withUnderlined(true)
-				.withClickEvent(new ClickEvent.SuggestCommand(command))));
+				.withClickEvent(PatchedVersionHacks.suggestCommand(command))));
 		return this;
 	}
 
 	@Override
 	public PatchedMutableComponent appendWithHover(String literal, String text) {
 		message.append(Component.literal(literal).withStyle(Style.EMPTY
-				.withHoverEvent(new HoverEvent.ShowText(Component.literal(text)))));
+				.withHoverEvent(PatchedVersionHacks.showText(Component.literal(text)))));
 		return this;
 	}
 }
