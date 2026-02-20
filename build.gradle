@@ -11,6 +11,13 @@ subprojects {
 
     if (it != project(':PatchedMod.Common')) {
         apply plugin: 'com.gradleup.shadow'
+
+        tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
+            configurations = [project.configurations.shadow]
+            from (rootDir) {
+                include 'LICENSE.txt'
+            }
+        }
     }
 
     base {

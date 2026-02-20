@@ -46,17 +46,10 @@ neoForge {
 
 tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
     archiveClassifier = ''
-
-    configurations = [project.configurations.shadow]
-
-    from (rootDir) {
-        include 'LICENSE.txt'
-    }
 }
 
 jar.enabled = false
 
 artifacts {
     archives shadowJar
-    shadow shadowJar
 }
