@@ -32,18 +32,6 @@ loom {
     }
 }
 
-tasks.named('jar', Jar).configure {
-    // Add the Patched library to the built jar.
-    dependsOn configurations.shadow
-    from {
-        configurations.shadow.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
-    }
-
-    from (rootDir) {
-        include 'LICENSE-small.txt'
-    }
-}
-
 tasks.named('processResources', ProcessResources).configure {
     inputs.property 'version', project.version
 

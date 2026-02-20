@@ -1,6 +1,5 @@
 plugins {
     id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.9'
-    id 'com.gradleup.shadow' version '8.3.0' apply false
     id 'com.diffplug.eclipse.apt' version '4.1.0' apply false
 }
 
@@ -8,17 +7,6 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'eclipse'
     apply plugin: 'com.diffplug.eclipse.apt'
-
-    if (it != project(':PatchedMod.Common')) {
-        apply plugin: 'com.gradleup.shadow'
-
-        tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
-            configurations = [project.configurations.shadow]
-            from (rootDir) {
-                include 'LICENSE-small.txt'
-            }
-        }
-    }
 
     base {
         archivesName = 'Patched'
@@ -84,6 +72,20 @@ subprojects {
                 'Implementation-Vendor': 'EnderTurret'
             ])
         }
+    }
+
+    tasks.named('jar', Jar).configure {
+        // Add the Patched library to the built jar.
+        dependsOn configurations.shadow
+        from {
+            configurations.shadow.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+        }
+
+        from (rootDir) {
+            include 'LICENSE-small.txt'
+        }
+
+        exclude 'net/enderturret/patchedmod/forge/data/**'
     }
 
     tasks.named('sourcesJar', Jar).configure {
