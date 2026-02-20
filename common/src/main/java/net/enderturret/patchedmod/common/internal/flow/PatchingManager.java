@@ -190,8 +190,20 @@ public final class PatchingManager {
 					if (access == null)
 						access = ctx != null ? ctx.fileAccess() : new PatchedFileAccess(pack.resources());
 
+					final JsonPatch realPatch;
+
+					try {
+						realPatch = access.readIncludedPatch(patch);
+					} catch (PatchingException e) { // Almost always going to be caused by a missing file.
+						PatchedInternal.LOGGER.warn("Failed to read patch {} from {}:\n{}", patch, pack.name(), e.getMessage());
+						continue;
+					} catch (Exception e) {
+						PatchedInternal.LOGGER.warn("Failed to read patch {} from {}:", patch, pack.name(), e);
+						continue;
+					}
+
 					applyPatch(
-							type, access.readIncludedPatch(patch),
+							type, realPatch,
 							"patches/" + patch + ".json.patch", pack, wrapper, audit, context,
 							name.toString()
 							);
