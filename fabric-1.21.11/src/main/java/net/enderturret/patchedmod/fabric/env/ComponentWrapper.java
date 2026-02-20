@@ -1,5 +1,7 @@
 package net.enderturret.patchedmod.fabric.env;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -27,11 +29,15 @@ public record ComponentWrapper(MutableComponent message) implements PatchedMutab
 	}
 
 	@Override
-	public PatchedMutableComponent appendWithCommandHover(String literal, String command, String text) {
-		message.append(Component.literal(literal).withStyle(Style.EMPTY
+	public PatchedMutableComponent appendWithCommandHover(String literal, String command, @Nullable String hoverText) {
+		Style style = Style.EMPTY
 				.withUnderlined(true)
-				.withClickEvent(new ClickEvent.SuggestCommand(command))
-				.withHoverEvent(new HoverEvent.ShowText(Component.literal(text)))));
+				.withClickEvent(new ClickEvent.SuggestCommand(command));
+
+		if (hoverText != null)
+			style = style.withHoverEvent(new HoverEvent.ShowText(Component.literal(hoverText)));
+
+		message.append(Component.literal(literal).withStyle(style));
 		return this;
 	}
 

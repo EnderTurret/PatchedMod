@@ -1,6 +1,7 @@
 package net.enderturret.patchedmod.common.internal.env;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.Nullable;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -46,8 +47,8 @@ public interface IEnvironment<T> {
 	 * @param message The literal message (in English), for vanilla clients.
 	 * @param args Arguments to apply to the messages.
 	 */
-	public default void sendSuccess(T source, boolean allowLogging, String languageKey, String message, Object... args) {
-		sendSuccess(source, allowLogging, translate(languageKey, message, args));
+	public default void sendSuccess(T source, boolean allowLogging, @Nullable String languageKey, String message, Object... args) {
+		sendSuccess(source, allowLogging, languageKey == null ? literalText(message.formatted(args)) : translate(languageKey, message, args));
 	}
 
 	/**
@@ -65,8 +66,8 @@ public interface IEnvironment<T> {
 	 * @param message The literal message (in English), for vanilla clients.
 	 * @param args Arguments to apply to the messages.
 	 */
-	public default void sendFailure(T source, String languageKey, String message, Object... args) {
-		sendFailure(source, translate(languageKey, message, args));
+	public default void sendFailure(T source, @Nullable String languageKey, String message, Object... args) {
+		sendFailure(source, languageKey == null ? literalText(message.formatted(args)) : translate(languageKey, message, args));
 	}
 
 	/**
