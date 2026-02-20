@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.forge.client;
+package net.enderturret.patchedmod.neoforge.client;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
@@ -15,8 +15,8 @@ import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.command.PatchedCommand;
-import net.enderturret.patchedmod.forge.env.AbstractEnvironment;
-import net.enderturret.patchedmod.forge.env.ComponentWrapper;
+import net.enderturret.patchedmod.neoforge.env.AbstractEnvironment;
+import net.enderturret.patchedmod.neoforge.env.ComponentWrapper;
 
 /**
  * Various client-side event handlers.

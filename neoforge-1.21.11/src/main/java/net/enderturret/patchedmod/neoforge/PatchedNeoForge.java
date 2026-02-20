@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.forge;
+package net.enderturret.patchedmod.neoforge;
 
 import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
@@ -18,13 +18,13 @@ import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.SingleDataSource;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.command.PatchedCommand;
-import net.enderturret.patchedmod.forge.env.ServerEnvironment;
+import net.enderturret.patchedmod.neoforge.env.ServerEnvironment;
 
 @Internal
 @Mod(Patched.MOD_ID)
-public final class PatchedForge {
+public final class PatchedNeoForge {
 
-	public PatchedForge(IEventBus modBus) {
+	public PatchedNeoForge(IEventBus modBus) {
 		NeoForge.EVENT_BUS.addListener(this::registerCommands);
 		modBus.addListener(this::handleIMC);
 	}

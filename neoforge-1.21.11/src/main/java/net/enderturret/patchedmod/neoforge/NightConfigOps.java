@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.forge;
+package net.enderturret.patchedmod.neoforge;
 
 import java.util.ArrayList;
 import java.util.List;

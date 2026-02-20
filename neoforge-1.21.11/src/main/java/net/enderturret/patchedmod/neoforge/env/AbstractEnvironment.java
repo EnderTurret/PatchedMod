@@ -1,10 +1,10 @@
-package net.enderturret.patchedmod.forge.env;
+package net.enderturret.patchedmod.neoforge.env;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.internal.env.IEnvironment;
@@ -13,12 +13,12 @@ public abstract class AbstractEnvironment<T> implements IEnvironment<T> {
 
 	@Override
 	public Class<?> getResourceLocationClass() {
-		return ResourceLocation.class;
+		return Identifier.class;
 	}
 
 	@Override
 	public ArgumentType<?> getResourceLocationArgumentType() {
-		return ResourceLocationArgument.id();
+		return IdentifierArgument.id();
 	}
 
 	@Override

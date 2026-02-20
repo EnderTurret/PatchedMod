@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.forge;
+package net.enderturret.patchedmod.neoforge;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;

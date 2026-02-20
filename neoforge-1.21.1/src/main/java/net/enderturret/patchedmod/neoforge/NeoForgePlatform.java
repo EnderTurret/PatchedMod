@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.forge;
+package net.enderturret.patchedmod.neoforge;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -27,7 +27,7 @@ import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform.JankyDataResult;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
-public final class ForgePlatform implements PatchedPlatform {
+public final class NeoForgePlatform implements PatchedPlatform {
 
 	@Override
 	public boolean isPhysicalClient() {

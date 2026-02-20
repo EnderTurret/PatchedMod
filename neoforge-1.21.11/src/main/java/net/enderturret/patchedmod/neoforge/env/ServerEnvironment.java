@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.forge.env;
+package net.enderturret.patchedmod.neoforge.env;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 

@@ -40,7 +40,7 @@ import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchUtil;
 import net.enderturret.patched.patch.TestPatch;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
-import net.enderturret.patchedmod.forge.PatchedVersionHacks;
+import net.enderturret.patchedmod.neoforge.PatchedVersionHacks;
 
 /**
  * A data provider for patches.

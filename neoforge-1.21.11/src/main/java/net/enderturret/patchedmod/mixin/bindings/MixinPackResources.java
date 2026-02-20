@@ -24,9 +24,9 @@ import net.neoforged.neoforge.resource.JarContentsPackResources;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
-import net.enderturret.patchedmod.forge.ForgePlatform;
 import net.enderturret.patchedmod.mixin.command.FilePackResourcesAccess;
 import net.enderturret.patchedmod.mixin.command.SharedZipFileAccessAccess;
+import net.enderturret.patchedmod.neoforge.NeoForgePlatform;
 
 @Mixin(PackResources.class)
 public interface MixinPackResources extends PatchedPackResources {
@@ -90,7 +90,7 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default String patched$getName() {
-		final Optional<? extends ModContainer> mod = ForgePlatform.findModNameFromModFile(this);
+		final Optional<? extends ModContainer> mod = NeoForgePlatform.findModNameFromModFile(this);
 
 		if (mod.isPresent())
 			return "mod/" + mod.get().getModInfo().getDisplayName();
