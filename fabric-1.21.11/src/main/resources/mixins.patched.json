@@ -5,17 +5,20 @@
   "compatibilityLevel": "JAVA_21",
   "plugin": "net.enderturret.patchedmod.mixin.fabric.PatchedMixinPlugin",
   "mixins": [
+    "bindings.MixinIdentifier",
+    "bindings.MixinPackResources",
+    "bindings.MixinResourceManager",
+    "command.FilePackResourcesAccess",
+    "command.SharedZipFileAccessAccess",
+    "dynamic_patches.MixinMinecraftServer",
+    "dynamic_patches.MixinPackConfig",
     "fabric.api.MixinModNioResourcePack",
     "fabric.api.MixinModResourcePack",
     "fabric.MixinCommands",
-    "FilePackResourcesAccess",
-    "MixinAbstractPackResources",
-    "MixinFallbackResourceManager",
-    "MixinMinecraftServer",
-    "MixinPackConfig",
-    "SharedZipFileAccessAccess"
+    "impl.MixinAbstractPackResources",
+    "impl.MixinFallbackResourceManager"
   ],
   "client": [
-    "client.MixinMinecraft"
+    "client.dynamic_patches.MixinMinecraft"
   ]
 }

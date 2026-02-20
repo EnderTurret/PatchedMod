@@ -3,14 +3,17 @@
   "package": "net.enderturret.patchedmod.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "FilePackResourcesAccess",
-    "MixinAbstractPackResources",
-    "MixinFallbackResourceManager",
-    "MixinMinecraftServer",
-    "MixinPackConfig",
-    "SharedZipFileAccessAccess"
+    "bindings.MixinIdentifier",
+    "bindings.MixinPackResources",
+    "bindings.MixinResourceManager",
+    "command.FilePackResourcesAccess",
+    "command.SharedZipFileAccessAccess",
+    "dynamic_patches.MixinMinecraftServer",
+    "dynamic_patches.MixinPackConfig",
+    "impl.MixinAbstractPackResources",
+    "impl.MixinFallbackResourceManager"
   ],
   "client": [
-    "client.MixinMinecraft"
+    "client.dynamic_patches.MixinMinecraft"
   ]
 }
