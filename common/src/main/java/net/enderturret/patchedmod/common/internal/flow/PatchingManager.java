@@ -261,10 +261,11 @@ public final class PatchingManager {
 			if (context[0] == null)
 				context[0] = PatchedInternal.BASE_CONTEXT.audit(audit).testEvaluator(new PatchedTestEvaluator(type));
 
-			loudDebug("Applying patch {} from {}{}.",
-					patchName,
-					pack.name(),
-					explicitTargetName != null ? " to " + explicitTargetName : "");
+			if (DEBUG)
+				PatchedInternal.LOGGER.info("Applying patch {} from {}{}.",
+						patchName,
+						pack.name(),
+						explicitTargetName != null ? " to " + explicitTargetName : "");
 
 			final PatchContext ctx = context[0].fileAccess(new PatchedFileAccess(pack.resources()));
 
