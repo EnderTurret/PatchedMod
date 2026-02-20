@@ -215,7 +215,7 @@ public final class PatchedInternal {
 			final String path = entry.getName().substring(root.length());
 			final PatchedResourceLocation loc = PatchedPlatform.get().tryBuild(namespace, path);
 
-			if (filter.test(loc))
+			if (loc != null && filter.test(loc))
 				ret.add(loc);
 		}
 
