@@ -23,6 +23,6 @@ tasks.named('jar', Jar).configure {
     }
 
     from (rootDir) {
-        include 'LICENSE.txt'
+        include 'LICENSE-small.txt'
     }
 }

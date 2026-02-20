@@ -15,7 +15,7 @@ subprojects {
         tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
             configurations = [project.configurations.shadow]
             from (rootDir) {
-                include 'LICENSE.txt'
+                include 'LICENSE-small.txt'
             }
         }
     }
@@ -94,7 +94,7 @@ subprojects {
         }
 
         from (rootDir) {
-            include 'LICENSE.txt'
+            include 'LICENSE-small.txt'
         }
     }
 
