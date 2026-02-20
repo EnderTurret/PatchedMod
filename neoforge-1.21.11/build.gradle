@@ -44,12 +44,16 @@ neoForge {
     }
 }
 
-tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
-    archiveClassifier = ''
-}
+tasks.named('jar', Jar).configure {
+    // Add the Patched library to the built jar.
+    dependsOn configurations.shadow
+    from {
+        configurations.shadow.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
 
-jar.enabled = false
+    from (rootDir) {
+        include 'LICENSE-small.txt'
+    }
 
-artifacts {
-    archives shadowJar
+    exclude 'net/enderturret/patchedmod/forge/data/**'
 }
