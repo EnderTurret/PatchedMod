@@ -35,8 +35,8 @@ public enum PatchedPackType {
 
 	public static DataResult<PatchedPackType> forName(String name) {
 		return switch (name) {
-			case "client_resources" -> DataResult.success(CLIENT_RESOURCES);
-			case "server_data" -> DataResult.success(SERVER_DATA);
+			case "client_resources" -> PatchedPlatform.get().success(CLIENT_RESOURCES);
+			case "server_data" -> PatchedPlatform.get().success(SERVER_DATA);
 			default -> PatchedPlatform.get().error(() -> "Unknown pack type '" + name + "'");
 		};
 	}

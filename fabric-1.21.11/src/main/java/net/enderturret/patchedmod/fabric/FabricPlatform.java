@@ -4,7 +4,9 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -67,6 +69,17 @@ public final class FabricPlatform implements PatchedPlatform {
 		if (cv == null) return null;
 
 		return PatchedMetadata.of(cv, CustomValueOps.INSTANCE, mod.getName() + " (" + mod.getId() + ")");
+	}
+
+	@Override
+	public <T, I> JankyDataResult<T> decode(Codec<T> codec, DynamicOps<I> ops, I input) {
+		final DataResult<T> result = codec.parse(ops, input);
+		return result.isSuccess() ? new JankyDataResult<>(result.getOrThrow(), null) : new JankyDataResult<>(null, result.error().get().message());
+	}
+
+	@Override
+	public <T> DataResult<T> success(T value) {
+		return DataResult.success(value);
 	}
 
 	@Override

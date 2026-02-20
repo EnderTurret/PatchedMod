@@ -15,6 +15,7 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.enderturret.patched.exception.PatchingException;
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 
 /**
  * <p>
@@ -128,14 +129,14 @@ public record PatchedMetadata(byte formatVersion, List<PatchTarget> patchTargets
 	 * @throws PatchingException If the metadata could not be parsed.
 	 */
 	public static <T> PatchedMetadata of(T data, DynamicOps<T> ops, String source) {
-		final DataResult<Pair<PatchedMetadata, T>> pair = CODEC.decode(ops, data);
+		final PatchedPlatform.JankyDataResult<PatchedMetadata> result = PatchedPlatform.get().decode(CODEC, ops, data);
 
-		if (pair.result().isPresent()) {
-			final PatchedMetadata ret = pair.result().get().getFirst();
+		if (result.value() != null) {
+			final PatchedMetadata ret = result.value();
 			// Use the cached version when possible; I don't necessarily trust the JVM to do that record optimization (too many people abuse them -- me included).
 			return CURRENT_VERSION.equals(ret) ? CURRENT_VERSION : ret;
 		}
 
-		throw new PatchingException("Could not parse Patched metadata for " + source + ": " + pair.error().get().message());
+		throw new PatchingException("Could not parse Patched metadata for " + source + ": " + result.error());
 	}
 }

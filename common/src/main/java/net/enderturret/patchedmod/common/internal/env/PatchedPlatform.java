@@ -6,7 +6,9 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
@@ -69,10 +71,14 @@ public interface PatchedPlatform {
 		return null;
 	}
 
+	public <T, I> JankyDataResult<T> decode(Codec<T> codec, DynamicOps<I> ops, I input);
+	public <T> DataResult<T> success(T value);
 	public <T> DataResult<T> error(Supplier<String> message);
 
 	public PatchedResourceLocation tryParse(String input);
 	public PatchedResourceLocation tryBuild(String namespace, String path);
 	public boolean isThingRegistered(PatchedResourceLocation registry, PatchedResourceLocation id);
 	public boolean isItemRegistered(PatchedResourceLocation id);
+
+	public static record JankyDataResult<T>(@Nullable T value, @Nullable String error) {}
 }

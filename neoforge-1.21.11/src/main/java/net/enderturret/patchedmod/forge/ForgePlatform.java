@@ -8,7 +8,9 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.Nullable;
 
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,6 +24,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform.JankyDataResult;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
 public final class ForgePlatform implements PatchedPlatform {
@@ -71,6 +74,17 @@ public final class ForgePlatform implements PatchedPlatform {
 		}
 
 		return null;
+	}
+
+	@Override
+	public <T, I> JankyDataResult<T> decode(Codec<T> codec, DynamicOps<I> ops, I input) {
+		final DataResult<T> result = codec.parse(ops, input);
+		return result.isSuccess() ? new JankyDataResult<>(result.getOrThrow(), null) : new JankyDataResult<>(null, result.error().get().message());
+	}
+
+	@Override
+	public <T> DataResult<T> success(T value) {
+		return DataResult.success(value);
 	}
 
 	@Override
