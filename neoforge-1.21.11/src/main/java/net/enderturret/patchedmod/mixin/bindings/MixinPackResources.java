@@ -76,6 +76,19 @@ public interface MixinPackResources extends PatchedPackResources {
 	}
 
 	@Override
+	public default boolean patched$hasRootResource(String... path) {
+		return ((PackResources) this).getRootResource(path) != null;
+	}
+
+	@Override
+	public default boolean patched$hasResource(PatchedPackType type, PatchedResourceLocation location) {
+		final IoSupplier<InputStream> ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (Identifier) (Object) location);
+		return ret != null;
+	}
+
+	//
+
+	@Override
 	public default String patched$getName() {
 		final Optional<? extends ModContainer> mod = ForgePlatform.findModNameFromModFile(this);
 

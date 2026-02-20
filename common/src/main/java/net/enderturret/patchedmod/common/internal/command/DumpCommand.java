@@ -80,7 +80,7 @@ final class DumpCommand {
 		return builder.buildFuture();
 	}
 
-	private static <T> CompletableFuture<Suggestions> suggestResource(CommandContext<T> ctx, PatchedPackType type, SuggestionsBuilder builder, IEnvironment<T> env) {
+	static <T> CompletableFuture<Suggestions> suggestResource(CommandContext<T> ctx, PatchedPackType type, SuggestionsBuilder builder, IEnvironment<T> env) {
 		final String input = builder.getRemaining();
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 

@@ -33,7 +33,8 @@ public final class PatchedCommand {
 		final var ret = env.literal("patched" + (env.client() ? "c" : ""))
 				.requires(src -> env.hasPermission(src, 2))
 				.then(DumpCommand.create(env))
-				.then(ListCommand.create(env));
+				.then(ListCommand.create(env))
+				.then(TraceCommand.create(env));
 
 		return PatchingManager.DEBUG ? ret.then(DebugCommand.create(env)) : ret;
 	}

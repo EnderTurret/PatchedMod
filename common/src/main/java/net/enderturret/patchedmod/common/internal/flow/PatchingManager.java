@@ -26,6 +26,7 @@ import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
+import net.enderturret.patchedmod.common.util.PatchTrace;
 import net.enderturret.patchedmod.common.util.PatchUtil;
 import net.enderturret.patchedmod.common.util.PatchedFileAccess;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;
@@ -67,7 +68,7 @@ public final class PatchingManager {
 	@Internal
 	public static PatchingInputStream newPatchingStream(InputStream delegate, PatchedResourceManager manager, PatchedPackResources origin, PatchedPackType type, PatchedResourceLocation name, boolean singlePack) throws IOException {
 		if (!manager.patched$isFallback()) throw new IllegalArgumentException("Expected fallback resource manager");
-		return new PatchingInputStream(delegate, (stream, audit) -> patch(manager, origin, type, name, stream, audit, singlePack));
+		return new PatchingInputStream(delegate, (stream, audit, trace) -> patch(manager, origin, type, name, stream, audit, trace, singlePack));
 	}
 
 	/**
@@ -82,16 +83,16 @@ public final class PatchingManager {
 	 * @return A new stream containing the patched data.
 	 */
 	@Internal
-	private static InputStream patch(PatchedResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, InputStream stream, @Nullable PatchAudit audit, boolean singlePack) {
+	private static InputStream patch(PatchedResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, InputStream stream, @Nullable PatchAudit audit, PatchTrace trace, boolean singlePack) {
 		if (stream == null || !PatchUtil.isPatchable(name.patched$getPath())) return stream;
 
 		final LazyPatchingWrapper wrapper = new LazyPatchingWrapper(stream);
 
 		try {
 			if (singlePack)
-				patchSingle(manager, from, type, name, wrapper, audit);
+				patchSingle(manager, from, type, name, wrapper, audit, trace);
 			else
-				patch(manager, from, type, name, wrapper, audit);
+				patch(manager, from, type, name, wrapper, audit, trace);
 		} catch (BailException e) {
 			// Let the future data consumer handle these.
 		} catch (Exception e) {
@@ -113,7 +114,7 @@ public final class PatchingManager {
 	 * @return Whether any patches were actually applied.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean patchSingle(PatchedResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
+	private static boolean patchSingle(PatchedResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit, PatchTrace trace) {
 		// Since many packs could provide this file, we cannot rely on existence checks to find the real pack.
 		// This will simply have to not work in that case.
 		//from = findTrueSource(from, type, name);
@@ -125,7 +126,7 @@ public final class PatchingManager {
 			try {
 				applyPatch(
 						type, from.patched$getResource(type, patchName),
-						patchName.toString(), new Entry(from), wrapper, audit, context,
+						patchName.toString(), new Entry(from), wrapper, audit, trace, context,
 						null
 						);
 			} catch (IOException e) {
@@ -149,7 +150,7 @@ public final class PatchingManager {
 	 * @return Whether any patches were actually applied.
 	 */
 	@SuppressWarnings("resource")
-	private static boolean patch(PatchedResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit) {
+	private static boolean patch(PatchedResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit, PatchTrace trace) {
 		final PatchedResourceLocation patchName = name.patched$withPath(name.patched$getPath() + ".patch");
 
 		final PatchContext[] context = new PatchContext[1];
@@ -164,10 +165,14 @@ public final class PatchingManager {
 
 			// Until we see the pack the file originated from, don't apply any patches.
 			if (!seenOriginal)
-				if (packEntry == from)
+				if (packEntry == from) {
+					trace.recordFile(packEntry, false);
 					seenOriginal = true;
-				else
+				} else {
+					if (trace.active())
+						traceOverridenPatchesOrFile(type, name, patchName, packEntry, trace, targets.getOrDefault(packEntry, List.of()));
 					continue;
+				}
 
 			if (packEntry.patched$hasPatches()) {
 				final Entry pack = new Entry(packEntry);
@@ -177,7 +182,7 @@ public final class PatchingManager {
 				try {
 					ctx = applyPatch(
 							type, pack.resources().patched$getResource(type, patchName),
-							patchName.toString(), pack, wrapper, audit, context,
+							patchName.toString(), pack, wrapper, audit, trace, context,
 							null
 							);
 				} catch (IOException e) {
@@ -214,6 +219,25 @@ public final class PatchingManager {
 		return context[0] != null;
 	}
 
+	private static void traceOverridenPatchesOrFile(
+			PatchedPackType type,
+			PatchedResourceLocation fileName,
+			PatchedResourceLocation patchName,
+			PatchedPackResources pack,
+			PatchTrace trace,
+			List<String> targets) {
+		if (pack.patched$hasResource(type, fileName))
+			trace.recordFile(pack, true);
+
+		if (pack.patched$hasPatches()) {
+			if (pack.patched$hasResource(type, patchName))
+				trace.recordPatch(pack, true);
+
+			// We can't actually check targets, because those are already filtered out.
+			// Maybe one day.
+		}
+	}
+
 	private static PatchContext applyPatch(
 			PatchedPackType type,
 			@Nullable InputStream patchSupplier,
@@ -221,9 +245,15 @@ public final class PatchingManager {
 			Entry pack,
 			LazyPatchingWrapper wrapper,
 			@Nullable PatchAudit audit,
+			PatchTrace trace,
 			PatchContext[] context,
-			String explicitTargetName) {
+			@Nullable String explicitTargetName) {
 		if (patchSupplier == null) return null;
+
+		if (explicitTargetName != null)
+			trace.recordDynamicPatch(pack.resources(), false);
+		else
+			trace.recordPatch(pack.resources(), false);
 
 		final String patchJson;
 

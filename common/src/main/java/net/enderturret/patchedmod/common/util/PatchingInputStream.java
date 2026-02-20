@@ -28,6 +28,8 @@ public class PatchingInputStream extends FilterInputStream {
 	@Nullable
 	private PatchAudit audit = null;
 
+	private PatchTrace trace = PatchTrace.none();
+
 	/**
 	 * Constructs a new {@code PatchingInputStream}.
 	 * @param delegate The stream to be patched.
@@ -41,7 +43,7 @@ public class PatchingInputStream extends FilterInputStream {
 
 	private void transform() {
 		if (patcher != null) {
-			in = patcher.patch(in, audit);
+			in = patcher.patch(in, audit, trace);
 			patcher = null;
 		}
 	}
@@ -65,6 +67,10 @@ public class PatchingInputStream extends FilterInputStream {
 	 */
 	public void withAudit(PatchAudit audit) {
 		this.audit = audit;
+	}
+
+	public void withTrace(PatchTrace trace) {
+		this.trace = trace;
 	}
 
 	@Override
@@ -126,8 +132,9 @@ public class PatchingInputStream extends FilterInputStream {
 		 * Applies the patch function to the specified stream, optionally with the specified audit.
 		 * @param stream The stream to patch the contents of.
 		 * @param audit The audit. May be {@code null}.
+		 * @param trace The file trace. Used for the {@code /patched trace} command.
 		 * @return The patched stream.
 		 */
-		public InputStream patch(InputStream stream, @Nullable PatchAudit audit);
+		public InputStream patch(InputStream stream, @Nullable PatchAudit audit, PatchTrace trace);
 	}
 }

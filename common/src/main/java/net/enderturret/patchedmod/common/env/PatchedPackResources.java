@@ -27,6 +27,9 @@ public interface PatchedPackResources extends IPatchingPackResources {
 	public @Nullable InputStream patched$getResource(PatchedPackType type, PatchedResourceLocation location) throws IOException;
 	public void patched$listResources(PatchedPackType type, String namespace, String path, Consumer<PatchedResourceLocation> consumer);
 
+	public boolean patched$hasRootResource(String... path);
+	public boolean patched$hasResource(PatchedPackType type, PatchedResourceLocation location);
+
 	// ===== Non-API Patched-specific junk =====
 
 	/**
