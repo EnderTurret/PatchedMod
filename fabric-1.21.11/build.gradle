@@ -32,14 +32,16 @@ loom {
     }
 }
 
-tasks.register('remappedShadowJar', net.fabricmc.loom.task.RemapJarTask) {
-    archiveClassifier = ''
-    input = tasks.shadowJar.archiveFile
-    dependsOn shadowJar
-}
+tasks.named('jar', Jar).configure {
+    // Add the Patched library to the built jar.
+    dependsOn configurations.shadow
+    from {
+        configurations.shadow.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
 
-artifacts {
-    archives remappedShadowJar
+    from (rootDir) {
+        include 'LICENSE-small.txt'
+    }
 }
 
 tasks.named('processResources', ProcessResources).configure {
