@@ -149,7 +149,9 @@ final class DumpCommand {
 		}
 
 		try {
-			final InputStream io = pack.patched$getResource(type, location);
+			InputStream io = pack.patched$getResource(type, location);
+			// If we can't find the patch, try flipping the pack type.
+			if (io == null) io = pack.patched$getResource(type.toVanilla(PatchedPackType.SERVER_DATA, PatchedPackType.CLIENT_RESOURCES), location);
 
 			if (io == null) {
 				env.sendFailure(ctx.getSource(), "command.patched.dump.patch_not_found", "That patch could not be found.");
