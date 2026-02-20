@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
+import net.enderturret.patchedmod.common.internal.flow.PatchingManager;
 import net.enderturret.patchedmod.common.util.meta.IPattern;
 import net.enderturret.patchedmod.common.util.meta.PatchTarget;
 import net.enderturret.patchedmod.common.util.meta.PatchTarget.Target;
@@ -70,8 +71,9 @@ public final class PatchTargetManager {
 		this.packsByPriority = empty ? null : List.copyOf(packsByPriority);
 		this.priorityByPack = empty ? null : priorityByPack;
 
-		PatchedInternal.LOGGER.debug("Built PatchTargetManager {} with {}", type.name(), packsByPriority.stream()
-				.map(pr -> pr.toString() + " (" + pr.patched$packId() + ")").collect(Collectors.joining(", ")));
+		if (DynamicPatches.DEBUG_TARGETS || PatchingManager.DEBUG)
+			PatchedInternal.LOGGER.info("Built PatchTargetManager {} with {}", type.name(), packsByPriority.stream()
+					.map(pr -> pr.toString() + " (" + pr.patched$packId() + ")").collect(Collectors.joining(", ")));
 
 		bakeNamespace("minecraft"); // This is the single-most likely filled namespace.
 	}
