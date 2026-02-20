@@ -45,7 +45,7 @@ public abstract class MixinFallbackResourceManager {
 	@WrapOperation(
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/FallbackResourceManager;createResource("
 					+ "Lnet/minecraft/server/packs/PackResources;"
-					+ "Lnet/minecraft/resources/Identifier;"
+					+ "Lnet/minecraft/resources/ResourceLocation;"
 					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
 					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
 					+ ")Lnet/minecraft/server/packs/resources/Resource;"),
@@ -64,7 +64,7 @@ public abstract class MixinFallbackResourceManager {
 	@WrapOperation(
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/FallbackResourceManager;createResource("
 					+ "Lnet/minecraft/server/packs/PackResources;"
-					+ "Lnet/minecraft/resources/Identifier;"
+					+ "Lnet/minecraft/resources/ResourceLocation;"
 					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
 					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
 					+ ")Lnet/minecraft/server/packs/resources/Resource;"),
@@ -110,7 +110,7 @@ public abstract class MixinFallbackResourceManager {
 	@WrapOperation(
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/FallbackResourceManager;createResource("
 					+ "Lnet/minecraft/server/packs/PackResources;"
-					+ "Lnet/minecraft/resources/Identifier;"
+					+ "Lnet/minecraft/resources/ResourceLocation;"
 					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
 					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
 					+ ")Lnet/minecraft/server/packs/resources/Resource;"),
