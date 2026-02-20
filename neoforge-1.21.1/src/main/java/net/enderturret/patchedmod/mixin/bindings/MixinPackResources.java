@@ -99,18 +99,16 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default boolean patched$needsSwapNamespaceAndPath() {
-		return true; // Not actually important for JarContentsPackResources — it'll be weirdly broken with or without this hack.
+		return true;
 	}
 
 	@Override
 	public default Function<PatchedResourceLocation, PatchedResourceLocation> patched$getRenamer(String namespace) {
-		final int prefixLen = this instanceof JarContentsPackResources ? 0 : 1;
+		final int prefixLen = patched$isVanillaPack() ? "../".length() + 1 : 1;
 
 		// PathPackResources:        :minecraft/something → minecraft:something
 		// FilePackResources is handled separately.
-		// VanillaPackResources:     :minecraft/something → minecraft:something
-		// JarContentsPackResources: :inecraft/something  → minecraft:something
-		// (The latter is because the path ends up being "assets//minecraft/" and NeoForge gets a little too excited trimming it.)
+		// VanillaPackResources:     :../minecraft/something → minecraft:something
 
 		return rl -> (PatchedResourceLocation) (Object) ResourceLocation.fromNamespaceAndPath(
 				namespace, rl.patched$getPath().substring(prefixLen + namespace.length()));

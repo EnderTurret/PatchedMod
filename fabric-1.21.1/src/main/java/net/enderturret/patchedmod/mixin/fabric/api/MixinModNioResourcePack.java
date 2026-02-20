@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
-import net.fabricmc.fabric.impl.resource.pack.ModNioPackResources;
+import net.fabricmc.fabric.impl.resource.loader.ModNioResourcePack;
 
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
@@ -15,7 +15,7 @@ import net.enderturret.patchedmod.mixin.impl.MixinAbstractPackResources;
  * Identical to {@link MixinAbstractPackResources}.
  * @author EnderTurret
  */
-@Mixin({ ModNioPackResources.class })
+@Mixin({ ModNioResourcePack.class })
 public abstract class MixinModNioResourcePack implements IPatchingPackResources {
 
 	@Nullable

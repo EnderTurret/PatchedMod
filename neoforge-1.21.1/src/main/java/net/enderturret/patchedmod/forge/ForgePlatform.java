@@ -31,7 +31,7 @@ public final class ForgePlatform implements PatchedPlatform {
 
 	@Override
 	public boolean isPhysicalClient() {
-		return FMLEnvironment.getDist() == Dist.CLIENT;
+		return FMLEnvironment.dist == Dist.CLIENT;
 	}
 
 	@Override

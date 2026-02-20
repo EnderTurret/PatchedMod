@@ -4,7 +4,6 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.permissions.Permissions;
 
 import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
@@ -40,12 +39,6 @@ public final class ServerEnvironment extends AbstractEnvironment<CommandSourceSt
 	@Override
 	public boolean hasPermission(CommandSourceStack source, int permissionLevel) {
 		if (permissionLevel == 0) return true;
-		return source.permissions().hasPermission(switch (permissionLevel) {
-			case 1 -> Permissions.COMMANDS_MODERATOR;
-			case 2 -> Permissions.COMMANDS_GAMEMASTER;
-			case 3 -> Permissions.COMMANDS_ADMIN;
-			case 4 -> Permissions.COMMANDS_OWNER;
-			default -> throw new IllegalArgumentException();
-		});
+		return source.hasPermission(permissionLevel);
 	}
 }
