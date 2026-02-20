@@ -3,8 +3,8 @@
   "package": "net.enderturret.patchedmod.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "bindings.MixinIdentifier",
     "bindings.MixinPackResources",
+    "bindings.MixinResourceLocation",
     "bindings.MixinResourceManager",
     "command.FilePackResourcesAccess",
     "command.SharedZipFileAccessAccess",

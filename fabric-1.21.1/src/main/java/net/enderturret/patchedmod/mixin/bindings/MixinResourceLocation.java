@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 
 @Mixin(ResourceLocation.class)
-public abstract class MixinIdentifier implements PatchedResourceLocation {
+public abstract class MixinResourceLocation implements PatchedResourceLocation {
 
 	@Override
 	public String patched$getNamespace() {
