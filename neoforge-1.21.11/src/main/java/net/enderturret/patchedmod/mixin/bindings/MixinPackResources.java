@@ -19,6 +19,7 @@ import net.minecraft.server.packs.VanillaPackResources;
 import net.minecraft.server.packs.resources.IoSupplier;
 
 import net.neoforged.fml.ModContainer;
+import net.neoforged.neoforge.resource.JarContentsPackResources;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
@@ -86,17 +87,20 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default boolean patched$needsSwapNamespaceAndPath() {
-		return true;
+		return true; // Not actually important for JarContentsPackResources — it'll be weirdly broken with or without this hack.
 	}
 
 	@Override
 	public default Function<PatchedResourceLocation, PatchedResourceLocation> patched$getRenamer(String namespace) {
-		final boolean vanilla = patched$isVanillaPack();
-		final int prefixLen = 0;
-		// PathPackResources:     :minecraft/something → minecraft:something
+		final int prefixLen = this instanceof JarContentsPackResources ? 0 : 1;
+
+		// PathPackResources:        :minecraft/something → minecraft:something
 		// FilePackResources is handled separately.
-		// VanillaPackResources:  :minecraft/something → minecraft:something
+		// VanillaPackResources:     :minecraft/something → minecraft:something
+		// JarContentsPackResources: :inecraft/something  → minecraft:something
+		// (The latter is because the path ends up being "assets//minecraft/" and NeoForge gets a little too excited trimming it.)
+
 		return rl -> (PatchedResourceLocation) (Object) Identifier.fromNamespaceAndPath(
-				namespace, rl.patched$getPath().substring(prefixLen + namespace.length() + 1));
+				namespace, rl.patched$getPath().substring(prefixLen + namespace.length()));
 	}
 }
