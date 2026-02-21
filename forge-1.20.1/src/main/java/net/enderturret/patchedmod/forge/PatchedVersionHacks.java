@@ -5,6 +5,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.Executor;
 import java.util.zip.ZipFile;
 
@@ -18,12 +20,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
 
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import net.minecraftforge.resource.DelegatingPackResources;
 
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.mixin.command.FilePackResourcesAccess;
+import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
 
 /**
  * Various hacks to make Patched work on newer versions of Minecraft without needing to write entire platform implementations for them.
@@ -42,6 +48,13 @@ public final class PatchedVersionHacks {
 			}
 
 		return ((FilePackResourcesAccess) pack).patched$getOrCreateZipFile();
+	}
+
+	@SuppressWarnings("removal")
+	public static Collection<PackResources> getCandidatePacks(PackResources pack, PackType type, String namespace) {
+		if (pack instanceof DelegatingPackResourcesAccess access)
+			return access.patched$getCandidatePacks(type, new ResourceLocation(namespace, ""));
+		return Collections.emptyList();
 	}
 
 	private static final @Nullable MethodHandle zipFileAccess;

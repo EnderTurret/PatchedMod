@@ -2,6 +2,9 @@ package net.enderturret.patchedmod.mixin.bindings;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -19,6 +22,7 @@ import net.minecraft.server.packs.VanillaPackResources;
 import net.minecraft.server.packs.resources.IoSupplier;
 
 import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.resource.DelegatingPackResources;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
@@ -112,5 +116,20 @@ public interface MixinPackResources extends PatchedPackResources {
 
 		return rl -> (PatchedResourceLocation) new ResourceLocation(
 				namespace, rl.patched$getPath().substring(prefixLen + namespace.length()));
+	}
+
+	@Override
+	public default boolean patched$isGroupPack() {
+		return this instanceof DelegatingPackResources;
+	}
+
+	@Override
+	public default Collection<PatchedPackResources> patched$getChildren() {
+		return (Collection) Objects.requireNonNullElse(((PackResources) this).getChildren(), List.of());
+	}
+
+	@Override
+	public default Collection<PatchedPackResources> patched$getFilteredChildren(PatchedPackType type, String namespace) {
+		return (Collection) PatchedVersionHacks.getCandidatePacks((PackResources) this, type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), namespace);
 	}
 }

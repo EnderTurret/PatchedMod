@@ -2,6 +2,7 @@ package net.enderturret.patchedmod.mixin.bindings;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -10,6 +11,7 @@ import java.util.zip.ZipFile;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
+import net.fabricmc.fabric.impl.resource.loader.GroupResourcePack;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +27,7 @@ import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.fabric.FabricPlatform;
 import net.enderturret.patchedmod.fabric.IFabricModPackResources;
 import net.enderturret.patchedmod.fabric.PatchedVersionHacks;
+import net.enderturret.patchedmod.mixin.fabric.api.GroupResourcePackAccess;
 
 @Mixin(PackResources.class)
 public interface MixinPackResources extends PatchedPackResources {
@@ -111,7 +114,7 @@ public interface MixinPackResources extends PatchedPackResources {
 	@Override
 	public default boolean patched$needsSwapNamespaceAndPath() {
 		// Fabric implementations surprisingly throw no errors, unlike Minecraft.
-		return !(this instanceof IFabricModPackResources);
+		return !patched$isGroupPack() && !(this instanceof IFabricModPackResources);
 	}
 
 	@Override
@@ -123,5 +126,20 @@ public interface MixinPackResources extends PatchedPackResources {
 		// VanillaPackResources:  .:minecraft/something → minecraft:something
 		return rl -> (PatchedResourceLocation) new ResourceLocation(
 				namespace, rl.patched$getPath().substring(namespace.length() + 1));
+	}
+
+	@Override
+	public default boolean patched$isGroupPack() {
+		return this instanceof GroupResourcePack && this instanceof GroupResourcePackAccess;
+	}
+
+	@Override
+	public default Collection<PatchedPackResources> patched$getChildren() {
+		return (Collection) ((GroupResourcePackAccess) this).patched$packs();
+	}
+
+	@Override
+	public default Collection<PatchedPackResources> patched$getFilteredChildren(PatchedPackType type, String namespace) {
+		return (Collection) ((GroupResourcePackAccess) this).patched$namespacedPacks().get(namespace);
 	}
 }
