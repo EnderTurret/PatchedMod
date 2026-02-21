@@ -63,7 +63,7 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default @Nullable InputStream patched$getResource(PatchedPackType type, PatchedResourceLocation location) throws IOException {
-		final IoSupplier<InputStream> ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (ResourceLocation) (Object) location);
+		final IoSupplier<InputStream> ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (ResourceLocation) location);
 		return ret != null ? ret.get() : null;
 	}
 
@@ -71,7 +71,7 @@ public interface MixinPackResources extends PatchedPackResources {
 	public default void patched$listResources(PatchedPackType type, String namespace, String path, Consumer<PatchedResourceLocation> consumer) {
 		((PackResources) this).listResources(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA),
 				namespace, path,
-				(loc, io) -> consumer.accept((PatchedResourceLocation) (Object) loc));
+				(loc, io) -> consumer.accept((PatchedResourceLocation) loc));
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default boolean patched$hasResource(PatchedPackType type, PatchedResourceLocation location) {
-		final IoSupplier<InputStream> ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (ResourceLocation) (Object) location);
+		final IoSupplier<InputStream> ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (ResourceLocation) location);
 		return ret != null;
 	}
 
@@ -110,7 +110,7 @@ public interface MixinPackResources extends PatchedPackResources {
 		// FilePackResources is handled separately.
 		// VanillaPackResources:     :../minecraft/something → minecraft:something
 
-		return rl -> (PatchedResourceLocation) (Object) ResourceLocation.fromNamespaceAndPath(
+		return rl -> (PatchedResourceLocation) ResourceLocation.fromNamespaceAndPath(
 				namespace, rl.patched$getPath().substring(prefixLen + namespace.length()));
 	}
 }

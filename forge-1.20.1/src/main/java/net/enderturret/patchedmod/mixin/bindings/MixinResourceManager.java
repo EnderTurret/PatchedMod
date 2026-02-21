@@ -63,7 +63,7 @@ public interface MixinResourceManager extends PatchedResourceManager {
 
 	@Override
 	public default Optional<InputStream> patched$getResource(PatchedResourceLocation location) throws IOException {
-		final Optional<Resource> optional = ((ResourceManager) this).getResource((ResourceLocation) (Object) location);
+		final Optional<Resource> optional = ((ResourceManager) this).getResource((ResourceLocation) location);
 		if (optional.isEmpty()) return Optional.empty();
 		return Optional.of(optional.get().open());
 	}

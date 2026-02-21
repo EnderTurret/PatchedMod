@@ -57,7 +57,7 @@ public abstract class MixinFallbackResourceManager {
 		streamSupplier = patched$chain(streamSupplier,
 				(PatchedResourceManager) self,
 				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
-				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, false);
+				(PatchedResourceLocation) location, (PatchedPackResources) pack, false);
 		return downstream.call(pack, location, streamSupplier, metadataSupplier);
 	}
 
@@ -76,7 +76,7 @@ public abstract class MixinFallbackResourceManager {
 		streamSupplier = patched$chain(streamSupplier,
 				(PatchedResourceManager) self,
 				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
-				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, true);
+				(PatchedResourceLocation) location, (PatchedPackResources) pack, true);
 		return downstream.call(pack, location, streamSupplier, metadataSupplier);
 	}
 
@@ -90,7 +90,7 @@ public abstract class MixinFallbackResourceManager {
 		streamSupplier = patched$chain(streamSupplier,
 				(PatchedResourceManager) self,
 				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
-				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, true);
+				(PatchedResourceLocation) location, (PatchedPackResources) pack, true);
 		return downstream.call(pack, streamSupplier, metadataSupplier);
 	}
 
@@ -132,7 +132,7 @@ public abstract class MixinFallbackResourceManager {
 
 		final IoSupplier<InputStream> sup = patched$chain(streamSupplier,
 				hidden.manager, hidden.type,
-				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, false);
+				(PatchedResourceLocation) location, (PatchedPackResources) pack, false);
 
 		return downstream.call(pack, location, sup, metadataSupplier);
 	}

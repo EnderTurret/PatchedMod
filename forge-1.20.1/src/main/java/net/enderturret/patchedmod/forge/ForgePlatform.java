@@ -94,22 +94,22 @@ public final class ForgePlatform implements PatchedPlatform {
 
 	@Override
 	public PatchedResourceLocation tryParse(String input) {
-		return (PatchedResourceLocation) (Object) ResourceLocation.parse(input);
+		return (PatchedResourceLocation) ResourceLocation.parse(input);
 	}
 
 	@Override
 	public PatchedResourceLocation tryBuild(String namespace, String path) {
-		return (PatchedResourceLocation) (Object) ResourceLocation.tryBuild(namespace, path);
+		return (PatchedResourceLocation) ResourceLocation.tryBuild(namespace, path);
 	}
 
 	@Override
 	public boolean isThingRegistered(PatchedResourceLocation registry, PatchedResourceLocation id) {
-		final Registry<?> reg = PatchedVersionHacks.get(BuiltInRegistries.REGISTRY, (ResourceLocation) (Object) registry);
-		return reg != null && reg.containsKey((ResourceLocation) (Object) id);
+		final Registry<?> reg = PatchedVersionHacks.get(BuiltInRegistries.REGISTRY, (ResourceLocation) registry);
+		return reg != null && reg.containsKey((ResourceLocation) id);
 	}
 
 	@Override
 	public boolean isItemRegistered(PatchedResourceLocation id) {
-		return BuiltInRegistries.ITEM.containsKey((ResourceLocation) (Object) id);
+		return BuiltInRegistries.ITEM.containsKey((ResourceLocation) id);
 	}
 }
