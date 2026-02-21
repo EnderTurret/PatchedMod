@@ -17,6 +17,16 @@ tasks.named('jar', Jar).configure {
     ])
 }
 
+dependencies {
+    compileOnly(annotationProcessor('io.github.llamalad7:mixinextras-common:0.4.1'))
+    jarJar(implementation('io.github.llamalad7:mixinextras-forge')) {
+        version {
+            strictly '[0.4.1,)'
+            prefer '0.4.1'
+        }
+    }
+}
+
 legacyForge {
     version = "${minecraft_version}-${loader_version}"
 
