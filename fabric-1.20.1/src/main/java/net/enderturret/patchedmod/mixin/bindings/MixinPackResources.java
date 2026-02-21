@@ -122,7 +122,7 @@ public interface MixinPackResources extends PatchedPackResources {
 		// PathPackResources:      :minecraft/something → minecraft:something
 		// FilePackResources is handled separately.
 		// VanillaPackResources:  .:minecraft/something → minecraft:something
-		return rl -> (PatchedResourceLocation) (Object) ResourceLocation.fromNamespaceAndPath(
+		return rl -> (PatchedResourceLocation) new ResourceLocation(
 				namespace, rl.patched$getPath().substring(namespace.length() + 1));
 	}
 }

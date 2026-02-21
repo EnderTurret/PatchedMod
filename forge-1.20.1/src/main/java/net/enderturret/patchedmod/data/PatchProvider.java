@@ -98,8 +98,9 @@ public abstract class PatchProvider implements DataProvider {
 	 * @param path The path of the {@link ResourceLocation}.
 	 * @return The new {@link ResourceLocation}.
 	 */
+	@SuppressWarnings("removal")
 	public ResourceLocation id(String modId, String path) {
-		return ResourceLocation.fromNamespaceAndPath(modId, path);
+		return new ResourceLocation(modId, path);
 	}
 
 	/**

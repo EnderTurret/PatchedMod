@@ -99,7 +99,7 @@ public abstract class PatchProvider implements DataProvider {
 	 * @return The new {@link ResourceLocation}.
 	 */
 	public ResourceLocation id(String modId, String path) {
-		return ResourceLocation.fromNamespaceAndPath(modId, path);
+		return new ResourceLocation(modId, path);
 	}
 
 	/**

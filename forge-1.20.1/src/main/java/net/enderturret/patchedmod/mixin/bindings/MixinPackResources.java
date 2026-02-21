@@ -102,6 +102,7 @@ public interface MixinPackResources extends PatchedPackResources {
 		return true;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public default Function<PatchedResourceLocation, PatchedResourceLocation> patched$getRenamer(String namespace) {
 		final int prefixLen = patched$isVanillaPack() ? "../".length() + 1 : 1;
@@ -110,7 +111,7 @@ public interface MixinPackResources extends PatchedPackResources {
 		// FilePackResources is handled separately.
 		// VanillaPackResources:     :../minecraft/something → minecraft:something
 
-		return rl -> (PatchedResourceLocation) ResourceLocation.fromNamespaceAndPath(
+		return rl -> (PatchedResourceLocation) new ResourceLocation(
 				namespace, rl.patched$getPath().substring(prefixLen + namespace.length()));
 	}
 }
