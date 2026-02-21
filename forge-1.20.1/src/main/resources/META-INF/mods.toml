@@ -1,0 +1,32 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="LGPL v2.1"
+issueTrackerURL="https://github.com/EnderTurret/PatchedMod/issues"
+
+[[mods]]
+    modId="patched"
+    displayName="Patched"
+    description='''
+    Patched features a powerful patching system based mostly on RFC 6902, with extensions added to make it more useful for modding.
+    This allows resource/data packs to patch arbitrary json files that would otherwise need to be completely replaced.
+    It also comes with several commands to aid in patch debugging or compatibility.
+    '''
+    version="${file.jarVersion}"
+    authors="EnderTurret"
+    displayURL="https://github.com/EnderTurret/PatchedMod"
+    logoFile="icon.png"
+    displayTest="IGNORE_ALL_VERSION"
+
+[[dependencies.patched]]
+    modId="neoforge"
+    type="required"
+    versionRange="[46,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.patched]]
+    modId="minecraft"
+    type="required"
+    versionRange="[1.20.1,1.20.2]"
+    ordering="NONE"
+    side="BOTH"

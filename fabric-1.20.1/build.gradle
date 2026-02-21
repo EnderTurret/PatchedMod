@@ -1,0 +1,41 @@
+plugins {
+    // https://maven.fabricmc.net/net/fabricmc/fabric-loom-remap/net.fabricmc.fabric-loom-remap.gradle.plugin/
+    id 'net.fabricmc.fabric-loom-remap' version '1.15.4'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+}
+
+loom {
+    accessWidenerPath = file("${rootDir}/fabric-${minecraft_version}/src/main/resources/patched.accesswidener")
+
+    // Due to an incredible oversight(?) in Loom, you cannot change the configuration name from the default, which is derived from the project name.
+    runs {
+        client {
+            if (rootProject.findProperty('minecraft_username') != null) {
+                programArg '--uuid'
+                programArg rootProject.findProperty('minecraft_uuid')
+                programArg '--username'
+                programArg rootProject.findProperty('minecraft_username')
+            }
+        }
+    }
+
+    runConfigs.configureEach {
+        ideConfigGenerated = true
+    }
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    inputs.property 'version', project.version
+
+    filesMatching('fabric.mod.json') {
+        expand 'version': inputs.properties.version
+    }
+}

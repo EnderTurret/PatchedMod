@@ -18,9 +18,11 @@ plugins {
 
 rootProject.name = 'PatchedMod'
 
-include('common', 'fabric-1.21.1', 'neoforge-1.21.1', 'fabric-1.21.11', 'neoforge-1.21.11')
+include('common', 'fabric-1.20.1', 'forge-1.20.1', 'fabric-1.21.1', 'neoforge-1.21.1', 'fabric-1.21.11', 'neoforge-1.21.11')
 project(':common').name = 'PatchedMod.Common'
-project(':neoforge-1.21.1').name = 'PatchedMod.NeoForge.1.21.1'
+project(':fabric-1.20.1').name = 'PatchedMod.Fabric.1.20.1'
+project(':forge-1.20.1').name = 'PatchedMod.Forge.1.20.1'
 project(':fabric-1.21.1').name = 'PatchedMod.Fabric.1.21.1'
-project(':neoforge-1.21.11').name = 'PatchedMod.NeoForge.1.21.11'
+project(':neoforge-1.21.1').name = 'PatchedMod.NeoForge.1.21.1'
 project(':fabric-1.21.11').name = 'PatchedMod.Fabric.1.21.11'
+project(':neoforge-1.21.11').name = 'PatchedMod.NeoForge.1.21.11'

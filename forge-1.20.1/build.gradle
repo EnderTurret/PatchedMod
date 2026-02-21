@@ -1,0 +1,56 @@
+// https://projects.neoforged.net/
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev.legacyforge' version '2.0.137'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+mixin {
+    add sourceSets.main, 'patched.refmap.json'
+    config 'mixins.patched.json'
+}
+
+tasks.named('jar', Jar).configure {
+    manifest.attributes([
+        'MixinConfigs': 'mixins.patched.json'
+    ])
+}
+
+legacyForge {
+    version = "${minecraft_version}-${loader_version}"
+
+    mods {
+        patched {
+            sourceSet sourceSets.main
+            sourceSet project(':PatchedMod.Common').sourceSets.main
+        }
+    }
+
+    parchment {
+        minecraftVersion = "${minecraft_version}"
+        mappingsVersion = "${mappings_version}"
+    }
+
+    runs {
+        configureEach {
+            additionalRuntimeClasspathConfiguration.extendsFrom configurations.shadow
+        }
+
+        client {
+            client()
+            ideName = 'runPatchedModClientNeoForge1_20_1'
+            if (rootProject.findProperty('minecraft_username') != null) {
+                programArguments.addAll('--uuid', rootProject.findProperty('minecraft_uuid'), '--username', rootProject.findProperty('minecraft_username'))
+            }
+        }
+        server {
+            server()
+            ideName = 'runPatchedModServerNeoForge1_20_1'
+        }
+        data {
+            data()
+            ideName = 'runPatchedModClientDataNeoForge1_20_1'
+        }
+    }
+}
