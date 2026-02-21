@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.server.packs.AbstractPackResources;
-import net.minecraft.server.packs.CompositePackResources;
 
 import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
@@ -15,7 +14,7 @@ import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
  * Provides an {@link IPatchingPackResources} implementation for {@link AbstractPackResources}.
  * @author EnderTurret
  */
-@Mixin({ AbstractPackResources.class, CompositePackResources.class })
+@Mixin(AbstractPackResources.class)
 public abstract class MixinAbstractPackResources implements IPatchingPackResources {
 
 	@Nullable

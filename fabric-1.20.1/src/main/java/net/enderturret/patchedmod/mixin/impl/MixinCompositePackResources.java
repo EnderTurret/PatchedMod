@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 
 import net.minecraft.server.packs.AbstractPackResources;
 
@@ -11,11 +12,12 @@ import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
 /**
- * Provides an {@link IPatchingPackResources} implementation for {@link AbstractPackResources}.
+ * Provides an {@link IPatchingPackResources} implementation for {@code CompositePackResources} (from ≥1.20.2).
  * @author EnderTurret
  */
-@Mixin(AbstractPackResources.class)
-public abstract class MixinAbstractPackResources implements IPatchingPackResources {
+@Pseudo
+@Mixin(targets = { "net/minecraft/server/packs/CompositePackResources", "net/minecraft/class_8614" })
+public abstract class MixinCompositePackResources implements IPatchingPackResources {
 
 	@Nullable
 	private PatchedMetadata patched$meta;

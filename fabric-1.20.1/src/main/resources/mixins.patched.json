@@ -16,6 +16,7 @@
     "fabric.api.MixinModResourcePack",
     "fabric.MixinCommands",
     "impl.MixinAbstractPackResources",
+    "impl.MixinCompositePackResources",
     "impl.MixinFallbackResourceManager"
   ],
   "client": [

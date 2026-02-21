@@ -1,16 +1,15 @@
-package net.enderturret.patchedmod.mixin.fabric;
+package net.enderturret.patchedmod.mixin.forge;
 
 import java.util.List;
 import java.util.Set;
 
+import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.SemanticVersion;
-import net.fabricmc.loader.api.Version;
+import net.minecraftforge.fml.loading.LoadingModList;
 
 @Internal
 public final class PatchedMixinPlugin implements IMixinConfigPlugin {
@@ -20,15 +19,12 @@ public final class PatchedMixinPlugin implements IMixinConfigPlugin {
 		if (mixinClassName.endsWith("MixinCompositePackResources"))
 			return getMinecraftPatch() >= 2;
 
-		if (mixinClassName.contains("fabric.api") && !FabricLoader.getInstance().isModLoaded("fabric-resource-loader-v0"))
-			return false;
-
 		return true;
 	}
 
 	private static int getMinecraftPatch() {
-		final Version mcVersion = FabricLoader.getInstance().getModContainer("minecraft").get().getMetadata().getVersion();
-		return ((SemanticVersion) mcVersion).getVersionComponent(2);
+		final ArtifactVersion mcVersion = LoadingModList.get().getModFileById("minecraft").getMods().get(0).getVersion();
+		return mcVersion.getIncrementalVersion(); // major.minor.incremental
 	}
 
 	@Override
