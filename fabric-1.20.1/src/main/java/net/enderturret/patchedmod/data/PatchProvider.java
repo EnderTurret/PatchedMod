@@ -173,11 +173,11 @@ public abstract class PatchProvider implements DataProvider {
 
 		DynamicOps<JsonElement> ops = JsonOps.INSTANCE;
 		if (provider != null)
-			ops = provider.createSerializationContext(JsonOps.INSTANCE);
+			ops = RegistryOps.create(JsonOps.INSTANCE, provider);
 
 		final DataResult<JsonElement> result = codec.encodeStart(ops, value);
 
-		return result.getOrThrow(PatchingException::new);
+		return result.getOrThrow(false, PatchingException::new);
 	}
 
 	/**

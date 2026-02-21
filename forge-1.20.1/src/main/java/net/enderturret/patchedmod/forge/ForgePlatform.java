@@ -79,7 +79,7 @@ public final class ForgePlatform implements PatchedPlatform {
 	@Override
 	public <T, I> JankyDataResult<T> decode(Codec<T> codec, DynamicOps<I> ops, I input) {
 		final DataResult<T> result = codec.parse(ops, input);
-		return result.isSuccess() ? new JankyDataResult<>(result.getOrThrow(), null) : new JankyDataResult<>(null, result.error().get().message());
+		return result.result().isPresent() ? new JankyDataResult<>(result.result().get(), null) : new JankyDataResult<>(null, result.error().get().message());
 	}
 
 	@Override
