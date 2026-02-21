@@ -9,7 +9,6 @@
     "bindings.MixinResourceLocation",
     "bindings.MixinResourceManager",
     "command.FilePackResourcesAccess",
-    "command.SharedZipFileAccessAccess",
     "dynamic_patches.MixinMinecraftServer",
     "dynamic_patches.MixinPackConfig",
     "fabric.api.MixinModNioResourcePack",

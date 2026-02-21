@@ -24,8 +24,7 @@ import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.forge.ForgePlatform;
-import net.enderturret.patchedmod.mixin.command.FilePackResourcesAccess;
-import net.enderturret.patchedmod.mixin.command.SharedZipFileAccessAccess;
+import net.enderturret.patchedmod.forge.PatchedVersionHacks;
 
 @Mixin(PackResources.class)
 public interface MixinPackResources extends PatchedPackResources {
@@ -47,7 +46,7 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default ZipFile patched$getFilePackZipFile() {
-		return ((SharedZipFileAccessAccess) ((FilePackResourcesAccess) this).patched$getZipFileAccess()).patched$getOrCreateZipFile();
+		return PatchedVersionHacks.getOrCreateZipFile((FilePackResources) this);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
+import java.util.zip.ZipFile;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -16,9 +17,13 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.FilePackResources;
+
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
+import net.enderturret.patchedmod.mixin.command.FilePackResourcesAccess;
 
 /**
  * Various hacks to make Patched work on newer versions of Minecraft without needing to write entire platform implementations for them.
@@ -27,19 +32,41 @@ import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 @Internal
 public final class PatchedVersionHacks {
 
-	static {
-		MethodHandle temp = null;
-
-		if (PatchedPlatform.get().isModLoaded("minecraft", "1.21.4")) {
+	public static ZipFile getOrCreateZipFile(FilePackResources pack) {
+		if (zipFileAccess != null)
 			try {
-				final Method getValue = Registry.class.getDeclaredMethod("getValue", ResourceLocation.class);
-				temp = MethodHandles.publicLookup().unreflect(getValue);
-				PatchedInternal.LOGGER.debug("Found Registry.getValue(): {}", getValue);
-			} catch (NoSuchMethodException e) {
-				PatchedInternal.LOGGER.warn("Could not find Registry.getValue()!", e);
+				final Object access = zipFileAccess.invoke(pack);
+				return (ZipFile) getOrCreateZipFile.invoke(access);
+			} catch (Throwable e) {
+				throw new RuntimeException(e);
+			}
+
+		return ((FilePackResourcesAccess) pack).patched$getOrCreateZipFile();
+	}
+
+	private static final @Nullable MethodHandle zipFileAccess;
+	private static final @Nullable MethodHandle getOrCreateZipFile;
+
+	static {
+		MethodHandle tempField = null;
+		MethodHandle tempMethod = null;
+
+		if (PatchedPlatform.get().isModLoaded("minecraft", "1.20.2")) {
+			try {
+				final Field zipFileAccess = ObfuscationReflectionHelper.findField(FilePackResources.class, "f_291183_");
+				tempField = MethodHandles.publicLookup().unreflectGetter(zipFileAccess);
+
+				final Class<?> sharedZipFileAccess = Class.forName("net.minecraft.server.packs.FilePackResources$SharedZipFileAccess",
+						false, PatchedVersionHacks.class.getClassLoader());
+				final Method getOrCreateZipFile = ObfuscationReflectionHelper.findMethod(sharedZipFileAccess, "m_295521_");
+				tempMethod = MethodHandles.publicLookup().unreflect(getOrCreateZipFile);
+				PatchedInternal.LOGGER.debug("Found SharedZipFileAccess.getOrCreateZipFile(): {}", getOrCreateZipFile);
 			} catch (Exception e) {
-				PatchedInternal.LOGGER.warn("Exception locating Registry.getValue():", e);
+				PatchedInternal.LOGGER.warn("Exception locating SharedZipFileAccess.getOrCreateZipFile():", e);
 			}
 		}
+
+		zipFileAccess = tempField;
+		getOrCreateZipFile = tempMethod;
 	}
 }

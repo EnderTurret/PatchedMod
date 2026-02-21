@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
+import java.util.zip.ZipFile;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -19,9 +20,11 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.FilePackResources;
 
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
+import net.enderturret.patchedmod.mixin.command.FilePackResourcesAccess;
 
 /**
  * Various hacks to make Patched work on newer versions of Minecraft without needing to write entire platform implementations for them.
@@ -30,23 +33,48 @@ import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 @Internal
 public final class PatchedVersionHacks {
 
+	public static ZipFile getOrCreateZipFile(FilePackResources pack) {
+		if (zipFileAccess != null)
+			try {
+				final Object access = zipFileAccess.invoke(pack);
+				return (ZipFile) getOrCreateZipFile.invoke(access);
+			} catch (Throwable e) {
+				throw new RuntimeException(e);
+			}
+
+		return ((FilePackResourcesAccess) pack).patched$getOrCreateZipFile();
+	}
+
+	private static final @Nullable MethodHandle zipFileAccess;
+	private static final @Nullable MethodHandle getOrCreateZipFile;
+
 	static {
 		final MappingResolver mappings = FabricLoader.getInstance().getMappingResolver();
-		MethodHandle temp = null;
+		MethodHandle tempField = null;
+		MethodHandle tempMethod = null;
 
-		if (PatchedPlatform.get().isModLoaded("minecraft", "1.21.4")) {
-			final String registryInt = "net.minecraft.class_2378";
-			final String registryGetValueInt = "method_63535", registryGetValueDescInt = "(Lnet.minecraft.class_2960;)Ljava/lang/Object;";
-			final String registryGetValue = mappings.mapMethodName("intermediary", registryInt, registryGetValueInt, registryGetValueDescInt);
+		if (PatchedPlatform.get().isModLoaded("minecraft", "1.20.2")) {
+			final String filePackResourcesInt = "net.minecraft.class_3258";
+			final String zipFileAccessInt = "field_45038", zipFileAccessDescInt = "Lnet/minecraft/class_3258/class_8616;";
+			final String sharedZipFileAccessInt = "net.minecraft.class_3258.class_8616";
+			final String getOrCreateZipFileInt = "method_52426", getOrCreateZipFileDescInt = "()Ljava/util/zip/ZipFile;";
 			try {
-				final Method getValue = Registry.class.getDeclaredMethod(registryGetValue, ResourceLocation.class);
-				temp = MethodHandles.publicLookup().unreflect(getValue);
-				PatchedInternal.LOGGER.debug("Found Registry.getValue(): {}", getValue);
-			} catch (NoSuchMethodException e) {
-				PatchedInternal.LOGGER.warn("Could not find Registry.getValue()!", e);
+				final Field zipFileAccess = FilePackResources.class.getDeclaredField(mappings.mapFieldName("intermediary", filePackResourcesInt, zipFileAccessInt, zipFileAccessDescInt));
+				zipFileAccess.setAccessible(true);
+				tempField = MethodHandles.publicLookup().unreflectGetter(zipFileAccess);
+
+				final Class<?> sharedZipFileAccess = Class.forName(mappings.mapClassName("intermediary", sharedZipFileAccessInt),
+						false, PatchedVersionHacks.class.getClassLoader());
+				final Method getOrCreateZipFile = sharedZipFileAccess.getDeclaredMethod(mappings.mapMethodName("intermediary", sharedZipFileAccessInt, getOrCreateZipFileInt, getOrCreateZipFileDescInt));
+				getOrCreateZipFile.setAccessible(true);
+				tempMethod = MethodHandles.publicLookup().unreflect(getOrCreateZipFile);
+				PatchedInternal.LOGGER.debug("Found SharedZipFileAccess.getOrCreateZipFile(): {}", getOrCreateZipFile);
 			} catch (Exception e) {
-				PatchedInternal.LOGGER.warn("Exception locating Registry.getValue():", e);
+				PatchedInternal.LOGGER.warn("Exception locating SharedZipFileAccess.getOrCreateZipFile():", e);
 			}
 		}
+
+		zipFileAccess = tempField;
+		getOrCreateZipFile = tempMethod;
 	}
 }
