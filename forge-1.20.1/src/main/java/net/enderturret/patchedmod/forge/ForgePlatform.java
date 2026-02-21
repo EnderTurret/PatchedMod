@@ -30,6 +30,11 @@ import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 public final class ForgePlatform implements PatchedPlatform {
 
 	@Override
+	public boolean hasGroupPacks() {
+		return true; // Unfortunately.
+	}
+
+	@Override
 	public boolean isPhysicalClient() {
 		return FMLEnvironment.dist == Dist.CLIENT;
 	}

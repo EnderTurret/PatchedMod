@@ -40,6 +40,17 @@ public interface PatchedPlatform {
 	}
 
 	/**
+	 * <p>
+	 * Returns whether or not the platform contains {@linkplain PatchedPackResources#patched$isGroupPack() group packs}.
+	 * </p>
+	 * <p>
+	 * Some of the Patched machinery uses this method to determine whether to enable more expensive code paths that aren't necessary on newer versions.
+	 * </p>
+	 * @return {@code true} if so.
+	 */
+	public default boolean hasGroupPacks() { return false; }
+
+	/**
 	 * Returns whether or not Patched is running on the (physical) client.
 	 * @return {@code true} if Patched is running on the client.
 	 */

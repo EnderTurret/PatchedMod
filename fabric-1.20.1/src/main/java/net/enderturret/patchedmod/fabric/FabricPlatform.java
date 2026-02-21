@@ -28,6 +28,11 @@ import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 public final class FabricPlatform implements PatchedPlatform {
 
 	@Override
+	public boolean hasGroupPacks() {
+		return true; // Unfortunately.
+	}
+
+	@Override
 	public boolean isPhysicalClient() {
 		return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
 	}

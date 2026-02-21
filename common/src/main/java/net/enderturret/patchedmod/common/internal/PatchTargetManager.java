@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.internal.flow.PatchingManager;
 import net.enderturret.patchedmod.common.util.meta.IPattern;
@@ -49,7 +50,12 @@ public final class PatchTargetManager {
 	public PatchTargetManager(PatchedPackType type, List<PatchedPackResources> packsByPriority) {
 		this.type = type;
 
-		packsByPriority = List.copyOf(packsByPriority);
+		if (PatchedPlatform.get().hasGroupPacks())
+			packsByPriority = packsByPriority.stream()
+					.flatMap(pack -> (pack.patched$isGroupPack() ? pack.patched$getChildren() : List.of(pack)).stream())
+					.toList();
+		else
+			packsByPriority = List.copyOf(packsByPriority);
 
 		final Map<String, Integer> priorityByPack = new IdentityHashMap<>();
 		final List<BakedTarget> targets = new ArrayList<>();

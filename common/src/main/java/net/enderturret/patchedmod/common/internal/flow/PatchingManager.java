@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.collect.Iterables;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -47,6 +48,8 @@ public final class PatchingManager {
 	 */
 	@Internal
 	public static final boolean DEBUG = Boolean.getBoolean("patched.debug");
+
+	private static final boolean HAS_GROUP_PACKS = PatchedPlatform.get().hasGroupPacks();
 
 	// Whether to print the "patched:has_patches" deprecation warning.
 	// This is here so it can be disabled on older versions.
@@ -117,7 +120,7 @@ public final class PatchingManager {
 	private static boolean patchSingle(PatchedResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit, PatchTrace trace) {
 		// Since many packs could provide this file, we cannot rely on existence checks to find the real pack.
 		// This will simply have to not work in that case.
-		//from = findTrueSource(from, type, name);
+		// (Only relevant on <1.21.1.)
 
 		if (from.patched$hasPatches()) {
 			final PatchedResourceLocation patchName = name.patched$withPath(name.patched$getPath() + ".patch");
@@ -155,6 +158,9 @@ public final class PatchingManager {
 
 		final PatchContext[] context = new PatchContext[1];
 
+		if (HAS_GROUP_PACKS)
+			from = findTrueSource(from, type, patchName);
+
 		final Map<PatchedPackResources, List<String>> targets = DynamicPatches.getTargets(type, name, from);
 
 		boolean seenOriginal = false;
@@ -163,60 +169,91 @@ public final class PatchingManager {
 			final PatchedPackResources packEntry = manager.patched$getFallbackPack(i);
 			if (packEntry == null) continue;
 
-			// Until we see the pack the file originated from, don't apply any patches.
-			if (!seenOriginal)
-				if (packEntry == from) {
-					trace.recordFile(packEntry, false);
-					seenOriginal = true;
-				} else {
-					if (trace.active())
-						traceOverridenPatchesOrFile(type, name, patchName, packEntry, trace, targets.getOrDefault(packEntry, List.of()));
-					continue;
+			if (HAS_GROUP_PACKS)
+				for (Entry pack : packsIn(new Entry(packEntry), type, patchName.patched$getNamespace())) {
+					// Until we see the pack the file originated from, don't apply any patches.
+					if (!seenOriginal)
+						if (packEntry == from) {
+							trace.recordFile(packEntry, false);
+							seenOriginal = true;
+						} else {
+							if (trace.active())
+								traceOverridenPatchesOrFile(type, name, patchName, packEntry, trace, targets.getOrDefault(packEntry, List.of()));
+							continue;
+						}
+
+					if (packEntry.patched$hasPatches())
+						applyPatchesFromPack(manager, from, new Entry(packEntry), type, name, patchName, wrapper, audit, trace, context, targets);
 				}
 
-			if (packEntry.patched$hasPatches()) {
-				final Entry pack = new Entry(packEntry);
-
-				PatchContext ctx = null;
-
-				try {
-					ctx = applyPatch(
-							type, pack.resources().patched$getResource(type, patchName),
-							patchName.toString(), pack, wrapper, audit, trace, context,
-							null
-							);
-				} catch (IOException e) {
-					PatchedInternal.LOGGER.warn("Failed to read patch {} from {}:", patchName, from.patched$getName(), e);
-				}
-
-				IFileAccess access = null;
-				for (String patch : targets.getOrDefault(pack.resources(), List.of())) {
-					// We use the IFileAccess instead of grabbing it manually so that it's cached.
-					if (access == null)
-						access = ctx != null ? ctx.fileAccess() : new PatchedFileAccess(pack.resources());
-
-					final JsonPatch realPatch;
-
-					try {
-						realPatch = access.readIncludedPatch(patch);
-					} catch (PatchingException e) { // Almost always going to be caused by a missing file.
-						PatchedInternal.LOGGER.warn("Failed to read patch {} from {}:\n{}", patch, pack.name(), e.getMessage());
-						continue;
-					} catch (Exception e) {
-						PatchedInternal.LOGGER.warn("Failed to read patch {} from {}:", patch, pack.name(), e);
+			else {
+				// Until we see the pack the file originated from, don't apply any patches.
+				if (!seenOriginal)
+					if (packEntry == from) {
+						trace.recordFile(packEntry, false);
+						seenOriginal = true;
+					} else {
+						if (trace.active())
+							traceOverridenPatchesOrFile(type, name, patchName, packEntry, trace, targets.getOrDefault(packEntry, List.of()));
 						continue;
 					}
 
-					applyPatch(
-							type, realPatch,
-							"patches/" + patch + ".json.patch", pack, wrapper, audit, context,
-							name.toString()
-							);
-				}
+				if (packEntry.patched$hasPatches())
+					applyPatchesFromPack(manager, from, new Entry(packEntry), type, name, patchName, wrapper, audit, trace, context, targets);
 			}
 		}
 
 		return context[0] != null;
+	}
+
+	private static void applyPatchesFromPack(
+			PatchedResourceManager manager,
+			PatchedPackResources from,
+			Entry pack,
+			PatchedPackType type,
+			PatchedResourceLocation name,
+			PatchedResourceLocation patchName,
+			LazyPatchingWrapper wrapper,
+			@Nullable PatchAudit audit,
+			PatchTrace trace,
+			PatchContext[] context,
+			Map<PatchedPackResources, List<String>> targets) {
+		PatchContext ctx = null;
+
+		try {
+			ctx = applyPatch(
+					type, pack.resources().patched$getResource(type, patchName),
+					patchName.toString(), pack, wrapper, audit, trace, context,
+					null
+					);
+		} catch (IOException e) {
+			PatchedInternal.LOGGER.warn("Failed to read patch {} from {}:", patchName, from.patched$getName(), e);
+		}
+
+		IFileAccess access = null;
+		for (String patch : targets.getOrDefault(pack.resources(), List.of())) {
+			// We use the IFileAccess instead of grabbing it manually so that it's cached.
+			if (access == null)
+				access = ctx != null ? ctx.fileAccess() : new PatchedFileAccess(pack.resources());
+
+			final JsonPatch realPatch;
+
+			try {
+				realPatch = access.readIncludedPatch(patch);
+			} catch (PatchingException e) { // Almost always going to be caused by a missing file.
+				PatchedInternal.LOGGER.warn("Failed to read patch {} from {}:\n{}", patch, pack.name(), e.getMessage());
+				continue;
+			} catch (Exception e) {
+				PatchedInternal.LOGGER.warn("Failed to read patch {} from {}:", patch, pack.name(), e);
+				continue;
+			}
+
+			applyPatch(
+					type, realPatch,
+					"patches/" + patch + ".json.patch", pack, wrapper, audit, context,
+					name.toString()
+					);
+		}
 	}
 
 	private static void traceOverridenPatchesOrFile(
@@ -331,7 +368,14 @@ public final class PatchingManager {
 		if (!patching.patched$initialized())
 			synchronized (patching) {
 				if (!patching.patched$initialized()) {
-					{
+					if (HAS_GROUP_PACKS && patching.patched$isGroupPack()) {
+						boolean enabled = false;
+
+						for (PatchedPackResources resources : patching.patched$getChildren())
+							enabled |= resources.patched$hasPatches();
+
+						patching.setPatchedMetadata(enabled ? PatchedMetadata.CURRENT_VERSION : PatchedMetadata.DISABLED_METADATA);
+					} else {
 						PatchedMetadata meta;
 
 						try {
@@ -376,5 +420,46 @@ public final class PatchingManager {
 			PatchedInternal.LOGGER.info(message, args);
 		else
 			PatchedInternal.LOGGER.debug(message, args);
+	}
+
+	/**
+	 * Returns an {@link Iterable} of packs within the given pack.
+	 * In most cases, this will only be the given pack.
+	 * @param entry The pack.
+	 * @param type The pack type.
+	 * @param namespace The namespace to look for.
+	 * @return The packs containing the specified namespace.
+	 */
+	private static Iterable<Entry> packsIn(Entry entry, PatchedPackType type, String namespace) {
+		if (entry.resources().patched$isGroupPack())
+			return Iterables.transform(
+					Iterables.filter(
+							entry.resources().patched$getFilteredChildren(type, namespace),
+							PatchedPackResources::patched$hasPatches),
+					Entry::new);
+
+		return List.of(entry);
+	}
+
+	/**
+	 * <p>Given a pack and a file, tries to find the true source of the file.</p>
+	 * <p>
+	 * Sometimes a pack may "provide" a file without actually containing it itself.
+	 * In particular, mod loaders tend to combine a number of packs together in a way similar to {@code MultiPackResourceManager}.
+	 * This is done to condense all the mod resource packs down into one entry in the pack screen (and similar for data packs).
+	 * However, we need to know which pack the file actually came from in order to figure out which patches to apply, so that is what this method is for.
+	 * </p>
+	 * @param from The pack the file is provided by.
+	 * @param type The pack type.
+	 * @param name The file in question.
+	 * @return The true source of the file.
+	 */
+	private static PatchedPackResources findTrueSource(PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name) {
+		if (from.patched$isGroupPack())
+			for (PatchedPackResources pack : from.patched$getFilteredChildren(type, name.patched$getNamespace()))
+				if (pack.patched$hasResource(type, name))
+					return pack;
+
+		return from;
 	}
 }

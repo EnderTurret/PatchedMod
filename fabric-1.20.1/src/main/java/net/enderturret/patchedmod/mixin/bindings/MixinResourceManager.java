@@ -29,9 +29,7 @@ public interface MixinResourceManager extends PatchedResourceManager {
 
 	@Override
 	public default Stream<PatchedPackResources> patched$getPatchingPacks() {
-		return ((ResourceManager) this).listPacks()
-				.map(p -> (PatchedPackResources) p)
-				.filter(p -> p.patchedMetadata().patchingEnabled());
+		return patched$getExpandedPacks().filter(p -> p.patchedMetadata().patchingEnabled());
 	}
 
 	@Override
@@ -58,7 +56,7 @@ public interface MixinResourceManager extends PatchedResourceManager {
 
 	@Override
 	public default Stream<PatchedPackResources> patched$listPacks() {
-		return (Stream) ((ResourceManager) this).listPacks();
+		return patched$getExpandedPacks();
 	}
 
 	@Override
