@@ -8,11 +8,11 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.resources.ResourceLocation;
 
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.SingleDataSource;
@@ -24,9 +24,10 @@ import net.enderturret.patchedmod.forge.env.ServerEnvironment;
 @Mod(Patched.MOD_ID)
 public final class PatchedForge {
 
-	public PatchedForge(IEventBus modBus) {
-		NeoForge.EVENT_BUS.addListener(this::registerCommands);
-		modBus.addListener(this::handleIMC);
+	@SuppressWarnings("removal")
+	public PatchedForge() {
+		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::handleIMC);
 	}
 
 	private void registerCommands(RegisterCommandsEvent e) {

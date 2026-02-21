@@ -6,10 +6,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
@@ -23,7 +23,7 @@ import net.enderturret.patchedmod.forge.env.ComponentWrapper;
  * @author EnderTurret
  */
 @Internal
-@EventBusSubscriber(modid = Patched.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Patched.MOD_ID, bus = EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public final class ClientEvents {
 
 	@SubscribeEvent
