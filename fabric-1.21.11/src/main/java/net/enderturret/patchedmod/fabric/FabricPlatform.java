@@ -89,7 +89,7 @@ public final class FabricPlatform implements PatchedPlatform {
 
 	@Override
 	public PatchedResourceLocation tryParse(String input) {
-		return (PatchedResourceLocation) (Object) Identifier.parse(input);
+		return (PatchedResourceLocation) (Object) Identifier.tryParse(input);
 	}
 
 	@Override

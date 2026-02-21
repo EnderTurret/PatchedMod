@@ -94,7 +94,7 @@ public final class ForgePlatform implements PatchedPlatform {
 
 	@Override
 	public PatchedResourceLocation tryParse(String input) {
-		return (PatchedResourceLocation) ResourceLocation.parse(input);
+		return (PatchedResourceLocation) ResourceLocation.tryParse(input);
 	}
 
 	@Override

@@ -94,7 +94,7 @@ public final class NeoForgePlatform implements PatchedPlatform {
 
 	@Override
 	public PatchedResourceLocation tryParse(String input) {
-		return (PatchedResourceLocation) (Object) ResourceLocation.parse(input);
+		return (PatchedResourceLocation) (Object) ResourceLocation.tryParse(input);
 	}
 
 	@Override
