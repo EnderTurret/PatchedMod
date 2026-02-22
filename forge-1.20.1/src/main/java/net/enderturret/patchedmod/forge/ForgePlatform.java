@@ -20,6 +20,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.forgespi.language.IModFileInfo;
+import net.minecraftforge.resource.PathPackResources;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
@@ -56,10 +58,12 @@ public final class ForgePlatform implements PatchedPlatform {
 	}
 
 	public static Optional<? extends ModContainer> findModNameFromModFile(PatchedPackResources pack) {
-		if (pack.patched$packId().startsWith("mod/")) {
-			final String modId = pack.patched$packId().substring("mod/".length());
-			return ModList.get().getModContainerById(modId);
-		}
+		if (!(pack instanceof PathPackResources)) return Optional.empty();
+
+		final String packId = pack.patched$packId();
+		for (IModFileInfo modInfo : ModList.get().getModFiles())
+			if (packId.equals(modInfo.getFile().getFileName()))
+				return ModList.get().getModContainerById(modInfo.getMods().get(0).getModId());
 
 		return Optional.empty();
 	}
