@@ -49,18 +49,18 @@ legacyForge {
 
         client {
             client()
-            ideName = 'runPatchedModClientNeoForge1_20_1'
+            ideName = 'runPatchedModClientForge1_20_1'
             if (rootProject.findProperty('minecraft_username') != null) {
                 programArguments.addAll('--uuid', rootProject.findProperty('minecraft_uuid'), '--username', rootProject.findProperty('minecraft_username'))
             }
         }
         server {
             server()
-            ideName = 'runPatchedModServerNeoForge1_20_1'
+            ideName = 'runPatchedModServerForge1_20_1'
         }
         data {
             data()
-            ideName = 'runPatchedModClientDataNeoForge1_20_1'
+            ideName = 'runPatchedModClientDataForge1_20_1'
         }
     }
 }
