@@ -13,7 +13,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 
 import net.minecraftforge.api.distmarker.Dist;
@@ -118,13 +117,13 @@ public final class ForgePlatform implements PatchedPlatform {
 
 	@Override
 	public boolean isThingRegistered(PatchedResourceLocation registry, PatchedResourceLocation id) {
-		final Registry<?> reg = BuiltInRegistries.REGISTRY.get((ResourceLocation) registry);
+		final Registry<?> reg = Registry.REGISTRY.get((ResourceLocation) registry);
 		return reg != null && reg.containsKey((ResourceLocation) id);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean isItemRegistered(PatchedResourceLocation id) {
-		return BuiltInRegistries.ITEM.containsKey((ResourceLocation) id);
+		return Registry.ITEM.containsKey((ResourceLocation) id);
 	}
 }

@@ -46,7 +46,7 @@ public final class ClientEvents {
 		@Override
 		public void sendSuccess(CommandSourceStack source, boolean allowLogging, PatchedMutableComponent message) {
 			final Component msg = ((ComponentWrapper) message).message();
-			source.sendSuccess(() -> msg, allowLogging);
+			source.sendSuccess(msg, allowLogging);
 		}
 
 		@Override
