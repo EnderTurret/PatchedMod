@@ -75,7 +75,7 @@ public final class PatchTargetManager {
 		final boolean empty = this.targets.isEmpty();
 		targetsByNamespace = empty ? null : new HashMap<>();
 		this.packsByPriority = empty ? null : List.copyOf(packsByPriority);
-		this.priorityByPack = empty ? null : priorityByPack;
+		this.priorityByPack = priorityByPack;
 
 		if (DynamicPatches.DEBUG_TARGETS || PatchingManager.DEBUG)
 			PatchedInternal.LOGGER.info("Built PatchTargetManager {} with {}", type.name(), packsByPriority.stream()
