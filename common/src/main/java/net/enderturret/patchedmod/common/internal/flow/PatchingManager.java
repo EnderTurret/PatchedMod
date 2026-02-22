@@ -159,7 +159,7 @@ public final class PatchingManager {
 		final PatchContext[] context = new PatchContext[1];
 
 		if (HAS_GROUP_PACKS)
-			from = findTrueSource(from, type, patchName);
+			from = findTrueSource(from, type, name);
 
 		final Map<PatchedPackResources, List<String>> targets = DynamicPatches.getTargets(type, name, from);
 
