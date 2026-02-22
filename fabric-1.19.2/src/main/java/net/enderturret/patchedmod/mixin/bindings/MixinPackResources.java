@@ -64,8 +64,11 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default @Nullable InputStream patched$getResource(PatchedPackType type, PatchedResourceLocation location) throws IOException {
-		final InputStream ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (ResourceLocation) location);
-		return ret != null ? ret : null;
+		try {
+			return ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (ResourceLocation) location);
+		} catch (FileNotFoundException e) {
+			return null;
+		}
 	}
 
 	@Override
