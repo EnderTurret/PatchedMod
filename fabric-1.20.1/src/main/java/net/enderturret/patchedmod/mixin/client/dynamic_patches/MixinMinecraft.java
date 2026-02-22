@@ -38,7 +38,7 @@ public abstract class MixinMinecraft {
 					value = "INVOKE_ASSIGN",
 					target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;"
 					),
-			method = "reloadResourcePacks(ZLnet/minecraft/client/Minecraft$GameLoadCookie;)Ljava/util/concurrent/CompletableFuture;",
+			method = "reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;",
 			ordinal = 0
 	)
 	private List<PackResources> patched$setupClientPatchTargetManagerReload(List<PackResources> packsByPriority) {
