@@ -42,10 +42,11 @@ public abstract class MixinFallbackResourceManager implements FallbackResourceMa
 					+ ")Lnet/minecraft/server/packs/resources/Resource$IoSupplier;"),
 			method = { "getResource", "listResources" })
 	private Resource.IoSupplier<InputStream> patched$replaceResourceMulti(
-			PackResources pack, ResourceLocation location,
+			FallbackResourceManager _self,
+			ResourceLocation location, PackResources pack,
 			Operation<Resource.IoSupplier<InputStream>> downstream) {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
-		final Resource.IoSupplier<InputStream> streamSupplier = downstream.call(pack, location);
+		final Resource.IoSupplier<InputStream> streamSupplier = downstream.call(_self, location, pack);
 		return patched$chain(streamSupplier, (PatchedResourceLocation) location, (PatchedPackResources) pack, false);
 	}
 
