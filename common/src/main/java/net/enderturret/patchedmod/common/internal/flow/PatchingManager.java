@@ -53,7 +53,7 @@ public final class PatchingManager {
 
 	// Whether to print the "patched:has_patches" deprecation warning.
 	// This is here so it can be disabled on older versions.
-	private static final boolean HASPATCHES_WARNING = true;
+	private static final boolean HASPATCHES_WARNING = !PatchedPlatform.get().hasLegacyPatchedMetadata();
 
 	private static final AtomicBoolean LOG_EXCEPTIONS = new AtomicBoolean(true);
 

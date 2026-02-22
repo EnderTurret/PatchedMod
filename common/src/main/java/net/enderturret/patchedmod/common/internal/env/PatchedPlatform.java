@@ -51,6 +51,19 @@ public interface PatchedPlatform {
 	public default boolean hasGroupPacks() { return false; }
 
 	/**
+	 * <p>
+	 * Returns whether or not the platform contains the deprecated (and soon-to-be-withdrawn) legacy {@code "patched:has_patches"} format.
+	 * </p>
+	 * <p>
+	 * This is necessary because while a new syntax was introduced in 1.20.4, the old syntax was historically used throughout 1.20.1 and below.
+	 * We issue warnings about the deprecated status of this syntax in 1.21.1 and up,
+	 * but we wouldn't want to clutter the logs with complaints on versions that predate the newer format.
+	 * </p>
+	 * @return {@code true} if so.
+	 */
+	public default boolean hasLegacyPatchedMetadata() { return false; }
+
+	/**
 	 * Returns whether or not Patched is running on the (physical) client.
 	 * @return {@code true} if Patched is running on the client.
 	 */
