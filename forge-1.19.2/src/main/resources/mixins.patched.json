@@ -14,7 +14,8 @@
     "forge.DelegatingPackResourcesAccess",
     "impl.MixinAbstractPackResources",
     "impl.MixinCompositePackResources",
-    "impl.MixinFallbackResourceManager"
+    "impl.MixinFallbackResourceManager",
+    "impl.MixinSinglePackResourceThunkSupplier"
   ],
   "client": [
     "client.dynamic_patches.MixinMinecraft"

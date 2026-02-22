@@ -1,0 +1,13 @@
+package net.enderturret.patchedmod.forge;
+
+import java.io.InputStream;
+
+import net.minecraft.server.packs.resources.Resource;
+
+import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
+
+public interface FallbackResourceManagerAccess {
+
+	public Resource.IoSupplier<InputStream> patched$chain(Resource.IoSupplier<InputStream> delegate, PatchedResourceLocation name, PatchedPackResources origin, boolean singlePack);
+}
