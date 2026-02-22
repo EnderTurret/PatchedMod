@@ -18,7 +18,6 @@ import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.VanillaPackResources;
-import net.minecraft.server.packs.resources.IoSupplier;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
@@ -33,7 +32,7 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default String patched$packId() {
-		return ((PackResources) this).packId();
+		return ((PackResources) this).getName();
 	}
 
 	@Override
@@ -58,32 +57,39 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default @Nullable InputStream patched$getRootResource(String... path) throws IOException {
-		final IoSupplier<InputStream> ret = ((PackResources) this).getRootResource(path);
-		return ret != null ? ret.get() : null;
+		// TODO: This throws for slashes. What should we do?
+		final InputStream ret = ((PackResources) this).getRootResource(String.join("/", path));
+		return ret != null ? ret : null;
 	}
 
 	@Override
 	public default @Nullable InputStream patched$getResource(PatchedPackType type, PatchedResourceLocation location) throws IOException {
-		final IoSupplier<InputStream> ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (ResourceLocation) location);
-		return ret != null ? ret.get() : null;
+		final InputStream ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (ResourceLocation) location);
+		return ret != null ? ret : null;
 	}
 
 	@Override
 	public default void patched$listResources(PatchedPackType type, String namespace, String path, Consumer<PatchedResourceLocation> consumer) {
-		((PackResources) this).listResources(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA),
+		((PackResources) this).getResources(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA),
 				namespace, path,
-				(loc, io) -> consumer.accept((PatchedResourceLocation) loc));
+				loc -> { consumer.accept((PatchedResourceLocation) loc); return false; });
 	}
 
 	@Override
 	public default boolean patched$hasRootResource(String... path) {
-		return ((PackResources) this).getRootResource(path) != null;
+		try {
+			final InputStream stream = patched$getRootResource(path);
+			if (stream != null) {
+				stream.close();
+				return true;
+			}
+		} catch (IOException ignored) {}
+		return false;
 	}
 
 	@Override
 	public default boolean patched$hasResource(PatchedPackType type, PatchedResourceLocation location) {
-		final IoSupplier<InputStream> ret = ((PackResources) this).getResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (ResourceLocation) location);
-		return ret != null;
+		return ((PackResources) this).hasResource(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA), (ResourceLocation) location);
 	}
 
 	//

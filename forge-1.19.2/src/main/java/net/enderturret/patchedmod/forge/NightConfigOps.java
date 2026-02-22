@@ -38,7 +38,7 @@ final class NightConfigOps implements DynamicOps<Object> {
 
 	@Override
 	public DataResult<Object> mergeToList(Object list, Object value) {
-		if (!(list instanceof List l)) return DataResult.error(() -> "Not a list: " + list);
+		if (!(list instanceof List l)) return DataResult.error("Not a list: " + list);
 
 		final List ret = new ArrayList<>(l);
 		ret.add(value);
@@ -48,8 +48,8 @@ final class NightConfigOps implements DynamicOps<Object> {
 
 	@Override
 	public DataResult<Object> mergeToMap(Object map, Object key, Object value) {
-		if (!(map instanceof UnmodifiableConfig base)) return DataResult.error(() -> "Map is not a config: " + map);
-		if (!(key instanceof String k)) return DataResult.error(() -> "Key is not a string: " + key);
+		if (!(map instanceof UnmodifiableConfig base)) return DataResult.error("Map is not a config: " + map);
+		if (!(key instanceof String k)) return DataResult.error("Key is not a string: " + key);
 
 		final CommentedConfig cfg = CommentedConfig.copy(base);
 		cfg.add(k, value);
@@ -62,7 +62,7 @@ final class NightConfigOps implements DynamicOps<Object> {
 		return input instanceof UnmodifiableConfig c ? DataResult.success(
 				c.entrySet()
 				.stream()
-				.map(entry -> Pair.of(entry.getKey(), entry.getValue()))) : DataResult.error(() -> "Not an object: " + input);
+				.map(entry -> Pair.of(entry.getKey(), entry.getValue()))) : DataResult.error("Not an object: " + input);
 	}
 
 	@Override
@@ -79,7 +79,7 @@ final class NightConfigOps implements DynamicOps<Object> {
 
 	@Override
 	public DataResult<Stream<Object>> getStream(Object input) {
-		return input instanceof List l ? DataResult.success(l.stream()) : DataResult.error(() -> "Not a list: " + input);
+		return input instanceof List l ? DataResult.success(l.stream()) : DataResult.error("Not a list: " + input);
 	}
 
 	@Override
@@ -94,12 +94,12 @@ final class NightConfigOps implements DynamicOps<Object> {
 
 	@Override
 	public DataResult<Number> getNumberValue(Object input) {
-		return input instanceof Number n ? DataResult.success(n) : DataResult.error(() -> "Not a number: " + input);
+		return input instanceof Number n ? DataResult.success(n) : DataResult.error("Not a number: " + input);
 	}
 
 	@Override
 	public DataResult<String> getStringValue(Object input) {
-		return input instanceof String s ? DataResult.success(s) : DataResult.error(() -> "Not a string: " + input);
+		return input instanceof String s ? DataResult.success(s) : DataResult.error("Not a string: " + input);
 	}
 
 	@Override

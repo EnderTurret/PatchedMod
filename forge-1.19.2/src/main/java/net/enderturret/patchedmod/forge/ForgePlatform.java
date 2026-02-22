@@ -103,7 +103,7 @@ public final class ForgePlatform implements PatchedPlatform {
 
 	@Override
 	public <T> DataResult<T> error(Supplier<String> message) {
-		return DataResult.error(message);
+		return DataResult.error(message.get());
 	}
 
 	@Override

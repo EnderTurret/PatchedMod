@@ -26,10 +26,10 @@ import com.mojang.serialization.JsonOps;
 
 import net.minecraft.Util;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.GsonHelper;
@@ -52,21 +52,17 @@ public abstract class PatchProvider implements DataProvider {
 
 	private static final Gson GSON = net.enderturret.patchedmod.common.internal.PatchedInternal.GSON;
 
-	private final PackOutput output;
-	private final PackOutput.Target target;
+	private final DataGenerator output;
+	private final DataGenerator.Target target;
 	private final String modId;
 
 	private final Map<ResourceLocation, JsonPatch> patches = new HashMap<>();
 
-	protected PatchProvider(PackOutput output, PackOutput.Target target, @Nullable String modId) {
-		if (target == null || target == PackOutput.Target.REPORTS) throw new IllegalArgumentException("Bad type");
+	protected PatchProvider(DataGenerator output, DataGenerator.Target target, @Nullable String modId) {
+		if (target == null || target == DataGenerator.Target.REPORTS) throw new IllegalArgumentException("Bad type");
 		this.output = output;
 		this.target = target;
 		this.modId = modId;
-	}
-
-	protected PatchProvider(DataGenerator generator, PackOutput.Target target, @Nullable String modId) {
-		this(generator.vanillaPackOutput, target, modId);
 	}
 
 	/**
@@ -117,28 +113,23 @@ public abstract class PatchProvider implements DataProvider {
 	}
 
 	@Override
-	public CompletableFuture<?> run(CachedOutput cache) {
+	public void run(CachedOutput cache) {
 		patches.clear();
 		registerPatches();
 
 		if (!patches.isEmpty()) {
 			final Path root = output.getOutputFolder(target);
-			final List<CompletableFuture<?>> futures = new ArrayList<>();
 
 			for (Map.Entry<ResourceLocation, JsonPatch> entry : patches.entrySet())
-				futures.add(writePatch(cache, root, entry.getKey(), entry.getValue()));
-
-			return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
+				writePatch(cache, root, entry.getKey(), entry.getValue());
 		}
-
-		return CompletableFuture.allOf();
 	}
 
-	private CompletableFuture<?> writePatch(CachedOutput cache, Path root, ResourceLocation path, JsonPatch patch) {
+	private void writePatch(CachedOutput cache, Path root, ResourceLocation path, JsonPatch patch) {
 		final Path to = root.resolve(path.getNamespace()).resolve(path.getPath() + ".json.patch");
 		// The ordering is guaranteed to be stable, as patches are serialized manually.
 		// Using this method prevents the "type" field of test patches from jumping to the top of the json object.
-		return CompletableFuture.runAsync(() -> write(cache, GSON.toJsonTree(patch), to), Util.backgroundExecutor());
+		write(cache, GSON.toJsonTree(patch), to);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -168,12 +159,12 @@ public abstract class PatchProvider implements DataProvider {
 		return new RootOperationBuilder(location);
 	}
 
-	private static <T> JsonElement serializeUnchecked(@Nullable T value, Codec<T> codec, @Nullable HolderLookup.Provider provider) {
+	private static <T> JsonElement serializeUnchecked(@Nullable T value, Codec<T> codec, @Nullable RegistryAccess registries) {
 		if (value == null) return JsonNull.INSTANCE;
 
 		DynamicOps<JsonElement> ops = JsonOps.INSTANCE;
-		if (provider != null)
-			ops = RegistryOps.create(JsonOps.INSTANCE, provider);
+		if (registries != null)
+			ops = RegistryOps.create(JsonOps.INSTANCE, registries);
 
 		final DataResult<JsonElement> result = codec.encodeStart(ops, value);
 
@@ -218,7 +209,7 @@ public abstract class PatchProvider implements DataProvider {
 		}
 
 		/**
-		 * Non-registry-aware version of {@link #add(String, Object, Codec, net.minecraft.core.HolderLookup.Provider)}.
+		 * Non-registry-aware version of {@link #add(String, Object, Codec, RegistryAccess)}.
 		 * @param path The location the element will be placed.
 		 * @param value The element that will be added.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
@@ -233,11 +224,11 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param path The location the element will be placed.
 		 * @param value The element that will be added.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
-		 * @param provider Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
+		 * @param registries Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
 		 * @return {@code this}.
 		 */
-		public <T> OperationBuilder add(String path, T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider) {
-			return save(PatchUtil.add(path, serializeUnchecked(value, valueCodec, provider)));
+		public <T> OperationBuilder add(String path, T value, Codec<T> valueCodec, @Nullable RegistryAccess registries) {
+			return save(PatchUtil.add(path, serializeUnchecked(value, valueCodec, registries)));
 		}
 
 		/**
@@ -251,7 +242,7 @@ public abstract class PatchProvider implements DataProvider {
 		}
 
 		/**
-		 * Non-registry-aware version of {@link #replace(String, Object, Codec, net.minecraft.core.HolderLookup.Provider)}.
+		 * Non-registry-aware version of {@link #replace(String, Object, Codec, RegistryAccess)}.
 		 * @param path The path to the element to replace.
 		 * @param value The value to replace the element with.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
@@ -266,11 +257,11 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param path The path to the element to replace.
 		 * @param value The value to replace the element with.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
-		 * @param provider Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
+		 * @param registries Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
 		 * @return {@code this}.
 		 */
-		public <T> OperationBuilder replace(String path, T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider) {
-			return save(PatchUtil.replace(path, serializeUnchecked(value, valueCodec, provider)));
+		public <T> OperationBuilder replace(String path, T value, Codec<T> valueCodec, @Nullable RegistryAccess registries) {
+			return save(PatchUtil.replace(path, serializeUnchecked(value, valueCodec, registries)));
 		}
 
 		/**
@@ -351,7 +342,7 @@ public abstract class PatchProvider implements DataProvider {
 		// Test (Codecs)
 
 		/**
-		 * Non-registry-aware version of {@link #test(String, String, Object, Codec, net.minecraft.core.HolderLookup.Provider, boolean)}.
+		 * Non-registry-aware version of {@link #test(String, String, Object, Codec, RegistryAccess, boolean)}.
 		 * @param type A custom type for {@link ITestEvaluator}.
 		 * @param path The path to the element to test. May be {@code null}.
 		 * @param value The test element. May be {@code null}.
@@ -364,7 +355,7 @@ public abstract class PatchProvider implements DataProvider {
 		}
 
 		/**
-		 * Non-registry-aware version of {@link #test(String, Object, Codec, net.minecraft.core.HolderLookup.Provider)}.
+		 * Non-registry-aware version of {@link #test(String, Object, Codec, RegistryAccess)}.
 		 * @param type A custom type for {@link ITestEvaluator}.
 		 * @param value The test element.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
@@ -375,7 +366,7 @@ public abstract class PatchProvider implements DataProvider {
 		}
 
 		/**
-		 * Non-registry-aware version of {@link #test(String, Object, Codec, net.minecraft.core.HolderLookup.Provider, boolean)}.
+		 * Non-registry-aware version of {@link #test(String, Object, Codec, RegistryAccess, boolean)}.
 		 * @param path The path to the element to test.
 		 * @param value The test element. May be {@code null}.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
@@ -392,12 +383,12 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param path The path to the element to test. May be {@code null}.
 		 * @param value The test element. May be {@code null}.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
-		 * @param provider Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
+		 * @param registries Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
 		 * @param inverse Whether the check is inverted, i.e checking to see if something doesn't exist.
 		 * @return {@code this}.
 		 */
-		public <T> OperationBuilder test(String type, @Nullable String path, @Nullable T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider, boolean inverse) {
-			return save(PatchUtil.test(type, path, serializeUnchecked(value, valueCodec, provider), inverse));
+		public <T> OperationBuilder test(String type, @Nullable String path, @Nullable T value, Codec<T> valueCodec, @Nullable RegistryAccess registries, boolean inverse) {
+			return save(PatchUtil.test(type, path, serializeUnchecked(value, valueCodec, registries), inverse));
 		}
 
 		/**
@@ -405,11 +396,11 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param type A custom type for {@link ITestEvaluator}.
 		 * @param value The test element.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
-		 * @param provider Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
+		 * @param registries Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
 		 * @return {@code this}.
 		 */
-		public <T> OperationBuilder test(String type, T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider) {
-			return test(type, null, value, valueCodec, provider, false);
+		public <T> OperationBuilder test(String type, T value, Codec<T> valueCodec, @Nullable RegistryAccess registries) {
+			return test(type, null, value, valueCodec, registries, false);
 		}
 
 		/**
@@ -417,12 +408,12 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param path The path to the element to test.
 		 * @param value The test element. May be {@code null}.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
-		 * @param provider Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
+		 * @param registries Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
 		 * @param inverse Whether the check is inverted, i.e checking to see if something doesn't exist.
 		 * @return {@code this}.
 		 */
-		public <T> OperationBuilder test(String path, @Nullable T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider, boolean inverse) {
-			return save(PatchUtil.test(path, serializeUnchecked(value, valueCodec, provider), inverse));
+		public <T> OperationBuilder test(String path, @Nullable T value, Codec<T> valueCodec, @Nullable RegistryAccess registries, boolean inverse) {
+			return save(PatchUtil.test(path, serializeUnchecked(value, valueCodec, registries), inverse));
 		}
 
 		// Paste
@@ -478,11 +469,11 @@ public abstract class PatchProvider implements DataProvider {
 		 * @param type The data source identifier.
 		 * @param value The value to pass to the data source. May be {@code null}.
 		 * @param valueCodec A {@code Codec} for turning {@code value} into json.
-		 * @param provider Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
+		 * @param registries Required to create a {@link RegistryOps}. Otherwise, passing in {@code null} will just use a regular {@link JsonOps}.
 		 * @return {@code this}.
 		 */
-		public <T> OperationBuilder paste(String path, ResourceLocation type, @Nullable T value, Codec<T> valueCodec, @Nullable HolderLookup.Provider provider) {
-			return paste(path, type, null, serializeUnchecked(value, valueCodec, provider));
+		public <T> OperationBuilder paste(String path, ResourceLocation type, @Nullable T value, Codec<T> valueCodec, @Nullable RegistryAccess registries) {
+			return paste(path, type, null, serializeUnchecked(value, valueCodec, registries));
 		}
 
 		// Snowflakes

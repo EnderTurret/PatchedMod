@@ -21,6 +21,6 @@ public abstract class MixinResourceLocation implements PatchedResourceLocation {
 
 	@Override
 	public PatchedResourceLocation patched$withPath(String path) {
-		return (PatchedResourceLocation) ((ResourceLocation) (Object) this).withPath(path);
+		return (PatchedResourceLocation) new ResourceLocation(patched$getNamespace(), path);
 	}
 }

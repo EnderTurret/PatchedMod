@@ -9,12 +9,13 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 
 import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.fabric.PatchedVersionHacks;
 
 public record ComponentWrapper(MutableComponent message) implements PatchedMutableComponent {
 
 	public static MutableComponent translate(String languageKey, String message, Object... args) {
-		return Component.translatableWithFallback(languageKey, message.formatted(args), args);
+		return PatchedPlatform.get().isPhysicalClient() ? Component.translatable(languageKey, args) : Component.literal(message.formatted(args));
 	}
 
 	@Override

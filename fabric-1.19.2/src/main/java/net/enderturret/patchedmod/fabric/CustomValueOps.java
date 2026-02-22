@@ -61,29 +61,29 @@ final class CustomValueOps implements DynamicOps<CustomValue> {
 
 	@Override
 	public DataResult<Number> getNumberValue(CustomValue input) {
-		return input.getType() == CvType.NUMBER ? DataResult.success(input.getAsNumber()) : DataResult.error(() -> "Not a number: " + input);
+		return input.getType() == CvType.NUMBER ? DataResult.success(input.getAsNumber()) : DataResult.error("Not a number: " + input);
 	}
 
 	@Override
 	public DataResult<Boolean> getBooleanValue(CustomValue input) {
-		return input.getType() == CvType.BOOLEAN ? DataResult.success(input.getAsBoolean()) : DataResult.error(() -> "Not a boolean: " + input);
+		return input.getType() == CvType.BOOLEAN ? DataResult.success(input.getAsBoolean()) : DataResult.error("Not a boolean: " + input);
 	}
 
 	@Override
 	public DataResult<String> getStringValue(CustomValue input) {
-		return input.getType() == CvType.STRING ? DataResult.success(input.getAsString()) : DataResult.error(() -> "Not a string: " + input);
+		return input.getType() == CvType.STRING ? DataResult.success(input.getAsString()) : DataResult.error("Not a string: " + input);
 	}
 
 	@Override
 	public DataResult<Stream<Pair<CustomValue, CustomValue>>> getMapValues(CustomValue input) {
-		if (input.getType() != CvType.OBJECT) return DataResult.error(() -> "Not an object: " + input);
+		if (input.getType() != CvType.OBJECT) return DataResult.error("Not an object: " + input);
 		return DataResult.success(StreamSupport.stream(input.getAsObject().spliterator(), false)
 				.map(entry -> Pair.of(new JankString(entry.getKey()), entry.getValue())));
 	}
 
 	@Override
 	public DataResult<Stream<CustomValue>> getStream(CustomValue input) {
-		if (input.getType() != CvType.ARRAY) return DataResult.error(() -> "Not an array: " + input);
+		if (input.getType() != CvType.ARRAY) return DataResult.error("Not an array: " + input);
 		return DataResult.success(StreamSupport.stream(input.getAsArray().spliterator(), false));
 	}
 
@@ -98,7 +98,7 @@ final class CustomValueOps implements DynamicOps<CustomValue> {
 
 	@Override
 	public DataResult<CustomValue> mergeToList(CustomValue list, CustomValue value) {
-		if (!(list instanceof CvArray array)) return DataResult.error(() -> "Not a list: " + list);
+		if (!(list instanceof CvArray array)) return DataResult.error("Not a list: " + list);
 
 		final List<CustomValue> temp = new ArrayList<>(array.size() + 1);
 		for (CustomValue cv : array) temp.add(cv);
