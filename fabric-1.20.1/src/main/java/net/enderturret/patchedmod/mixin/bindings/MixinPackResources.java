@@ -11,7 +11,6 @@ import java.util.zip.ZipFile;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
-import net.fabricmc.fabric.impl.resource.loader.GroupResourcePack;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 
 import net.minecraft.resources.ResourceLocation;
@@ -130,7 +129,7 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default boolean patched$isGroupPack() {
-		return this instanceof GroupResourcePack && this instanceof GroupResourcePackAccess;
+		return this instanceof GroupResourcePackAccess; // Don't reference GroupResourcePack directly, for Quilt "support".
 	}
 
 	@Override
