@@ -1,5 +1,6 @@
 package net.enderturret.patchedmod.mixin.bindings;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -61,6 +62,7 @@ public interface MixinPackResources extends PatchedPackResources {
 	@Override
 	public default @Nullable InputStream patched$getRootResource(String... path) throws IOException {
 		// TODO: This throws for slashes. What should we do?
+		if (path.length > 1) return null;
 		final InputStream ret = ((PackResources) this).getRootResource(String.join("/", path));
 		return ret != null ? ret : null;
 	}
