@@ -173,17 +173,17 @@ public final class PatchingManager {
 				for (Entry pack : packsIn(new Entry(packEntry), type, patchName.patched$getNamespace())) {
 					// Until we see the pack the file originated from, don't apply any patches.
 					if (!seenOriginal)
-						if (packEntry == from) {
-							trace.recordFile(packEntry, false);
+						if (pack.resources() == from) {
+							trace.recordFile(pack.resources(), false);
 							seenOriginal = true;
 						} else {
 							if (trace.active())
-								traceOverridenPatchesOrFile(type, name, patchName, packEntry, trace, targets.getOrDefault(packEntry, List.of()));
+								traceOverridenPatchesOrFile(type, name, patchName, pack.resources(), trace, targets.getOrDefault(pack.resources(), List.of()));
 							continue;
 						}
 
-					if (packEntry.patched$hasPatches())
-						applyPatchesFromPack(manager, from, new Entry(packEntry), type, name, patchName, wrapper, audit, trace, context, targets);
+					if (pack.resources().patched$hasPatches())
+						applyPatchesFromPack(manager, from, pack, type, name, patchName, wrapper, audit, trace, context, targets);
 				}
 
 			else {
