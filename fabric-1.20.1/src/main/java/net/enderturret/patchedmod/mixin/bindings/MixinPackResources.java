@@ -24,9 +24,9 @@ import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.fabric.FabricPlatform;
+import net.enderturret.patchedmod.fabric.GroupResourcePackAccess;
 import net.enderturret.patchedmod.fabric.IFabricModPackResources;
 import net.enderturret.patchedmod.fabric.PatchedVersionHacks;
-import net.enderturret.patchedmod.mixin.fabric.api.GroupResourcePackAccess;
 
 @Mixin(PackResources.class)
 public interface MixinPackResources extends PatchedPackResources {
