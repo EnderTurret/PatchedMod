@@ -1,9 +1,12 @@
 package net.enderturret.patchedmod.data;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -131,8 +134,9 @@ public abstract class PatchProvider implements DataProvider {
 
 	@SuppressWarnings("deprecation")
 	private static void write(HashCache cache, JsonElement elem, Path to) {
-		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				HashingOutputStream hos = new HashingOutputStream(Hashing.sha1(), baos);
+		try (OutputStream os = Files.newOutputStream(to);
+				BufferedOutputStream bos = new BufferedOutputStream(os);
+				HashingOutputStream hos = new HashingOutputStream(Hashing.sha1(), bos);
 				OutputStreamWriter osw = new OutputStreamWriter(hos, StandardCharsets.UTF_8);
 				JsonWriter jw = new JsonWriter(osw)) {
 			jw.setSerializeNulls(false);
