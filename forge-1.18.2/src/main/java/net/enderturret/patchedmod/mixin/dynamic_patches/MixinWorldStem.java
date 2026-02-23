@@ -35,7 +35,7 @@ public abstract class MixinWorldStem {
 					),
 			method = "load"
 	)
-	private MultiPackResourceManager patched$setupServerPatchTargetManager(
+	private static MultiPackResourceManager patched$setupServerPatchTargetManager(
 			PackType type, List<PackResources> packs, Operation<MultiPackResourceManager> original) {
 		DynamicPatches.setupTargetManager(type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA, (List) packs);
 		return original.call(type, packs);
