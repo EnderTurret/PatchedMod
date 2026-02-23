@@ -21,7 +21,7 @@ import net.enderturret.patchedmod.fabric.FallbackResourceManagerAccess;
 @Mixin(targets = "net/minecraft/server/packs/resources/FallbackResourceManager$SinglePackResourceThunkSupplier")
 public abstract class MixinSinglePackResourceThunkSupplier {
 
-	@Shadow
+	@Shadow(aliases = { "field_37283", "f_215450_" })
 	@Final
 	private FallbackResourceManager this$0;
 
