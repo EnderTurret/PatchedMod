@@ -2,6 +2,8 @@ package net.enderturret.patchedmod.common.internal.flow;
 
 import java.util.Objects;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 
 /**
@@ -10,25 +12,21 @@ import net.enderturret.patchedmod.common.env.PatchedPackResources;
  */
 final class Entry {
 
-	private final String name;
 	private final PatchedPackResources resources;
+	private @Nullable String name;
 
 	/**
 	 * Constructs a new {@code Entry}.
-	 * @param name The name of the pack.
 	 * @param resources The pack itself.
 	 */
-	public Entry(String name, PatchedPackResources resources) {
-		this.name = Objects.requireNonNull(name, "name");
+	Entry(PatchedPackResources resources) {
 		this.resources = Objects.requireNonNull(resources, "resources");
-	}
-
-	public Entry(PatchedPackResources resources) {
-		this.resources = Objects.requireNonNull(resources, "resources");
-		this.name = resources.patched$getName();
 	}
 
 	public String name() {
+		if (name == null)
+			name = Objects.requireNonNull(resources.patched$getName(), "name");
+
 		return name;
 	}
 
