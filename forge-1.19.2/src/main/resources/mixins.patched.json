@@ -9,6 +9,7 @@
     "bindings.MixinResourceLocation",
     "bindings.MixinResourceManager",
     "command.FilePackResourcesAccess",
+    "dynamic_patches.MixinAbstractPackResources",
     "dynamic_patches.MixinMinecraftServer",
     "dynamic_patches.MixinPackConfig",
     "forge.DelegatingPackResourcesAccess",
