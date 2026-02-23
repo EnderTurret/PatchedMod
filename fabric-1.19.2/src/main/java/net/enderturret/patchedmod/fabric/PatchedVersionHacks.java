@@ -1,11 +1,13 @@
 package net.enderturret.patchedmod.fabric;
 
+import java.io.IOException;
 import java.util.zip.ZipFile;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.server.packs.FilePackResources;
 
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.mixin.command.FilePackResourcesAccess;
 
 /**
@@ -16,6 +18,11 @@ import net.enderturret.patchedmod.mixin.command.FilePackResourcesAccess;
 public final class PatchedVersionHacks {
 
 	public static ZipFile getOrCreateZipFile(FilePackResources pack) {
-		return ((FilePackResourcesAccess) pack).patched$getOrCreateZipFile();
+		try {
+			return ((FilePackResourcesAccess) pack).patched$getOrCreateZipFile();
+		} catch (IOException e) {
+			PatchedInternal.LOGGER.error("Caught IOException from getOrCreateZipFile():", e);
+			return null;
+		}
 	}
 }

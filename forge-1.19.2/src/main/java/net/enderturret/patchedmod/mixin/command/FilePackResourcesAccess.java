@@ -1,5 +1,6 @@
 package net.enderturret.patchedmod.mixin.command;
 
+import java.io.IOException;
 import java.util.zip.ZipFile;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +20,8 @@ public interface FilePackResourcesAccess {
 
 	/**
 	 * @return {@link FilePackResources#getOrCreateZipFile()}.
+	 * @throws IOException If an I/O error occurs opening the zip file.
 	 */
 	@Invoker(value = "getOrCreateZipFile")
-	public ZipFile patched$getOrCreateZipFile();
+	public ZipFile patched$getOrCreateZipFile() throws IOException;
 }
