@@ -12,7 +12,7 @@
     "dynamic_patches.MixinAbstractPackResources",
     "dynamic_patches.MixinMinecraftServer",
     "dynamic_patches.MixinPackConfig",
-    "fabric.api.GroupResourcePackAccess",
+    "fabric.api.MixinGroupResourcePack",
     "fabric.api.MixinModNioResourcePack",
     "fabric.api.MixinModResourcePack",
     "fabric.MixinCommands",
