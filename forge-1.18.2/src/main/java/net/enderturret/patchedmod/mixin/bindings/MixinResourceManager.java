@@ -1,5 +1,6 @@
 package net.enderturret.patchedmod.mixin.bindings;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
@@ -44,7 +45,7 @@ public interface MixinResourceManager extends PatchedResourceManager {
 
 	@Override
 	public default PatchedPackResources patched$getFallbackPack(int index) {
-		return (PatchedPackResources) ((FallbackResourceManager) this).fallbacks.get(index).resources();
+		return (PatchedPackResources) ((FallbackResourceManager) this).fallbacks.get(index);
 	}
 
 	//
@@ -61,8 +62,11 @@ public interface MixinResourceManager extends PatchedResourceManager {
 
 	@Override
 	public default Optional<InputStream> patched$getResource(PatchedResourceLocation location) throws IOException {
-		final Optional<Resource> optional = ((ResourceManager) this).getResource((ResourceLocation) location);
-		if (optional.isEmpty()) return Optional.empty();
-		return Optional.of(optional.get().open());
+		try {
+			final Resource resource = ((ResourceManager) this).getResource((ResourceLocation) location);
+			return Optional.of(resource.getInputStream());
+		} catch (FileNotFoundException e) {
+			return Optional.empty();
+		}
 	}
 }

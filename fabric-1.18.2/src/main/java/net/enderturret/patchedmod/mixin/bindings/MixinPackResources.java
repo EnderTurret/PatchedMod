@@ -77,9 +77,13 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default void patched$listResources(PatchedPackType type, String namespace, String path, Consumer<PatchedResourceLocation> consumer) {
-		((PackResources) this).getResources(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA),
-				namespace, path,
-				loc -> { consumer.accept((PatchedResourceLocation) loc); return false; });
+		final Collection<ResourceLocation> resources = ((PackResources) this).getResources(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA),
+				namespace, path, Integer.MAX_VALUE,
+				// Pre-filter to json files and patches.
+				str -> str.endsWith(".json") || str.endsWith(".patch"));
+
+		for (ResourceLocation rl : resources)
+			consumer.accept((PatchedResourceLocation) rl);
 	}
 
 	@Override

@@ -22,7 +22,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.VanillaPackResources;
 
 import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.resource.DelegatingPackResources;
+import net.minecraftforge.resource.DelegatingResourcePack;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
@@ -80,9 +80,13 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default void patched$listResources(PatchedPackType type, String namespace, String path, Consumer<PatchedResourceLocation> consumer) {
-		((PackResources) this).getResources(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA),
-				namespace, path,
-				loc -> { consumer.accept((PatchedResourceLocation) loc); return false; });
+		final Collection<ResourceLocation> resources = ((PackResources) this).getResources(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA),
+				namespace, path, Integer.MAX_VALUE,
+				// Pre-filter to json files and patches.
+				str -> str.endsWith(".json") || str.endsWith(".patch"));
+
+		for (ResourceLocation rl : resources)
+			consumer.accept((PatchedResourceLocation) rl);
 	}
 
 	@Override
@@ -134,7 +138,7 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default boolean patched$isGroupPack() {
-		return this instanceof DelegatingPackResources;
+		return this instanceof DelegatingResourcePack;
 	}
 
 	@Override
