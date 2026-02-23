@@ -17,12 +17,6 @@ public final class PatchedMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		if (mixinClassName.endsWith("MixinCompositePackResources"))
-			return getMinecraftPatch() >= 2;
-
-		if (mixinClassName.endsWith("FilePackResourcesAccess"))
-			return getMinecraftPatch() < 2;
-
 		if (mixinClassName.contains("fabric.api") && !FabricLoader.getInstance().isModLoaded("fabric-resource-loader-v0"))
 			return false;
 
