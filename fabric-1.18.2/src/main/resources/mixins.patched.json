@@ -17,8 +17,7 @@
     "fabric.api.MixinModResourcePack",
     "fabric.MixinCommands",
     "impl.MixinAbstractPackResources",
-    "impl.MixinFallbackResourceManager",
-    "impl.MixinSinglePackResourceThunkSupplier"
+    "impl.MixinFallbackResourceManager"
   ],
   "client": [
     "client.dynamic_patches.MixinMinecraft"

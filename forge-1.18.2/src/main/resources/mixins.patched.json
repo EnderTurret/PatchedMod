@@ -14,8 +14,7 @@
     "dynamic_patches.MixinWorldStem",
     "forge.DelegatingPackResourcesAccess",
     "impl.MixinAbstractPackResources",
-    "impl.MixinFallbackResourceManager",
-    "impl.MixinSinglePackResourceThunkSupplier"
+    "impl.MixinFallbackResourceManager"
   ],
   "client": [
     "client.dynamic_patches.MixinMinecraft"
