@@ -7,14 +7,32 @@ import net.enderturret.patchedmod.common.env.PatchedPackResources;
 /**
  * An alternative to transforming {@code PackEntry}'s constructor public.
  * @author EnderTurret
- * @param name The name of the pack.
- * @param resources The pack itself.
  */
-record Entry(String name, PatchedPackResources resources) {
+final class Entry {
 
-	Entry {}
+	private final String name;
+	private final PatchedPackResources resources;
 
-	Entry(PatchedPackResources resources) {
-		this(Objects.requireNonNull(resources, "resources").patched$getName(), resources);
+	/**
+	 * Constructs a new {@code Entry}.
+	 * @param name The name of the pack.
+	 * @param resources The pack itself.
+	 */
+	public Entry(String name, PatchedPackResources resources) {
+		this.name = Objects.requireNonNull(name, "name");
+		this.resources = Objects.requireNonNull(resources, "resources");
+	}
+
+	public Entry(PatchedPackResources resources) {
+		this.resources = Objects.requireNonNull(resources, "resources");
+		this.name = resources.patched$getName();
+	}
+
+	public String name() {
+		return name;
+	}
+
+	public PatchedPackResources resources() {
+		return resources;
 	}
 }
