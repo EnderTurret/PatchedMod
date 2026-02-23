@@ -16,7 +16,7 @@ public final class ClientEvents implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		if (PatchedPlatform.get().isModLoaded("fabric-command-api-v2"))
+		if (PatchedPlatform.get().isModLoaded("fabric-command-api-v1"))
 			try {
 				PatchedClientCommands.init();
 			} catch (Throwable e) {

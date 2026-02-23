@@ -24,7 +24,6 @@ import net.enderturret.patchedmod.forge.env.ServerEnvironment;
 @Mod(Patched.MOD_ID)
 public final class PatchedForge {
 
-	@SuppressWarnings("removal")
 	public PatchedForge() {
 		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::handleIMC);

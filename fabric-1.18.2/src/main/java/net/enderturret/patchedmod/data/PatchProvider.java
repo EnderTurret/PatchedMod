@@ -18,6 +18,7 @@ import com.google.common.hash.HashingOutputStream;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -25,11 +26,10 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 
 import net.minecraft.Util;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.HashCache;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.GsonHelper;
@@ -53,15 +53,12 @@ public abstract class PatchProvider implements DataProvider {
 	private static final Gson GSON = net.enderturret.patchedmod.common.internal.PatchedInternal.GSON;
 
 	private final DataGenerator output;
-	private final DataGenerator.Target target;
 	private final String modId;
 
 	private final Map<ResourceLocation, JsonPatch> patches = new HashMap<>();
 
-	protected PatchProvider(DataGenerator output, DataGenerator.Target target, @Nullable String modId) {
-		if (target == null || target == DataGenerator.Target.REPORTS) throw new IllegalArgumentException("Bad type");
+	protected PatchProvider(DataGenerator output, @Nullable String modId) {
 		this.output = output;
-		this.target = target;
 		this.modId = modId;
 	}
 
@@ -109,23 +106,23 @@ public abstract class PatchProvider implements DataProvider {
 
 	@Override
 	public String getName() {
-		return target + " Json Patches: " + modId;
+		return " Json Patches: " + modId;
 	}
 
 	@Override
-	public void run(CachedOutput cache) {
+	public void run(HashCache cache) {
 		patches.clear();
 		registerPatches();
 
 		if (!patches.isEmpty()) {
-			final Path root = output.getOutputFolder(target);
+			final Path root = output.getOutputFolder();
 
 			for (Map.Entry<ResourceLocation, JsonPatch> entry : patches.entrySet())
 				writePatch(cache, root, entry.getKey(), entry.getValue());
 		}
 	}
 
-	private void writePatch(CachedOutput cache, Path root, ResourceLocation path, JsonPatch patch) {
+	private void writePatch(HashCache cache, Path root, ResourceLocation path, JsonPatch patch) {
 		final Path to = root.resolve(path.getNamespace()).resolve(path.getPath() + ".json.patch");
 		// The ordering is guaranteed to be stable, as patches are serialized manually.
 		// Using this method prevents the "type" field of test patches from jumping to the top of the json object.
@@ -133,19 +130,54 @@ public abstract class PatchProvider implements DataProvider {
 	}
 
 	@SuppressWarnings("deprecation")
-	private static void write(CachedOutput cache, JsonElement elem, Path to) {
+	private static void write(HashCache cache, JsonElement elem, Path to) {
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				HashingOutputStream hos = new HashingOutputStream(Hashing.sha1(), baos);
 				OutputStreamWriter osw = new OutputStreamWriter(hos, StandardCharsets.UTF_8);
 				JsonWriter jw = new JsonWriter(osw)) {
 			jw.setSerializeNulls(false);
 			jw.setIndent("  ");
-			GsonHelper.writeValue(jw, elem, null);
+			writeValue(jw, elem);
 			jw.close();
-			cache.writeIfNeeded(to, baos.toByteArray(), hos.hash());
+			cache.putNew(to, hos.hash().toString());
 		} catch (IOException e) {
 			PatchedInternal.LOGGER.error("Exception saving file to {}:", to, e);
 		}
+	}
+
+	// This is copied from newer versions of GsonHelper.
+	private static void writeValue(JsonWriter writer, @Nullable JsonElement element) throws IOException {
+		if (element != null && !element.isJsonNull()) {
+			if (element.isJsonPrimitive()) {
+				JsonPrimitive prim = element.getAsJsonPrimitive();
+				if (prim.isNumber())
+					writer.value(prim.getAsNumber());
+				else if (prim.isBoolean())
+					writer.value(prim.getAsBoolean());
+				else
+					writer.value(prim.getAsString());
+			} else if (element.isJsonArray()) {
+				writer.beginArray();
+
+				for (JsonElement e : element.getAsJsonArray())
+					writeValue(writer, e);
+
+				writer.endArray();
+			} else {
+				if (!element.isJsonObject())
+					throw new IllegalArgumentException("Couldn't write " + element.getClass());
+
+				writer.beginObject();
+
+				for (Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet()) {
+					writer.name(entry.getKey());
+					writeValue(writer, entry.getValue());
+				}
+
+				writer.endObject();
+			}
+		} else
+			writer.nullValue();
 	}
 
 	// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────

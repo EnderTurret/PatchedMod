@@ -10,9 +10,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
-import net.minecraftforge.resource.DelegatingPackResources;
+import net.minecraftforge.resource.DelegatingResourcePack;
 
-@Mixin(value = DelegatingPackResources.class, remap = false)
+@Mixin(value = DelegatingResourcePack.class, remap = false)
 public interface DelegatingPackResourcesAccess {
 
 	@Accessor("delegates")

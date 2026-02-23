@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
@@ -28,6 +29,6 @@ public abstract class AbstractEnvironment<T> implements IEnvironment<T> {
 
 	@Override
 	public PatchedMutableComponent literalText(String text) {
-		return new ComponentWrapper(Component.literal(text));
+		return new ComponentWrapper(new TextComponent(text));
 	}
 }

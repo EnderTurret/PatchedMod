@@ -15,6 +15,7 @@ import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 
+import net.minecraft.ResourceLocationException;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 
@@ -103,7 +104,11 @@ public final class FabricPlatform implements PatchedPlatform {
 
 	@Override
 	public PatchedResourceLocation tryBuild(String namespace, String path) {
-		return (PatchedResourceLocation) ResourceLocation.tryBuild(namespace, path);
+		try {
+			return (PatchedResourceLocation) new ResourceLocation(namespace, path);
+		} catch (ResourceLocationException e) {
+			return null;
+		}
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 
+import net.minecraft.ResourceLocationException;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 
@@ -20,7 +21,7 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.forgespi.language.IModFileInfo;
-import net.minecraftforge.resource.PathPackResources;
+import net.minecraftforge.resource.PathResourcePack;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
@@ -62,7 +63,7 @@ public final class ForgePlatform implements PatchedPlatform {
 	}
 
 	public static Optional<? extends ModContainer> findModNameFromModFile(PatchedPackResources pack) {
-		if (!(pack instanceof PathPackResources)) return Optional.empty();
+		if (!(pack instanceof PathResourcePack)) return Optional.empty();
 
 		final String packId = pack.patched$packId();
 		for (IModFileInfo modInfo : ModList.get().getModFiles())
@@ -110,9 +111,14 @@ public final class ForgePlatform implements PatchedPlatform {
 		return (PatchedResourceLocation) ResourceLocation.tryParse(input);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public PatchedResourceLocation tryBuild(String namespace, String path) {
-		return (PatchedResourceLocation) ResourceLocation.tryBuild(namespace, path);
+		try {
+			return (PatchedResourceLocation) new ResourceLocation(namespace, path);
+		} catch (ResourceLocationException e) {
+			return null;
+		}
 	}
 
 	@Override

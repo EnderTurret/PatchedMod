@@ -1,7 +1,7 @@
 package net.enderturret.patchedmod.fabric.client;
 
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 
 import net.minecraft.client.Minecraft;
 
@@ -19,9 +19,7 @@ import net.enderturret.patchedmod.fabric.env.ComponentWrapper;
 final class PatchedClientCommands {
 
 	static void init() {
-		ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> {
-			dispatcher.register(PatchedCommand.create(new ClientEnvironment()));
-		});
+		ClientCommandManager.DISPATCHER.register(PatchedCommand.create(new ClientEnvironment()));
 	}
 
 	private static final class ClientEnvironment extends AbstractEnvironment<FabricClientCommandSource> {
