@@ -27,7 +27,7 @@ dependencies {
         }
     }
 
-    //runtimeOnly 'maven.modrinth:modernfix:Vlkqd178' // 5.18.0+mc1.18.2
+    modRuntimeOnly 'maven.modrinth:modernfix:Vlkqd178' // 5.18.0+mc1.18.2
 }
 
 legacyForge {
