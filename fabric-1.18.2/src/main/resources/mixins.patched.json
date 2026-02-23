@@ -1,0 +1,26 @@
+{
+  "minVersion": "0.8",
+  "package": "net.enderturret.patchedmod.mixin",
+  "refmap": "patched.refmap.json",
+  "compatibilityLevel": "JAVA_17",
+  "plugin": "net.enderturret.patchedmod.mixin.fabric.PatchedMixinPlugin",
+  "mixins": [
+    "bindings.MixinPackResources",
+    "bindings.MixinResourceLocation",
+    "bindings.MixinResourceManager",
+    "command.FilePackResourcesAccess",
+    "dynamic_patches.MixinAbstractPackResources",
+    "dynamic_patches.MixinMinecraftServer",
+    "dynamic_patches.MixinPackConfig",
+    "fabric.api.MixinGroupResourcePack",
+    "fabric.api.MixinModNioResourcePack",
+    "fabric.api.MixinModResourcePack",
+    "fabric.MixinCommands",
+    "impl.MixinAbstractPackResources",
+    "impl.MixinFallbackResourceManager",
+    "impl.MixinSinglePackResourceThunkSupplier"
+  ],
+  "client": [
+    "client.dynamic_patches.MixinMinecraft"
+  ]
+}
