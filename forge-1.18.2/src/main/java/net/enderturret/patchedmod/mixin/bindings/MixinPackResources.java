@@ -23,6 +23,7 @@ import net.minecraft.server.packs.VanillaPackResources;
 
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.resource.DelegatingResourcePack;
+import net.minecraftforge.resource.PathResourcePack;
 
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
@@ -120,12 +121,14 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default boolean patched$needsSwapNamespaceAndPath() {
-		return true;
+		return !patched$isGroupPack() && !(this instanceof PathResourcePack);
 	}
 
 	@SuppressWarnings("removal")
 	@Override
 	public default Function<PatchedResourceLocation, PatchedResourceLocation> patched$getRenamer(String namespace) {
+		if (!patched$needsSwapNamespaceAndPath()) return Function.identity();
+
 		final int prefixLen = patched$isVanillaPack() ? "../".length() + 1 : 1;
 
 		// PathPackResources:        :minecraft/something → minecraft:something

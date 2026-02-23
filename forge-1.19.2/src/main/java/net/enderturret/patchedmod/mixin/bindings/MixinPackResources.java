@@ -116,12 +116,14 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default boolean patched$needsSwapNamespaceAndPath() {
-		return true;
+		return !patched$isGroupPack() && !(this instanceof net.minecraftforge.resource.PathPackResources);
 	}
 
 	@SuppressWarnings("removal")
 	@Override
 	public default Function<PatchedResourceLocation, PatchedResourceLocation> patched$getRenamer(String namespace) {
+		if (!patched$needsSwapNamespaceAndPath()) return Function.identity();
+
 		final int prefixLen = patched$isVanillaPack() ? "../".length() + 1 : 1;
 
 		// PathPackResources:        :minecraft/something → minecraft:something
