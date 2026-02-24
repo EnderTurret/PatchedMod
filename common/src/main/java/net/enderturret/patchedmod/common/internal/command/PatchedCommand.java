@@ -13,6 +13,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.enderturret.patchedmod.common.env.PatchedPackResources;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.env.IEnvironment;
+import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.flow.PatchingManager;
 
 /**
@@ -36,7 +37,7 @@ public final class PatchedCommand {
 				.then(ListCommand.create(env))
 				.then(TraceCommand.create(env));
 
-		return PatchingManager.DEBUG ? ret.then(DebugCommand.create(env)) : ret;
+		return PatchingManager.DEBUG || !PatchedPlatform.get().isProduction() ? ret.then(DebugCommand.create(env)) : ret;
 	}
 
 	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, IEnvironment<T> env, boolean quoted) {

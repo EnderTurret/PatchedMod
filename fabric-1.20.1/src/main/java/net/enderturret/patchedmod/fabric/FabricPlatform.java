@@ -43,6 +43,11 @@ public final class FabricPlatform implements PatchedPlatform {
 	}
 
 	@Override
+	public boolean isProduction() {
+		return !FabricLoader.getInstance().isDevelopmentEnvironment();
+	}
+
+	@Override
 	public boolean isModLoaded(String modId) {
 		return FabricLoader.getInstance().isModLoaded(modId);
 	}

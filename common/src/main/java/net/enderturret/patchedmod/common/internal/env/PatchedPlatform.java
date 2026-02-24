@@ -70,6 +70,12 @@ public interface PatchedPlatform {
 	public boolean isPhysicalClient();
 
 	/**
+	 * Returns whether or not Patched is running in a production environment.
+	 * @return {@code true} if Patched is running in production.
+	 */
+	public boolean isProduction();
+
+	/**
 	 * Returns whether or not a mod with the specified mod ID is loaded.
 	 * @param modId The mod ID to check.
 	 * @return {@code true} if the mod is loaded.

@@ -47,6 +47,11 @@ public final class ForgePlatform implements PatchedPlatform {
 	}
 
 	@Override
+	public boolean isProduction() {
+		return FMLEnvironment.production;
+	}
+
+	@Override
 	public boolean isModLoaded(String modId) {
 		return ModList.get().isLoaded(modId);
 	}
