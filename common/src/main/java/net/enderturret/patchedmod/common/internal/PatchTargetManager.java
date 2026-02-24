@@ -112,10 +112,12 @@ public final class PatchTargetManager {
 
 		bakeNamespace(loc.patched$getNamespace());
 
+		final List<BakedTarget> targets = targetsByNamespace.get(loc.patched$getNamespace());
+		if (targets.isEmpty()) return Map.of();
+
 		final int fromIndex = Objects.requireNonNull(priorityByPack.get(from.patched$packId().intern()),
 				"Priority for pack " + from + " (" + from.patched$packId() + ") doesn't exist, was the pack registered?");
 
-		final List<BakedTarget> targets = targetsByNamespace.get(loc.patched$getNamespace());
 		final Map<PatchedPackResources, List<String>> ret = new IdentityHashMap<>(targets.size());
 
 		// Cache the last list used in the loop so we don't need to perform 40 lookups.
