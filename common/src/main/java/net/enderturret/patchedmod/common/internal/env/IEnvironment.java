@@ -1,5 +1,7 @@
 package net.enderturret.patchedmod.common.internal.env;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +37,20 @@ public interface IEnvironment<T> {
 	 * @return The corresponding resource manager.
 	 */
 	public PatchedResourceManager getResourceManager(T source);
+
+	/**
+	 * Submits a task to execute on the Client or Server Thread.
+	 * @param source The command source.
+	 * @param task The task to execute.
+	 */
+	public void submit(T source, Runnable task);
+
+	/**
+	 * Triggers a resource reload, for testing.
+	 * @param source The command source.
+	 * @return A {@code CompletableFuture} representing the operation.
+	 */
+	public CompletableFuture<Void> reloadResources(T source);
 
 	public PatchedMutableComponent translate(String languageKey, String message, Object... args);
 	public PatchedMutableComponent literalText(String text);
@@ -85,7 +101,26 @@ public interface IEnvironment<T> {
 	 */
 	public boolean hasPermission(T source, int permissionLevel);
 
+	/**
+	 * Executes the specified command, for testing.
+	 * @param source The command source.
+	 * @param command The command to execute.
+	 * @return The feedback from the command.
+	 */
+	public String executeCommand(T source, String command);
+
+	/**
+	 * Returns the class that represents this platform's {@code ResourceLocation}.
+	 * This is necessary because {@code common} needs to grab the {@code PatchedResourceLocation} from the {@code CommandContext}.
+	 * @return The {@code ResourceLocation} class.
+	 */
 	public Class<?> getResourceLocationClass();
+
+	/**
+	 * Returns an instance of this platform's {@code ResourceLocationArgument}.
+	 * This is necessary so that {@code common} can build commands that take {@code ResourceLocation}s.
+	 * @return The {@code ResourceLocation} argument type.
+	 */
 	public ArgumentType<?> getResourceLocationArgumentType();
 
 	/**

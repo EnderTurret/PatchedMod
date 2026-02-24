@@ -7,14 +7,24 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
 import net.enderturret.patchedmod.common.internal.PatchTargetManager;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.env.IEnvironment;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
+import net.enderturret.patchedmod.common.internal.test.PatchedTestHandler;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 final class DebugCommand {
 
 	static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
 		return env.literal("debug")
+				.then(env.literal("test").executes(ctx -> {
+					try {
+						PatchedTestHandler.runTest(env, ctx.getSource());
+					} catch (Exception e) {
+						PatchedInternal.LOGGER.error("Exception running tests:", e);
+					}
+					return Command.SINGLE_SUCCESS;
+				}))
 				.then(env.literal("dumpTargetManagers")
 						.executes(ctx -> dumpTargetManagers(ctx, env)));
 	}

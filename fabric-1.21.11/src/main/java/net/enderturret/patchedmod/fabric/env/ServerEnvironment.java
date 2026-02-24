@@ -1,9 +1,14 @@
 package net.enderturret.patchedmod.fabric.env;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.jetbrains.annotations.ApiStatus.Internal;
 
+import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.TickTask;
+import net.minecraft.server.commands.ReloadCommand;
 import net.minecraft.server.permissions.Permissions;
 
 import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
@@ -19,6 +24,16 @@ public final class ServerEnvironment extends AbstractEnvironment<CommandSourceSt
 	@Override
 	public boolean client() {
 		return false;
+	}
+
+	@Override
+	public void submit(CommandSourceStack source, Runnable task) {
+		source.getServer().schedule(new TickTask(source.getServer().getTickCount(), task));
+	}
+
+	@Override
+	public CompletableFuture<Void> reloadResources(CommandSourceStack source) {
+		return source.getServer().reloadResources(source.getServer().getPackRepository().getSelectedIds());
 	}
 
 	@Override
@@ -47,5 +62,17 @@ public final class ServerEnvironment extends AbstractEnvironment<CommandSourceSt
 			case 4 -> Permissions.COMMANDS_OWNER;
 			default -> throw new IllegalArgumentException();
 		});
+	}
+
+	@Override
+	public String executeCommand(CommandSourceStack source, String command) {
+		final StringBuilder msg = new StringBuilder();
+		source.getServer().getCommands().performPrefixedCommand(source.withSource(new CommandSource() {
+			@Override public void sendSystemMessage(Component component) { msg.append(component.getString()).append("\n"); }
+			@Override public boolean acceptsSuccess() { return true; }
+			@Override public boolean acceptsFailure() { return true; }
+			@Override public boolean shouldInformAdmins() { return false; }
+		}), command);
+		return msg.toString();
 	}
 }

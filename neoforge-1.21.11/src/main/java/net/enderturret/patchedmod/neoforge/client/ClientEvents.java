@@ -1,19 +1,26 @@
 package net.enderturret.patchedmod.neoforge.client;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.jetbrains.annotations.ApiStatus.Internal;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.ClientCommandHandler;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 
 import net.enderturret.patchedmod.Patched;
 import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.env.PatchedResourceManager;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.command.PatchedCommand;
 import net.enderturret.patchedmod.neoforge.env.AbstractEnvironment;
 import net.enderturret.patchedmod.neoforge.env.ComponentWrapper;
@@ -39,6 +46,16 @@ public final class ClientEvents {
 		}
 
 		@Override
+		public void submit(CommandSourceStack source, Runnable task) {
+			Minecraft.getInstance().submitAsync(task);
+		}
+
+		@Override
+		public CompletableFuture<Void> reloadResources(CommandSourceStack source) {
+			return Minecraft.getInstance().reloadResourcePacks();
+		}
+
+		@Override
 		public PatchedResourceManager getResourceManager(CommandSourceStack source) {
 			return (PatchedResourceManager) Minecraft.getInstance().getResourceManager();
 		}
@@ -57,6 +74,22 @@ public final class ClientEvents {
 		@Override
 		public boolean hasPermission(CommandSourceStack source, int permissionLevel) {
 			return true;
+		}
+
+		@Override
+		public String executeCommand(CommandSourceStack source, String command) {
+			final StringBuilder msg = new StringBuilder();
+			try {
+				ClientCommandHandler.getDispatcher().execute(command, source.withSource(new CommandSource() {
+					@Override public void sendSystemMessage(Component component) { msg.append(component.getString()).append("\n"); }
+					@Override public boolean acceptsSuccess() { return true; }
+					@Override public boolean acceptsFailure() { return true; }
+					@Override public boolean shouldInformAdmins() { return false; }
+				}));
+			} catch (CommandSyntaxException e) {
+				PatchedInternal.LOGGER.error("Exception executing command:", e);
+			}
+			return msg.toString();
 		}
 	}
 }
