@@ -131,7 +131,7 @@ final class ListCommand {
 
 		for (Entry pack : patching)
 			c.append("\n  ").appendWithCommandHover(pack.name, "/" + command + " list patches " + pack.name,
-					listAll ? pack.pack.patched$packId() + " (" + pack.pack.getClass().getSimpleName() + ")" : null);
+					makeVerboseDescription(pack.pack));
 
 		final List<Entry> notPatching = packs.stream()
 				.filter(e -> !e.patching)
@@ -140,11 +140,18 @@ final class ListCommand {
 		if (listAll && !notPatching.isEmpty()) {
 			c.append("\n\n").append("command.patched.list.packs.verbose", "Additionally, the following packs do not have patching enabled:");
 			for (Entry pack : notPatching)
-				c.append("\n  ").appendWithHover(pack.name, pack.pack.patched$packId() + " (" + pack.pack.getClass().getSimpleName() + ")");
+				c.append("\n  ").appendWithHover(pack.name, makeVerboseDescription(pack.pack));
 		}
 
 		env.sendSuccess(ctx.getSource(), false, c);
 
 		return Command.SINGLE_SUCCESS;
+	}
+
+	private static String makeVerboseDescription(PatchedPackResources pack) {
+		final Class<?> cls = pack.getClass();
+		String clsName = cls.getSimpleName();
+		if (clsName.isEmpty()) clsName = cls.getName().substring(cls.getPackageName().length() + 1);
+		return pack.patched$packId() + " (" + clsName + ")";
 	}
 }
