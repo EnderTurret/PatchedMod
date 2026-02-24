@@ -73,6 +73,8 @@ final class ListCommand {
 				for (PatchedResourceLocation loc : PatchedInternal.getResources(pack, type, namespace, s -> s.patched$getPath().endsWith(".patch")))
 					patches.add(new Patch(loc.toString(), null, null));
 
+		patches.sort(Comparator.comparing(Patch::loc));
+
 		for (PatchTarget patchTarget : pack.patchedMetadata().patchTargets())
 			for (PatchTarget.Target target : patchTarget.targets()) {
 				final String ns = target.namespace().stream().map(IPattern::toString).collect(Collectors.joining("\", \"", "\"", "\""));
