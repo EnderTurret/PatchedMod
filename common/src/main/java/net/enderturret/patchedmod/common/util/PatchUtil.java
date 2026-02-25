@@ -49,6 +49,6 @@ public final class PatchUtil {
 	 * @return {@code true} if the file at the given location supports being patched, based on its name.
 	 */
 	public static boolean isPatchable(String path) {
-		return path.endsWith(".json") || path.endsWith(".json.patch") || (path.endsWith(".mcmeta") && !path.equals("pack.mcmeta"));
+		return path.endsWith(".json") || (path.endsWith(".mcmeta") && !path.equals("pack.mcmeta"));
 	}
 }
