@@ -8,6 +8,8 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -18,6 +20,7 @@ import net.enderturret.patchedmod.common.internal.PatchedInternal;
  * A class that wraps an {@link InputStream} in such a way that we can avoid reading from it if no patching is performed.
  * @author EnderTurret
  */
+@Internal
 final class LazyPatchingWrapper {
 
 	private InputStream stream;

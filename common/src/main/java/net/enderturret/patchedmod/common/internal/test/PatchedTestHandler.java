@@ -3,6 +3,8 @@ package net.enderturret.patchedmod.common.internal.test;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -17,6 +19,7 @@ import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
  * The code behind Patched's test suite, accessible via the {@code /patched debug test} command.
  * @author EnderTurret
  */
+@Internal
 public final class PatchedTestHandler {
 
 	private static JsonElement parseJson(PatchedResourceManager resourceManager, String location) throws IOException {

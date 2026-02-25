@@ -3,6 +3,7 @@ package net.enderturret.patchedmod.common.internal.flow;
 import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
 
@@ -10,6 +11,7 @@ import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResourc
  * An alternative to transforming {@code PackEntry}'s constructor public.
  * @author EnderTurret
  */
+@Internal
 final class Entry {
 
 	private final PatchedPackResources resources;

@@ -1,11 +1,13 @@
 package net.enderturret.patchedmod.common.internal.env.binding;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Patched's bindings to {@code MutableComponent}.
  * @author EnderTurret
  */
+@Internal
 public interface PatchedMutableComponent {
 
 	public PatchedMutableComponent append(String languageKey, String message, Object... args);

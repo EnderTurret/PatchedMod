@@ -1,10 +1,13 @@
 package net.enderturret.patchedmod.common.internal.env.binding;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
+
 /**
  * Patched's bindings to {@code ResourceLocation}.
  * Also known as an {@code Identifier} in modern versions, or in Yarn.
  * @author EnderTurret
  */
+@Internal
 public interface PatchedResourceLocation {
 
 	/**
