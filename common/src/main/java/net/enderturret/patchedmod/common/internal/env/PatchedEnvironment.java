@@ -22,7 +22,7 @@ import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceMan
  * @param <T> The command source type. This will be {@code CommandSourceStack} on servers, and some other abomination on clients.
  */
 @Internal
-public interface IEnvironment<T> {
+public interface PatchedEnvironment<T> {
 
 	/**
 	 * Returns whether or not the environment represents a client context.

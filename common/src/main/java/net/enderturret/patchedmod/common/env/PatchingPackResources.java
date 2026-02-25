@@ -7,7 +7,7 @@ import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
  * Provides access to {@link PatchedMetadata} in resource/data packs.
  * @author EnderTurret
  */
-public interface IPatchingPackResources {
+public interface PatchingPackResources {
 
 	/**
 	 * Returns the {@link PatchedMetadata} associated with this pack.

@@ -20,7 +20,7 @@ import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchContext;
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchingPackResources;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.PatchedTestEvaluator;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
@@ -354,7 +354,7 @@ public final class PatchingManager {
 	 * Initializes the {@code PatchedMetadata} of the specified pack, if it has not been initialized yet.
 	 * @param resources The pack to initialize.
 	 */
-	public static void maybeInitialize(IPatchingPackResources resources) {
+	public static void maybeInitialize(PatchingPackResources resources) {
 		maybeInitialize(new Entry((PatchedPackResources) resources));
 	}
 

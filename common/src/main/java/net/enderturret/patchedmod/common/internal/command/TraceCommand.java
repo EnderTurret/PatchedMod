@@ -11,7 +11,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
-import net.enderturret.patchedmod.common.internal.env.IEnvironment;
+import net.enderturret.patchedmod.common.internal.env.PatchedEnvironment;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
 import net.enderturret.patchedmod.common.util.PatchTrace;
@@ -20,7 +20,7 @@ import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 final class TraceCommand {
 
-	static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
+	static <T> LiteralArgumentBuilder<T> create(PatchedEnvironment<T> env) {
 		final PatchedPackType type = env.client() ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA;
 		return env.literal("trace")
 				.then(env.argument("file", env.getResourceLocationArgumentType())
@@ -28,7 +28,7 @@ final class TraceCommand {
 								.executes(ctx -> traceFile(ctx, type, env)));
 	}
 
-	private static <T> int traceFile(CommandContext<T> ctx, PatchedPackType type, IEnvironment<T> env) {
+	private static <T> int traceFile(CommandContext<T> ctx, PatchedPackType type, PatchedEnvironment<T> env) {
 		final PatchedResourceLocation location = (PatchedResourceLocation) ctx.getArgument("file", env.getResourceLocationClass());
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 

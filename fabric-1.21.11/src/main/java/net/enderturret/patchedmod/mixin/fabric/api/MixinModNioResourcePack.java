@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import net.fabricmc.fabric.impl.resource.pack.ModNioPackResources;
 
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.mixin.impl.MixinAbstractPackResources;
 
@@ -16,7 +16,7 @@ import net.enderturret.patchedmod.mixin.impl.MixinAbstractPackResources;
  * @author EnderTurret
  */
 @Mixin({ ModNioPackResources.class })
-public abstract class MixinModNioResourcePack implements IPatchingPackResources {
+public abstract class MixinModNioResourcePack implements PatchingPackResources {
 
 	@Nullable
 	private PatchedMetadata patched$meta;

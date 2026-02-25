@@ -19,7 +19,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchingPackResources;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
@@ -57,7 +57,7 @@ public final class FabricPlatform implements PatchedPlatform {
 	}
 
 	@Nullable
-	public static ModMetadata getModMetadataFromPack(IPatchingPackResources pack) {
+	public static ModMetadata getModMetadataFromPack(PatchingPackResources pack) {
 		if (pack instanceof IFabricModPackResources mod)
 			return mod.patched$getFabricModMetadata();
 

@@ -11,14 +11,14 @@ import java.util.zip.ZipFile;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 /**
  * Patched's bindings to {@code PackResources}.
  * @author EnderTurret
  */
-public interface PatchedPackResources extends IPatchingPackResources {
+public interface PatchedPackResources extends PatchingPackResources {
 
 	// ===== PackResources bindings =====
 
@@ -99,7 +99,7 @@ public interface PatchedPackResources extends IPatchingPackResources {
 	 * </p>
 	 * @param type The pack type.
 	 * @param namespace The namespace.
-	 * @return The list of {@link IPatchingPackResources} that contain the namespace of the given file.
+	 * @return The list of {@link PatchingPackResources} that contain the namespace of the given file.
 	 */
 	public default Collection<PatchedPackResources> patched$getFilteredChildren(PatchedPackType type, String namespace) { return List.of(); }
 

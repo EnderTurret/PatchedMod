@@ -17,7 +17,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
-import net.enderturret.patchedmod.common.internal.env.IEnvironment;
+import net.enderturret.patchedmod.common.internal.env.PatchedEnvironment;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
@@ -30,7 +30,7 @@ import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
  */
 final class DumpCommand {
 
-	static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
+	static <T> LiteralArgumentBuilder<T> create(PatchedEnvironment<T> env) {
 		final PatchedPackType type = env.client() ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA;
 		return env.literal("dump")
 				.then(env.literal("patch")
@@ -51,7 +51,7 @@ final class DumpCommand {
 	}
 
 	@SuppressWarnings("resource")
-	private static <T> CompletableFuture<Suggestions> suggestPatch(CommandContext<T> ctx, String packArg, SuggestionsBuilder builder, IEnvironment<T> env) {
+	private static <T> CompletableFuture<Suggestions> suggestPatch(CommandContext<T> ctx, String packArg, SuggestionsBuilder builder, PatchedEnvironment<T> env) {
 		final String packName = StringArgumentType.getString(ctx, packArg);
 		final String input = builder.getRemaining();
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
@@ -80,7 +80,7 @@ final class DumpCommand {
 		return builder.buildFuture();
 	}
 
-	static <T> CompletableFuture<Suggestions> suggestResource(CommandContext<T> ctx, PatchedPackType type, SuggestionsBuilder builder, IEnvironment<T> env) {
+	static <T> CompletableFuture<Suggestions> suggestResource(CommandContext<T> ctx, PatchedPackType type, SuggestionsBuilder builder, PatchedEnvironment<T> env) {
 		final String input = builder.getRemaining();
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
@@ -122,7 +122,7 @@ final class DumpCommand {
 	}
 
 	@SuppressWarnings("resource")
-	private static <T> int dumpPatch(CommandContext<T> ctx, PatchedPackType type, IEnvironment<T> env) {
+	private static <T> int dumpPatch(CommandContext<T> ctx, PatchedPackType type, PatchedEnvironment<T> env) {
 		final String packName = StringArgumentType.getString(ctx, "pack");
 		final PatchedResourceLocation location = (PatchedResourceLocation) ctx.getArgument("location", env.getResourceLocationClass());
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
@@ -175,7 +175,7 @@ final class DumpCommand {
 	}
 
 	@SuppressWarnings("resource")
-	private static <T> int dumpLocalPatch(CommandContext<T> ctx, PatchedPackType type, IEnvironment<T> env) {
+	private static <T> int dumpLocalPatch(CommandContext<T> ctx, PatchedPackType type, PatchedEnvironment<T> env) {
 		final String packName = StringArgumentType.getString(ctx, "pack");
 		final String patchName = ctx.getArgument("patch", String.class);
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
@@ -226,7 +226,7 @@ final class DumpCommand {
 	}
 
 	@SuppressWarnings("deprecation")
-	private static <T> int dumpFile(CommandContext<T> ctx, IEnvironment<T> env, boolean useAudit, boolean usePatches) {
+	private static <T> int dumpFile(CommandContext<T> ctx, PatchedEnvironment<T> env, boolean useAudit, boolean usePatches) {
 		final PatchedResourceLocation location = (PatchedResourceLocation) ctx.getArgument("location", env.getResourceLocationClass());
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 

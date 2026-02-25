@@ -10,7 +10,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 import net.fabricmc.fabric.impl.resource.loader.ModNioResourcePack;
 
-import net.enderturret.patchedmod.common.env.IPatchingPackResources;
+import net.enderturret.patchedmod.common.env.PatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 import net.enderturret.patchedmod.mixin.impl.MixinAbstractPackResources;
 
@@ -19,7 +19,7 @@ import net.enderturret.patchedmod.mixin.impl.MixinAbstractPackResources;
  * @author EnderTurret
  */
 @Mixin({ ModNioResourcePack.class })
-public abstract class MixinModNioResourcePack implements IPatchingPackResources {
+public abstract class MixinModNioResourcePack implements PatchingPackResources {
 
 	// Apply the same change as dynamic_patches.MixinAbstractPackResources.
 	@ModifyExpressionValue(at = @At(value = "INVOKE", target = "Ljava/lang/String;contains(Ljava/lang/CharSequence;)Z"), method = "getRootResource")

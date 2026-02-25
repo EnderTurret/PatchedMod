@@ -8,14 +8,14 @@ import com.mojang.brigadier.context.CommandContext;
 
 import net.enderturret.patchedmod.common.internal.PatchTargetManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
-import net.enderturret.patchedmod.common.internal.env.IEnvironment;
+import net.enderturret.patchedmod.common.internal.env.PatchedEnvironment;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.internal.test.PatchedTestHandler;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 final class DebugCommand {
 
-	static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
+	static <T> LiteralArgumentBuilder<T> create(PatchedEnvironment<T> env) {
 		return env.literal("debug")
 				.then(env.literal("test").executes(ctx -> {
 					try {
@@ -29,7 +29,7 @@ final class DebugCommand {
 						.executes(ctx -> dumpTargetManagers(ctx, env)));
 	}
 
-	private static <T> int dumpTargetManagers(CommandContext<T> ctx, IEnvironment<T> env) {
+	private static <T> int dumpTargetManagers(CommandContext<T> ctx, PatchedEnvironment<T> env) {
 		final Map<PatchedPackType, PatchTargetManager> managers = DynamicPatches.getTargetManagers();
 
 		for (PatchedPackType type : PatchedPackType.values())

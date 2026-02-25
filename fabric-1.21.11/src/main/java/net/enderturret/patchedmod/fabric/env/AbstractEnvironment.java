@@ -6,10 +6,10 @@ import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
-import net.enderturret.patchedmod.common.internal.env.IEnvironment;
+import net.enderturret.patchedmod.common.internal.env.PatchedEnvironment;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
 
-public abstract class AbstractEnvironment<T> implements IEnvironment<T> {
+public abstract class AbstractEnvironment<T> implements PatchedEnvironment<T> {
 
 	@Override
 	public Class<?> getResourceLocationClass() {

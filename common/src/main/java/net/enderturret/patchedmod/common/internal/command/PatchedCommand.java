@@ -10,7 +10,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.enderturret.patchedmod.common.internal.env.IEnvironment;
+import net.enderturret.patchedmod.common.internal.env.PatchedEnvironment;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
@@ -30,7 +30,7 @@ public final class PatchedCommand {
 	 * @return The new argument builder.
 	 */
 	@Internal
-	public static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
+	public static <T> LiteralArgumentBuilder<T> create(PatchedEnvironment<T> env) {
 		final var ret = env.literal("patched" + (env.client() ? "c" : ""))
 				.requires(src -> env.hasPermission(src, 2))
 				.then(DumpCommand.create(env))
@@ -40,7 +40,7 @@ public final class PatchedCommand {
 		return PatchingManager.DEBUG || !PatchedPlatform.get().isProduction() ? ret.then(DebugCommand.create(env)) : ret;
 	}
 
-	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, IEnvironment<T> env, boolean quoted) {
+	static <T> CompletableFuture<Suggestions> suggestPack(CommandContext<T> ctx, SuggestionsBuilder builder, PatchedEnvironment<T> env, boolean quoted) {
 		final String input = builder.getRemaining();
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 

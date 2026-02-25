@@ -8,7 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
-import net.enderturret.patchedmod.common.internal.env.IEnvironment;
+import net.enderturret.patchedmod.common.internal.env.PatchedEnvironment;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
@@ -37,7 +37,7 @@ public final class PatchedTestHandler {
 	 * @param env The environment the command is running in.
 	 * @param src The command source.
 	 */
-	public static <T> void runTest(IEnvironment<T> env, T src) {
+	public static <T> void runTest(PatchedEnvironment<T> env, T src) {
 		env.submit(src, () -> {
 			env.sendSuccess(src, false, env.literalText("\n".repeat(90)));
 
@@ -80,7 +80,7 @@ public final class PatchedTestHandler {
 		});
 	}
 
-	private static <T> boolean runTest(IEnvironment<T> env, T src, PatchedResourceManager resourceManager, PatchedPackType type, String namespace) throws IOException {
+	private static <T> boolean runTest(PatchedEnvironment<T> env, T src, PatchedResourceManager resourceManager, PatchedPackType type, String namespace) throws IOException {
 		env.sendSuccess(src, false, env.literalText("Running test suite for " + type + " " + namespace + "!"));
 
 		final JsonArray tests = parseJson(resourceManager, namespace + ":patched/tests.json").getAsJsonArray();

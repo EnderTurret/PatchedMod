@@ -13,7 +13,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
-import net.enderturret.patchedmod.common.internal.env.IEnvironment;
+import net.enderturret.patchedmod.common.internal.env.PatchedEnvironment;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
@@ -28,7 +28,7 @@ import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
  */
 final class ListCommand {
 
-	static <T> LiteralArgumentBuilder<T> create(IEnvironment<T> env) {
+	static <T> LiteralArgumentBuilder<T> create(PatchedEnvironment<T> env) {
 		return env.literal("list")
 				.then(env.literal("patches")
 						.then(env.argument("pack", StringArgumentType.greedyString())
@@ -39,7 +39,7 @@ final class ListCommand {
 	}
 
 	@SuppressWarnings("resource")
-	private static <T> int listPatches(CommandContext<T> ctx, IEnvironment<T> env) {
+	private static <T> int listPatches(CommandContext<T> ctx, PatchedEnvironment<T> env) {
 		final String packName = StringArgumentType.getString(ctx, "pack");
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
@@ -107,7 +107,7 @@ final class ListCommand {
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static <T> int listPacks(CommandContext<T> ctx, IEnvironment<T> env, boolean listAll) {
+	private static <T> int listPacks(CommandContext<T> ctx, PatchedEnvironment<T> env, boolean listAll) {
 		final PatchedResourceManager man = env.getResourceManager(ctx.getSource());
 
 		record Entry(PatchedPackResources pack, String name, boolean patching) {}
