@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.common.util;
+package net.enderturret.patchedmod.common.internal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +18,6 @@ import net.enderturret.patched.IFileAccess;
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
-import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
 
 /**
