@@ -4,6 +4,9 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 import net.fabricmc.fabric.impl.resource.loader.ModNioResourcePack;
 
@@ -17,6 +20,12 @@ import net.enderturret.patchedmod.mixin.impl.MixinAbstractPackResources;
  */
 @Mixin({ ModNioResourcePack.class })
 public abstract class MixinModNioResourcePack implements IPatchingPackResources {
+
+	// Apply the same change as dynamic_patches.MixinAbstractPackResources.
+	@ModifyExpressionValue(at = @At(value = "INVOKE", target = "Ljava/lang/String;contains(Ljava/lang/CharSequence;)Z"), method = "getRootResource")
+	private boolean patched$allowSlashesForRootResource(boolean original) {
+		return false;
+	}
 
 	@Nullable
 	private PatchedMetadata patched$meta;
