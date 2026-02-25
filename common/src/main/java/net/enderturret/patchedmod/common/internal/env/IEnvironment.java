@@ -52,7 +52,20 @@ public interface IEnvironment<T> {
 	 */
 	public CompletableFuture<Void> reloadResources(T source);
 
+	/**
+	 * Returns a new {@link PatchedMutableComponent} based on a {@code TranslatableComponent}.
+	 * @param languageKey The translation key, for clients with the mod.
+	 * @param message The literal message (in English), for vanilla clients.
+	 * @param args Arguments to apply to the message.
+	 * @return The new {@code PatchedMutableComponent}.
+	 */
 	public PatchedMutableComponent translate(String languageKey, String message, Object... args);
+
+	/**
+	 * Returns a new {@link PatchedMutableComponent} based on a {@code TextComponent}.
+	 * @param text The literal message.
+	 * @return The new {@code PatchedMutableComponent}.
+	 */
 	public PatchedMutableComponent literalText(String text);
 
 	/**

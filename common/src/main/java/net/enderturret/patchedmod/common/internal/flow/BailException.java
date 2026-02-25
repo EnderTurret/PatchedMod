@@ -6,7 +6,7 @@ package net.enderturret.patchedmod.common.internal.flow;
  * for the caller to deal with this problem as they would need to when Patched isn't installed.
  * @author EnderTurret
  */
-public final class BailException extends RuntimeException {
+final class BailException extends RuntimeException {
 
 	public BailException() {}
 	public BailException(Throwable cause) { super(cause); }

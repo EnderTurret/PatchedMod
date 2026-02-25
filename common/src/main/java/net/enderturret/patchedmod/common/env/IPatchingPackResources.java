@@ -26,6 +26,11 @@ public interface IPatchingPackResources {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Returns whether or not the {@link PatchedMetadata} implies the pack contains patches.
+	 * This is a bouncer method for {@link PatchedMetadata#patchingEnabled()}.
+	 * @return {@code true} if the metadata suggests the pack contains patches.
+	 */
 	public default boolean patched$hasPatches() {
 		return patchedMetadata().patchingEnabled();
 	}

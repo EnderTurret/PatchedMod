@@ -23,6 +23,9 @@ import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 @Internal
 public interface PatchedPlatform {
 
+	/**
+	 * Patched's mod ID.
+	 */
 	public static final String MOD_ID = "patched";
 
 	/**
@@ -121,19 +124,73 @@ public interface PatchedPlatform {
 	 * @param pack The pack in question.
 	 * @return A derived {@link PatchedMetadata}, or {@code null} if one could not be derived.
 	 */
-	@Nullable
-	public default PatchedMetadata deriveMetadataFromMod(PatchedPackResources pack) {
-		return null;
-	}
+	public default @Nullable PatchedMetadata deriveMetadataFromMod(PatchedPackResources pack) { return null; }
 
+	/**
+	 * A binding to {@link Codec#decode(DynamicOps, Object)}, since in newer DFU versions {@code DataResult} became an interface.
+	 * @param <T> The output value type.
+	 * @param <I> The input value type.
+	 * @param codec The codec for the desired value.
+	 * @param ops The {@code DynamicOps} to interpret the input.
+	 * @param input The input value.
+	 * @return A {@link JankyDataResult} representing the outcome of the operation.
+	 */
 	public <T, I> JankyDataResult<T> decode(Codec<T> codec, DynamicOps<I> ops, I input);
+
+	/**
+	 * A binding to {@link DataResult#success(Object)}, since in newer DFU versions {@code DataResult} became an interface.
+	 * @param <T> The value type.
+	 * @param value The value.
+	 * @return The {@code DataResult}.
+	 */
 	public <T> DataResult<T> success(T value);
+
+	/**
+	 * A binding to {@link DataResult#error(String)}, since in newer DFU versions {@code DataResult} became an interface.
+	 * @param <T> The value type.
+	 * @param message The error message.
+	 * @return The {@code DataResult}.
+	 */
 	public <T> DataResult<T> error(Supplier<String> message);
 
-	public PatchedResourceLocation tryParse(String input);
-	public PatchedResourceLocation tryBuild(String namespace, String path);
+	/**
+	 * A binding to {@code ResourceLocation.tryParse()}.
+	 * @param input The input string.
+	 * @return A new {@code ResourceLocation}, or {@code null} if it could not be parsed.
+	 */
+	public @Nullable PatchedResourceLocation tryParse(String input);
+
+	/**
+	 * A binding to {@code ResourceLocation.tryBuild()}.
+	 * @param namespace The namespace.
+	 * @param path The path.
+	 * @return A new {@code ResourceLocation}, or {@code null} if the namespace or path are invalid.
+	 */
+	public @Nullable PatchedResourceLocation tryBuild(String namespace, String path);
+
+	/**
+	 * Returns whether or not the specified ID corresponds to a registry entry in the specified registry.
+	 * @param registry The ID of the registry to check.
+	 * @param id The ID of the desired entry.
+	 * @return {@code true} if {@code id} corresponds to something in {@code registry}.
+	 */
 	public boolean isThingRegistered(PatchedResourceLocation registry, PatchedResourceLocation id);
+
+	/**
+	 * {@code Item} version of {@link #isThingRegistered(PatchedResourceLocation, PatchedResourceLocation)}.
+	 * @param id The ID of the desired item.
+	 * @return {@code true} if {@code id} corresponds to an item.
+	 */
 	public boolean isItemRegistered(PatchedResourceLocation id);
 
+	/**
+	 * Returned by the output of {@link PatchedPlatform#decode(Codec, DynamicOps, Object)}, since {@code DataResult} has source breaking changes between versions.
+	 *
+	 * @author EnderTurret
+	 *
+	 * @param <T> The value type.
+	 * @param value The value, if present.
+	 * @param error The error message, if present.
+	 */
 	public static record JankyDataResult<T>(@Nullable T value, @Nullable String error) {}
 }

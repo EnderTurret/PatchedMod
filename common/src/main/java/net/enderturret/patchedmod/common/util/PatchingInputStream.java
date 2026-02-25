@@ -69,8 +69,12 @@ public class PatchingInputStream extends FilterInputStream {
 		this.audit = audit;
 	}
 
+	/**
+	 * Attaches a {@link PatchTrace} to the patching operation, allowing it to be filled out when the file is patched.
+	 * @param trace The trace to fill out.
+	 */
 	public void withTrace(PatchTrace trace) {
-		this.trace = trace;
+		this.trace = Objects.requireNonNull(trace);
 	}
 
 	@Override

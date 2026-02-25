@@ -29,6 +29,13 @@ public final class DynamicPatches {
 
 	private static final Map<PatchedPackType, PatchTargetManager> PATCH_TARGET_MANAGERS = new EnumMap<>(PatchedPackType.class);
 
+	/**
+	 * Returns the patch targets for the specified file, as a map of {@code PackResources} to list of patches to apply.
+	 * @param type The pack type. Determines whether to grab server versus client patches.
+	 * @param name The location of the file being patched.
+	 * @param from The {@code PackResources} that the base file came from.
+	 * @return The dynamic patches to apply to the file.
+	 */
 	public static Map<PatchedPackResources, List<String>> getTargets(PatchedPackType type, PatchedResourceLocation name, PatchedPackResources from) {
 		final PatchTargetManager targetManager = PATCH_TARGET_MANAGERS.get(type);
 		final Map<PatchedPackResources, List<String>> targets = targetManager == null ? Map.of() : targetManager.getTargets(name, from);

@@ -8,6 +8,10 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Patched's bindings to {@code ResourceManager}.
+ * @author EnderTurret
+ */
 public interface PatchedResourceManager {
 
 	/**
@@ -23,8 +27,23 @@ public interface PatchedResourceManager {
 	 */
 	public Stream<PatchedPackResources> patched$getPatchingPacks();
 
+	/**
+	 * Returns whether or not this {@code ResourceManager} is a {@code FallbackResourceManager}.
+	 * @return {@code true} if so.
+	 */
 	public boolean patched$isFallback();
+
+	/**
+	 * Returns the number of packs contained in this {@code FallbackResourceManager}.
+	 * @return The number of packs.
+	 */
 	public int patched$getFallbackPackCount();
+
+	/**
+	 * Returns the pack at {@code index} in this {@code FallbackResourceManager}.
+	 * @param index The index of the desired pack.
+	 * @return The pack.
+	 */
 	public @Nullable PatchedPackResources patched$getFallbackPack(int index);
 
 	// ===== Vanilla methods =====

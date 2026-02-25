@@ -13,6 +13,10 @@ import org.jetbrains.annotations.Nullable;
 
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
+/**
+ * Patched's bindings to {@code PackResources}.
+ * @author EnderTurret
+ */
 public interface PatchedPackResources extends IPatchingPackResources {
 
 	// ===== PackResources bindings =====

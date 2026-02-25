@@ -18,7 +18,7 @@ import net.enderturret.patchedmod.common.internal.PatchedInternal;
  * A class that wraps an {@link InputStream} in such a way that we can avoid reading from it if no patching is performed.
  * @author EnderTurret
  */
-public final class LazyPatchingWrapper {
+final class LazyPatchingWrapper {
 
 	private InputStream stream;
 	private byte[] oldBytes;

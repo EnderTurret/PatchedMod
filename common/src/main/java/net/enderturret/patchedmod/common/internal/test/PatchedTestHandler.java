@@ -13,6 +13,10 @@ import net.enderturret.patchedmod.common.internal.env.IEnvironment;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
+/**
+ * The code behind Patched's test suite, accessible via the {@code /patched debug test} command.
+ * @author EnderTurret
+ */
 public final class PatchedTestHandler {
 
 	private static JsonElement parseJson(PatchedResourceManager resourceManager, String location) throws IOException {
@@ -27,6 +31,12 @@ public final class PatchedTestHandler {
 		}
 	}
 
+	/**
+	 * Runs the test suite in the specified environment.
+	 * @param <T> The type representing the command source.
+	 * @param env The environment the command is running in.
+	 * @param src The command source.
+	 */
 	public static <T> void runTest(IEnvironment<T> env, T src) {
 		env.submit(src, () -> {
 			env.sendSuccess(src, false, env.literalText("\n".repeat(90)));

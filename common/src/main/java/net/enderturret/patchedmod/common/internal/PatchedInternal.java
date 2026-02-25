@@ -36,8 +36,15 @@ import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 @Internal
 public final class PatchedInternal {
 
+	/**
+	 * Patched's logger instance.
+	 */
 	public static final Logger LOGGER = LoggerFactory.getLogger("Patched");
 
+	/**
+	 * Patched's platform instance.
+	 * Prefer getting this via {@link PatchedPlatform#get()}.
+	 */
 	public static PatchedPlatform platform;
 
 	/**
