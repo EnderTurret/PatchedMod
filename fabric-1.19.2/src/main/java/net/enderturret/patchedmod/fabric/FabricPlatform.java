@@ -37,6 +37,11 @@ public final class FabricPlatform implements PatchedPlatform {
 	}
 
 	@Override
+	public boolean hasUnprefixedPackIds() {
+		return true;
+	}
+
+	@Override
 	public boolean isPhysicalClient() {
 		return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
 	}

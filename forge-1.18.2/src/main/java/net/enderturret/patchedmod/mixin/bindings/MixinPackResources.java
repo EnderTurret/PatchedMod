@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
+import net.minecraft.server.packs.FolderPackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.VanillaPackResources;
@@ -111,6 +112,14 @@ public interface MixinPackResources extends PatchedPackResources {
 
 	@Override
 	public default String patched$getName() {
+		// PATCHED: backport 1.20.1+ pack names for vanilla pack types.
+		if (this instanceof FilePackResources || this instanceof FolderPackResources) {
+			final String id = patched$packId();
+			if ("Programmer Art".equals(id) && getClass().isAnonymousClass()) return "programmer_art";
+			return "file/" + id;
+		}
+		if (patched$isVanillaPack()) return "vanilla";
+
 		final Optional<? extends ModContainer> mod = ForgePlatform.findModNameFromModFile(this);
 
 		if (mod.isPresent())

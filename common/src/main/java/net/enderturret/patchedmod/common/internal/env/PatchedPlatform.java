@@ -46,6 +46,18 @@ public interface PatchedPlatform {
 	 * <p>
 	 * Some of the Patched machinery uses this method to determine whether to enable more expensive code paths that aren't necessary on newer versions.
 	 * </p>
+	 * <p>
+	 * Platforms where this is {@code true}:
+	 * <table border="1">
+	 * <tr><th>Platform</th><th>Group pack name</th></tr>
+	 * <tr><td>Fabric 1.18.2</td><td>{@code GroupResourcePack}</td></tr>
+	 * <tr><td>Fabric 1.19.2</td><td>{@code GroupResourcePack}</td></tr>
+	 * <tr><td>Fabric 1.20.1</td><td>{@code GroupResourcePack}</td></tr>
+	 * <tr><td>Forge 1.18.2</td><td>{@code DelegatingResourcePack}</td></tr>
+	 * <tr><td>Forge 1.19.2</td><td>{@code DelegatingPackResources}</td></tr>
+	 * <tr><td>Forge 1.20.1</td><td>{@code DelegatingPackResources}</td></tr>
+	 * </table>
+	 * </p>
 	 * @return {@code true} if so.
 	 */
 	public default boolean hasGroupPacks() { return false; }
@@ -62,6 +74,19 @@ public interface PatchedPlatform {
 	 * @return {@code true} if so.
 	 */
 	public default boolean hasLegacyPatchedMetadata() { return false; }
+
+	/**
+	 * <p>
+	 * Returns whether or not the platform contains unprefixed pack IDs.
+	 * A prefixed pack ID takes the form "file/<pack name>"; unprefixed ones are simply "<pack name>".
+	 * </p>
+	 * <p>
+	 * This is necessary because while on these versions we do backport the prefixed names,
+	 * we also need to know whether to unprefix pack names passed to the {@code patched:pack_enabled} test condition.
+	 * </p>
+	 * @return {@code true} if so.
+	 */
+	public default boolean hasUnprefixedPackIds() { return false; }
 
 	/**
 	 * Returns whether or not Patched is running on the (physical) client.

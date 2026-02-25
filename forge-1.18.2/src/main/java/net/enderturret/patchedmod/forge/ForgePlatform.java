@@ -42,6 +42,11 @@ public final class ForgePlatform implements PatchedPlatform {
 	}
 
 	@Override
+	public boolean hasUnprefixedPackIds() {
+		return true;
+	}
+
+	@Override
 	public boolean isPhysicalClient() {
 		return FMLEnvironment.dist == Dist.CLIENT;
 	}

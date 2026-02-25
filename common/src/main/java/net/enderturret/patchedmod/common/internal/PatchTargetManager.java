@@ -31,6 +31,8 @@ import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 @Internal
 public final class PatchTargetManager {
 
+	private static final boolean USES_UNPREFIXED_IDS = PatchedPlatform.get().hasUnprefixedPackIds();
+
 	private final PatchedPackType type;
 	@Nullable
 	private final List<PatchedPackResources> packsByPriority; // Organized by priority, exactly like the resource pack screen.
@@ -178,6 +180,12 @@ public final class PatchTargetManager {
 	 */
 	@Internal
 	public boolean containsPack(String name) {
+		if (USES_UNPREFIXED_IDS)
+			if (name.startsWith("file/"))
+				name = name.substring("file/".length());
+			else if ("vanilla".equals(name))
+				name = "Default";
+
 		return priorityByPack.containsKey(name.intern());
 	}
 
