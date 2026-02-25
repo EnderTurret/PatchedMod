@@ -109,7 +109,7 @@ public interface MixinPackResources extends PatchedPackResources {
 	public default String patched$getName() {
 		final ModMetadata mod = FabricPlatform.getModMetadataFromPack(this);
 		if (mod != null) {
-			final String modId = mod.getId();
+			final String modId = mod.getName();
 			final String packId;
 
 			if (!modId.equals(patched$packId()))
