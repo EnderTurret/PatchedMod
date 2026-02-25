@@ -56,26 +56,26 @@ public final class PatchedFileAccess implements IFileAccess {
 	}
 
 	@Override
-	@Nullable
-	public JsonPatch readIncludedPatch(String path) {
+	public @Nullable JsonPatch readIncludedPatch(String path) {
 		try {
-			return CACHE.get(pack).computeIfAbsent(path, k -> {
-				try {
-					final InputStream stream = pack.patched$getRootResource("patches", path + ".json.patch");
-					if (stream == null) throw new PatchingException("Patch patches/" + path + ".json.patch doesn't exist; cannot include it.");
-
-					try (InputStream is = stream;
-							InputStreamReader isr = new InputStreamReader(is);
-							BufferedReader br = new BufferedReader(isr)) {
-						return Patches.readPatch(PatchedInternal.GSON, br);
-					}
-				} catch (IOException e) {
-					throw new UncheckedIOException(e);
-				}
-			});
+			return CACHE.get(pack).computeIfAbsent(path, this::readPatch);
 		} catch (Exception e) {
-			if (e instanceof RuntimeException re) throw re;
-			throw new RuntimeException(e);
+			throw e instanceof RuntimeException re ? re : new RuntimeException(e);
+		}
+	}
+
+	private JsonPatch readPatch(String path) {
+		try {
+			final InputStream stream = pack.patched$getRootResource("patches", path + ".json.patch");
+			if (stream == null) throw new PatchingException("Patch patches/" + path + ".json.patch doesn't exist; cannot include it.");
+
+			try (InputStream is = stream;
+					InputStreamReader isr = new InputStreamReader(is);
+					BufferedReader br = new BufferedReader(isr)) {
+				return Patches.readPatch(PatchedInternal.GSON, br);
+			}
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
 		}
 	}
 }

@@ -14,6 +14,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
  * @author EnderTurret
  */
 @Internal
+@SuppressWarnings("javadoc")
 public interface PatchedResourceManager {
 
 	/**

@@ -20,6 +20,7 @@ import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
  * @author EnderTurret
  */
 @Internal
+@SuppressWarnings("javadoc")
 public interface PatchedPackResources extends PatchingPackResources {
 
 	// ===== PackResources bindings =====

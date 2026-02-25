@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
  * @author EnderTurret
  */
 @Internal
+@SuppressWarnings("javadoc")
 public interface PatchedMutableComponent {
 
 	public PatchedMutableComponent append(String languageKey, String message, Object... args);
