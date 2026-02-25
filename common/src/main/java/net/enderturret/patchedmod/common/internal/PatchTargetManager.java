@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
-import net.enderturret.patchedmod.common.env.PatchedPackResources;
-import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.flow.DynamicPatches;
 import net.enderturret.patchedmod.common.internal.flow.PatchingManager;
 import net.enderturret.patchedmod.common.util.meta.IPattern;

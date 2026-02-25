@@ -11,8 +11,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.commands.ReloadCommand;
 
-import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
-import net.enderturret.patchedmod.common.env.PatchedResourceManager;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
 
 /**
  * A loader-agnostic implementation of {@code IEnvironment} for the server.

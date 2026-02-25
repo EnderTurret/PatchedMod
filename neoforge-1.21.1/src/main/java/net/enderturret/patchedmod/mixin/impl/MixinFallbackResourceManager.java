@@ -23,10 +23,10 @@ import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceMetadata;
 
-import net.enderturret.patchedmod.common.env.PatchedPackResources;
-import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
-import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.FallbackResourceManagerHidingTreeMap;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.flow.PatchingManager;
 import net.enderturret.patchedmod.common.util.PatchUtil;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;

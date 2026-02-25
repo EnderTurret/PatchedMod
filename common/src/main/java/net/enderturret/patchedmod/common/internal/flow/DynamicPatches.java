@@ -7,10 +7,10 @@ import java.util.Map;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import net.enderturret.patchedmod.common.env.PatchedPackResources;
-import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.PatchTargetManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 /**

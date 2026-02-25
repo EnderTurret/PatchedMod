@@ -10,10 +10,10 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
-import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
-import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.env.IEnvironment;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
 import net.enderturret.patchedmod.common.util.PatchTrace;
 import net.enderturret.patchedmod.common.util.PatchingInputStream;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;

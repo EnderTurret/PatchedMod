@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
 
 /**
  * An alternative to transforming {@code PackEntry}'s constructor public.

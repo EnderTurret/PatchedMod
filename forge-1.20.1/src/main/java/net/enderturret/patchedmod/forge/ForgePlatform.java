@@ -23,10 +23,10 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.forgespi.language.IModFileInfo;
 import net.minecraftforge.resource.PathPackResources;
 
-import net.enderturret.patchedmod.common.env.PatchedPackResources;
-import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform.JankyDataResult;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
 public final class ForgePlatform implements PatchedPlatform {

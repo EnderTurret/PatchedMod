@@ -20,8 +20,8 @@ import net.minecraft.server.packs.resources.IoSupplier;
 
 import net.neoforged.fml.ModContainer;
 
-import net.enderturret.patchedmod.common.env.PatchedPackResources;
-import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.mixin.command.FilePackResourcesAccess;
 import net.enderturret.patchedmod.mixin.command.SharedZipFileAccessAccess;

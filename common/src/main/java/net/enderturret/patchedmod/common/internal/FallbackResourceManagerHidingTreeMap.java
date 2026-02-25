@@ -4,7 +4,7 @@ import java.util.TreeMap;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import net.enderturret.patchedmod.common.env.PatchedResourceManager;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 /**

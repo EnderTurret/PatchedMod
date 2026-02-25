@@ -3,8 +3,8 @@ package net.enderturret.patchedmod.common.util;
 import com.google.gson.JsonElement;
 
 import net.enderturret.patched.exception.PatchingException;
-import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 
 /**
  * An assortment of utilities related to patching Json data.

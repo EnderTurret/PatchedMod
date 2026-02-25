@@ -28,10 +28,10 @@ import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.Level;
 
-import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
-import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.command.PatchedCommand;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
 import net.enderturret.patchedmod.fabric.env.AbstractEnvironment;
 import net.enderturret.patchedmod.fabric.env.ComponentWrapper;
 

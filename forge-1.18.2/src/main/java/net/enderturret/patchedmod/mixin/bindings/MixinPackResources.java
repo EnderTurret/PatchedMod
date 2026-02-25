@@ -26,8 +26,8 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.resource.DelegatingResourcePack;
 import net.minecraftforge.resource.PathResourcePack;
 
-import net.enderturret.patchedmod.common.env.PatchedPackResources;
-import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.forge.ForgePlatform;
 import net.enderturret.patchedmod.forge.PatchedVersionHacks;

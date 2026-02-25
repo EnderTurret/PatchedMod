@@ -8,7 +8,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 
-import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
 import net.enderturret.patchedmod.fabric.PatchedVersionHacks;
 
 public record ComponentWrapper(MutableComponent message) implements PatchedMutableComponent {

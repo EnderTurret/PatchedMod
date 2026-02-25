@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.enderturret.patchedmod.common.env.PatchedPackResources;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
 
 /**
  * Represents the contents of an invocation of the {@code /patched trace} subcommand.

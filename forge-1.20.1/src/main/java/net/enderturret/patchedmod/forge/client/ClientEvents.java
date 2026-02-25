@@ -18,10 +18,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
-import net.enderturret.patchedmod.common.env.PatchedResourceManager;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.command.PatchedCommand;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
 import net.enderturret.patchedmod.forge.env.AbstractEnvironment;
 import net.enderturret.patchedmod.forge.env.ComponentWrapper;
 

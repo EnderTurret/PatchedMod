@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.common.env;
+package net.enderturret.patchedmod.common.internal.env.binding;
 
 /**
  * Patched's bindings to {@code ResourceLocation}.

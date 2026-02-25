@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.common.env;
+package net.enderturret.patchedmod.common.internal.env.binding;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +11,7 @@ import java.util.zip.ZipFile;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.enderturret.patchedmod.common.env.IPatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 /**

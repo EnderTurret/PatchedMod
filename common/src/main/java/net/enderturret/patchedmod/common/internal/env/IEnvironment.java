@@ -9,8 +9,8 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
-import net.enderturret.patchedmod.common.env.PatchedMutableComponent;
-import net.enderturret.patchedmod.common.env.PatchedResourceManager;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
 
 /**
  * An abstraction over the client and server command APIs.

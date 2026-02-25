@@ -4,7 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.resources.ResourceLocation;
 
-import net.enderturret.patchedmod.common.env.PatchedResourceLocation;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 
 @Mixin(ResourceLocation.class)
 public abstract class MixinResourceLocation implements PatchedResourceLocation {

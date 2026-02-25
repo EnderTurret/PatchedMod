@@ -1,4 +1,4 @@
-package net.enderturret.patchedmod.common.env;
+package net.enderturret.patchedmod.common.internal.env.binding;
 
 import org.jetbrains.annotations.Nullable;
 
