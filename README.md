@@ -10,7 +10,7 @@ Patched's documentation can be found [here](https://github.com/EnderTurret/Patch
 
 ## What this mod can do that vanilla packs cannot
 
-Patched implements json patching functionality that can be leveraged by packs to patch parts of files -- that is, the mod gives packs the option to only change parts of json files.
+Patched implements json patching functionality that can be leveraged by packs to patch parts of files — that is, the mod gives packs the option to only change parts of json files.
 This allows packs to avoid having to replace the entire file when they only need to change a small part of it.
 
 For example, if a data pack in vanilla wants to add something to a loot table, it has to replace the *entire* file.
@@ -53,14 +53,14 @@ This means that data pack developers do not need to make use of undocumented bes
 ## Why use Patched over <insert mod-loader-specific biome/loot/whatever modification API>?
 
 The primary thing is discoverability.
-Patched provides a way to easily see how a file is being patched and by who, which allows someone -- say, a modpack developer -- to know exactly what is going on in said file.
+Patched provides a way to easily see how a file is being patched and by who, which allows someone — say, a modpack developer — to know exactly what is going on in said file.
 Additionally, it allows one to write "counter-patches" to patch out someone else's changes (if necessary).
 
 The same cannot be said for the many modification APIs, which at best might log the changes each mod makes (in practice this never happens).
 For a modpack developer, unless they look through every mod's source code, the changes that are being made are completely invisible to them; they have no idea who's changing what.
 Even worse, not all of these changes may be configurable. Some might, but there will be mods that simply don't provide the ability to configure them.
 
-For those who have dabbled with both Forge and Fabric before, you may have noticed how all of Forge's changes are immediately visible in Minecraft's code, whereas Fabric's changes are (or were -- I haven't checked recently) hidden behind mixins that are applied at runtime.
+For those who have dabbled with both Forge and Fabric before, you may have noticed how all of Forge's changes are immediately visible in Minecraft's code, whereas Fabric's changes are (or were — I haven't checked recently) hidden behind mixins that are applied at runtime.
 This is similar to the modification API vs. patches difference, where the changes made by patches are perfectly visible (via commands), but the changes made using the modification API are invisible (like mixins).
 
 If you use Patched, your changes to Minecraft's data are visible via commands, and can be changed or overwritten by data packs or other mods.
@@ -93,7 +93,7 @@ While there are other mods that allow a person to patch json files (it's not exa
 Patched tries very hard to make sure that errors are handled gracefully (your game shouldn't crash if a patch fails) and that the changes that are made can be easily viewed.
 And while I'm not saying other mods don't have decent error handling, I haven't seen another json patching mod that allows viewing the patched json data or any of the other informational features that Patched provides.
 
-In addition, Patched is a small dependency (only ~180 kB) and doesn't pull in any dependencies itself (such as a language provider) except for its backing library (which is shaded in -- you won't even notice it's there).
+In addition, Patched is a small dependency (only ~180 kB) and doesn't pull in any dependencies itself (such as a language provider) except for its backing library (which is shaded in — you won't even notice it's there).
 It also takes a more future-proof approach to things by keeping the actual json-patching algorithm Minecraft-unaware, which prevents that part from breaking if Mojang changes resource loading or something again for the fifteenth time this update.
 
 However, I would say the main appeal of Patched is the user-friendliness of being able to list/dump patches, dump files in patched/unpatched forms, and error messages that tell you what went wrong where (and that don't crash the game when they happen).
