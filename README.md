@@ -87,6 +87,22 @@ Once one has been defined, it can be used like so:
 ]
 ```
 
+#### But what about non-toggle config options?
+
+Mods can add custom [paste data sources](https://github.com/EnderTurret/PatchedMod/wiki/API-Documentation#custom-data-sources) which can provide json data (like numbers) from config files or other sources.
+Once one has been defined, it can be used like so:
+
+```json
+[
+  {
+    "op": "paste",
+    "type": "mymod:config_value",
+    "path": "/placement/frequency",
+    "value": "Fancy Dungeon Frequency"
+  }
+]
+```
+
 ## Why use Patched over any of the other json patching mods?
 
 While there are other mods that allow a person to patch json files (it's not exactly a *new* concept),
