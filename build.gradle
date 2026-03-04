@@ -1,12 +1,12 @@
 plugins {
-    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.9'
-    id 'com.diffplug.eclipse.apt' version '4.1.0' apply false
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.4.1'
+    id 'com.diffplug.eclipse.apt' version '4.4.1' apply false
 }
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'eclipse'
-    apply plugin: 'com.diffplug.eclipse.apt'
+    //apply plugin: 'com.diffplug.eclipse.apt'
 
     base {
         archivesName = 'Patched'
