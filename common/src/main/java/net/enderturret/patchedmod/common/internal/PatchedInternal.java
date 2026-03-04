@@ -23,7 +23,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import net.enderturret.patched.Patches;
-import net.enderturret.patched.patch.PatchContext;
+import net.enderturret.patched.patch.context.ImmutablePatchContext;
+import net.enderturret.patched.patch.context.PatchContext;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
@@ -51,7 +52,7 @@ public final class PatchedInternal {
 	 * The context used for patching json. This context has all extensions enabled by default.
 	 */
 	@Internal
-	public static final PatchContext BASE_CONTEXT = PatchContext.newContext()
+	public static final PatchContext BASE_CONTEXT = ImmutablePatchContext.newContext()
 			.testExtensions(true)
 			.patchedExtensions(true)
 			.testEvaluator(new PatchedTestEvaluator(null))

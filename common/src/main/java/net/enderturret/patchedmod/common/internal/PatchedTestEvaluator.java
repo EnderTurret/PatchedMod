@@ -11,7 +11,7 @@ import com.google.gson.JsonElement;
 
 import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.exception.PatchingException;
-import net.enderturret.patched.patch.PatchContext;
+import net.enderturret.patched.patch.context.PatchContext;
 import net.enderturret.patchedmod.common.RootEvaluator;
 import net.enderturret.patchedmod.common.TestCondition;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;

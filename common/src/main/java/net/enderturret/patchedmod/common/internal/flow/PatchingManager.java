@@ -19,7 +19,8 @@ import net.enderturret.patched.Patches;
 import net.enderturret.patched.audit.PatchAudit;
 import net.enderturret.patched.exception.PatchingException;
 import net.enderturret.patched.patch.JsonPatch;
-import net.enderturret.patched.patch.PatchContext;
+import net.enderturret.patched.patch.context.MutablePatchContext;
+import net.enderturret.patched.patch.context.PatchContext;
 import net.enderturret.patchedmod.common.env.PatchingPackResources;
 import net.enderturret.patchedmod.common.internal.PatchedFileAccess;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
@@ -124,7 +125,7 @@ public final class PatchingManager {
 
 		if (from.patched$hasPatches()) {
 			final PatchedResourceLocation patchName = name.patched$withPath(name.patched$getPath() + ".patch");
-			final PatchContext[] context = new PatchContext[1];
+			final MutablePatchContext[] context = new MutablePatchContext[1];
 
 			try {
 				applyPatch(
@@ -156,7 +157,7 @@ public final class PatchingManager {
 	private static boolean patch(PatchedResourceManager manager, PatchedPackResources from, PatchedPackType type, PatchedResourceLocation name, LazyPatchingWrapper wrapper, @Nullable PatchAudit audit, PatchTrace trace) {
 		final PatchedResourceLocation patchName = name.patched$withPath(name.patched$getPath() + ".patch");
 
-		final PatchContext[] context = new PatchContext[1];
+		final MutablePatchContext[] context = new MutablePatchContext[1];
 
 		if (HAS_GROUP_PACKS)
 			from = findTrueSource(from, type, name);
@@ -216,7 +217,7 @@ public final class PatchingManager {
 			LazyPatchingWrapper wrapper,
 			@Nullable PatchAudit audit,
 			PatchTrace trace,
-			PatchContext[] context,
+			MutablePatchContext[] context,
 			Map<PatchedPackResources, List<String>> targets) {
 		PatchContext ctx = null;
 
@@ -283,7 +284,7 @@ public final class PatchingManager {
 			LazyPatchingWrapper wrapper,
 			@Nullable PatchAudit audit,
 			PatchTrace trace,
-			PatchContext[] context,
+			MutablePatchContext[] context,
 			@Nullable String explicitTargetName) {
 		if (patchSupplier == null) return null;
 
@@ -320,13 +321,13 @@ public final class PatchingManager {
 			Entry pack,
 			LazyPatchingWrapper wrapper,
 			@Nullable PatchAudit audit,
-			PatchContext[] context,
+			MutablePatchContext[] context,
 			String explicitTargetName) {
 		try {
 			if (audit != null)
 				audit.setPatchPath(pack.name());
 			if (context[0] == null)
-				context[0] = PatchedInternal.BASE_CONTEXT.audit(audit).testEvaluator(new PatchedTestEvaluator(type));
+				context[0] = new MutablePatchContext(PatchedInternal.BASE_CONTEXT).audit(audit).testEvaluator(new PatchedTestEvaluator(type));
 
 			if (DEBUG)
 				PatchedInternal.LOGGER.info("Applying patch {} from {}{}.",
