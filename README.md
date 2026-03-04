@@ -35,13 +35,13 @@ This of course results in the same problem: only one data pack's biome definitio
 With Patched, the two data packs can modify the different parts of the biome separately, allowing both of their changes to persist.
 
 Patched also makes it possible for packs to "post-process" or patch their own files.
-With Patched's [`mod_loaded` test condition](docs/extensions.md#patchedmod_loaded), packs can add their own integration with mods.
+With Patched's [`mod_loaded` test condition](https://github.com/EnderTurret/PatchedMod/wiki/Test-Conditions#patchedmod_loaded), packs can add their own integration with mods.
 
 For example, Terralith could patch their own biomes to add Biomes o' Plenty (or BYG) foliage when that mod is installed.
 It could also add blocks from other mods to spruce up its biomes more than vanilla can allow (when those mods are installed).
 
 Another example might be a mod that adds configuration support for data/resource packs.
-This could be exposed through [a test condition](docs/api.md#custom-test-registration) that these packs could use to enable/disable features.
+This could be exposed through [a test condition](https://github.com/EnderTurret/PatchedMod/wiki/API-Documentation#custom-test-conditions) that these packs could use to enable/disable features.
 
 Lastly, Patched (as of `5.1.0+1.20.4` and `3.3.0+1.20.1`) allows packs to apply the same patch to *any number of files*, via the 'dynamic patching' feature.
 This means that data pack developers do not need to make use of undocumented bespoke mod loader features to add their custom ores to every biome (or certain ones).
@@ -69,7 +69,7 @@ which is more likely to stay compatible with future Minecraft versions since Moj
 
 ### Okay, but how do you configure a patch?
 
-Mods can add custom [test conditions](docs/api.md#custom-test-registration) which can check config files for a value of some kind.
+Mods can add custom [test conditions](https://github.com/EnderTurret/PatchedMod/wiki/API-Documentation#custom-test-conditions) which can check config files for a value of some kind.
 Once one has been defined, it can be used like so:
 
 ```json
