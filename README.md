@@ -93,7 +93,7 @@ While there are other mods that allow a person to patch json files (it's not exa
 Patched tries very hard to make sure that errors are handled gracefully (your game shouldn't crash if a patch fails) and that the changes that are made can be easily viewed.
 And while I'm not saying other mods don't have decent error handling, I haven't seen another json patching mod that allows viewing the patched json data or any of the other informational features that Patched provides.
 
-In addition, Patched is a small dependency (only ~180 kB) and doesn't pull in any dependencies itself (such as a language provider) except for its backing library (which is shaded in — you won't even notice it's there).
+In addition, Patched is a small dependency (only ~200 kB, or ~400 kB on older Forge) and doesn't pull in any dependencies itself (such as a language provider) except for its backing library (which is shaded in — you won't even notice it's there).
 It also takes a more future-proof approach to things by keeping the actual json-patching algorithm Minecraft-unaware, which prevents that part from breaking if Mojang changes resource loading or something again for the fifteenth time this update.
 
 However, I would say the main appeal of Patched is the user-friendliness of being able to list/dump patches, dump files in patched/unpatched forms, and error messages that tell you what went wrong where (and that don't crash the game when they happen).
@@ -106,10 +106,4 @@ Linux: `./gradlew build`<br>
 Windows: `gradlew.bat build`
 
 Each platform's binaries will be in the `libs` folder of the platform's corresponding project folder.
-(For example, the Fabric binaries are in `fabric/build/libs`.)
-
-### For Fabric and Quilt
-
-There's one more manual step that should be performed after running `build`: the shaded jar (the one with `-all` in it) needs to be deleted.
-This jar is the unremapped shadow jar, so it's safe to remove.
-Strictly-speaking it doesn't *need* to be deleted, but it might cause confusion otherwise.
+(For example, the Fabric 1.21.1 binaries are in `fabric-1.21.1/build/libs`.)
