@@ -115,15 +115,16 @@ public abstract class PatchProvider implements DataProvider {
 		registerPatches();
 
 		if (!patches.isEmpty()) {
+			final Path packRoot = output.getOutputFolder();
 			final Path root = output.getOutputFolder(target);
 
 			for (Map.Entry<ResourceLocation, JsonPatch> entry : patches.entrySet())
-				writePatch(cache, root, entry.getKey(), entry.getValue());
+				writePatch(cache, packRoot, root, entry.getKey(), entry.getValue());
 		}
 	}
 
-	private void writePatch(CachedOutput cache, Path root, ResourceLocation path, JsonPatch patch) {
-		final Path to = root.resolve(path.getNamespace()).resolve(path.getPath() + ".json.patch");
+	private void writePatch(CachedOutput cache, Path packRoot, Path root, ResourceLocation path, JsonPatch patch) {
+		final Path to = (path.getNamespace().isEmpty() ? packRoot.resolve("patches") : root.resolve(path.getNamespace())).resolve(path.getPath() + ".json.patch");
 		// The ordering is guaranteed to be stable, as patches are serialized manually.
 		// Using this method prevents the "type" field of test patches from jumping to the top of the json object.
 		write(cache, GSON.toJsonTree(patch), to);
@@ -154,6 +155,15 @@ public abstract class PatchProvider implements DataProvider {
 	 */
 	public OperationBuilder patch(ResourceLocation location) {
 		return new RootOperationBuilder(location);
+	}
+
+	/**
+	 * Begin a new patch definition. The patch will be placed in the {@code patches} folder, for reference by {@code include} patches or dynamic patch targets.
+	 * @param location The location to place this patch.
+	 * @return The patch builder.
+	 */
+	public OperationBuilder localPatch(String location) {
+		return new RootOperationBuilder(id("", location));
 	}
 
 	private static <T> JsonElement serializeUnchecked(@Nullable T value, Codec<T> codec, @Nullable RegistryAccess registries) {

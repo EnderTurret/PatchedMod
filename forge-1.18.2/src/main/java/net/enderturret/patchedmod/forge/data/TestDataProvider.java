@@ -2,6 +2,8 @@ package net.enderturret.patchedmod.forge.data;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
+import net.minecraft.server.packs.PackType;
+
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
@@ -17,7 +19,7 @@ public final class TestDataProvider {
 
 	@SubscribeEvent
 	static void gatherData(GatherDataEvent e) {
-		e.getGenerator().addProvider(new PatchProvider(e.getGenerator(), "patched") {
+		e.getGenerator().addProvider(new PatchProvider(e.getGenerator(), PackType.CLIENT_RESOURCES, "patched") {
 			@Override
 			public void registerPatches() {
 				patch(id("minecraft", "models/item/poisonous_potato"))

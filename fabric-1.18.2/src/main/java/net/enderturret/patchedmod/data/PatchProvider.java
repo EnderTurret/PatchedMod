@@ -32,6 +32,7 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.HashCache;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 
 import net.enderturret.patched.ITestEvaluator;
 import net.enderturret.patched.exception.PatchingException;
@@ -51,12 +52,14 @@ public abstract class PatchProvider implements DataProvider {
 	private static final Gson GSON = net.enderturret.patchedmod.common.internal.PatchedInternal.GSON;
 
 	private final DataGenerator output;
+	private final PackType type;
 	private final String modId;
 
 	private final Map<ResourceLocation, JsonPatch> patches = new HashMap<>();
 
-	protected PatchProvider(DataGenerator output, @Nullable String modId) {
+	protected PatchProvider(DataGenerator output, PackType type, @Nullable String modId) {
 		this.output = output;
+		this.type = type;
 		this.modId = modId;
 	}
 
@@ -113,15 +116,16 @@ public abstract class PatchProvider implements DataProvider {
 		registerPatches();
 
 		if (!patches.isEmpty()) {
-			final Path root = output.getOutputFolder();
+			final Path packRoot = output.getOutputFolder();
+			final Path root = packRoot.resolve(type.getDirectory());
 
 			for (Map.Entry<ResourceLocation, JsonPatch> entry : patches.entrySet())
-				writePatch(cache, root, entry.getKey(), entry.getValue());
+				writePatch(cache, packRoot, root, entry.getKey(), entry.getValue());
 		}
 	}
 
-	private void writePatch(HashCache cache, Path root, ResourceLocation path, JsonPatch patch) {
-		final Path to = root.resolve(path.getNamespace()).resolve(path.getPath() + ".json.patch");
+	private void writePatch(HashCache cache, Path packRoot, Path root, ResourceLocation path, JsonPatch patch) {
+		final Path to = (path.getNamespace().isEmpty() ? packRoot.resolve("patches") : root.resolve(path.getNamespace())).resolve(path.getPath() + ".json.patch");
 		// The ordering is guaranteed to be stable, as patches are serialized manually.
 		// Using this method prevents the "type" field of test patches from jumping to the top of the json object.
 		write(cache, GSON.toJsonTree(patch), to);
@@ -188,6 +192,15 @@ public abstract class PatchProvider implements DataProvider {
 	 */
 	public OperationBuilder patch(ResourceLocation location) {
 		return new RootOperationBuilder(location);
+	}
+
+	/**
+	 * Begin a new patch definition. The patch will be placed in the {@code patches} folder, for reference by {@code include} patches or dynamic patch targets.
+	 * @param location The location to place this patch.
+	 * @return The patch builder.
+	 */
+	public OperationBuilder localPatch(String location) {
+		return new RootOperationBuilder(id("", location));
 	}
 
 	private static <T> JsonElement serializeUnchecked(@Nullable T value, Codec<T> codec, @Nullable RegistryAccess registries) {
