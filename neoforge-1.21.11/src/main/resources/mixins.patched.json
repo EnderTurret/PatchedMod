@@ -9,6 +9,7 @@
     "command.FilePackResourcesAccess",
     "command.SharedZipFileAccessAccess",
     "dynamic_patches.MixinMinecraftServer",
+    "dynamic_patches.MixinMultiPackResourceManager",
     "dynamic_patches.MixinPackConfig",
     "impl.MixinAbstractPackResources",
     "impl.MixinFallbackResourceManager"

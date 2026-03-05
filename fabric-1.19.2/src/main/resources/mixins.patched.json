@@ -11,6 +11,7 @@
     "command.FilePackResourcesAccess",
     "dynamic_patches.MixinAbstractPackResources",
     "dynamic_patches.MixinMinecraftServer",
+    "dynamic_patches.MixinMultiPackResourceManager",
     "dynamic_patches.MixinPackConfig",
     "fabric.api.MixinGroupResourcePack",
     "fabric.api.MixinModNioResourcePack",

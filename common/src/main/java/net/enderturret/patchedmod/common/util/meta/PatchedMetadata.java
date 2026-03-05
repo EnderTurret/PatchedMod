@@ -72,6 +72,22 @@ public record PatchedMetadata(byte formatVersion, List<PatchTarget> patchTargets
 	}
 
 	/**
+	 * Checks whether any of the {@linkplain #patchTargets() dynamic patch targets} match the specified namespace.
+	 * @param type The pack type to filter patch targets with.
+	 * @param namespace The namespace to check.
+	 * @return {@code true} if at least one dynamic patch target for the given pack type matches the specified namespace.
+	 */
+	public boolean hasDynamicNamespace(PatchedPackType type, String namespace) {
+		for (PatchTarget pTarget : patchTargets)
+			if (pTarget.packType().orElse(type) == type)
+				for (PatchTarget.Target target : pTarget.targets())
+					if (target.matchesNamespace(namespace))
+						return true;
+
+		return false;
+	}
+
+	/**
 	 * The cached metadata for packs that don't use Patched in any way.
 	 * These have a format version of negative one (-1).
 	 */

@@ -10,6 +10,7 @@
     "bindings.MixinResourceManager",
     "command.FilePackResourcesAccess",
     "dynamic_patches.MixinMinecraftServer",
+    "dynamic_patches.MixinMultiPackResourceManager",
     "dynamic_patches.MixinPackConfig",
     "forge.DelegatingPackResourcesAccess",
     "impl.MixinAbstractPackResources",
