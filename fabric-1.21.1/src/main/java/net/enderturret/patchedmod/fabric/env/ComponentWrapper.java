@@ -1,6 +1,7 @@
 package net.enderturret.patchedmod.fabric.env;
 
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -14,6 +15,7 @@ import net.enderturret.patchedmod.fabric.PatchedVersionHacks;
  * @author EnderTurret
  * @param message The wrapped component.
  */
+@Internal
 public record ComponentWrapper(MutableComponent message) implements PatchedMutableComponent {
 
 	/**

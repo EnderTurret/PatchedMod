@@ -3,6 +3,7 @@ package net.enderturret.patchedmod.fabric;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -29,6 +30,7 @@ import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
  * The Fabric {@code PatchedPlatform} implementation.
  * @author EnderTurret
  */
+@Internal
 public final class FabricPlatform implements PatchedPlatform {
 
 	@Override

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
+
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -29,6 +31,7 @@ import net.fabricmc.loader.api.metadata.CustomValue.CvType;
  * </p>
  * @author EnderTurret, reluctantly
  */
+@Internal
 final class CustomValueOps implements DynamicOps<CustomValue> {
 
 	public static final CustomValueOps INSTANCE = new CustomValueOps();

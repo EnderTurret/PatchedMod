@@ -1,5 +1,6 @@
 package net.enderturret.patchedmod.neoforge.env;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.chat.Component;
@@ -14,6 +15,7 @@ import net.enderturret.patchedmod.neoforge.PatchedVersionHacks;
  * @author EnderTurret
  * @param message The wrapped component.
  */
+@Internal
 public record ComponentWrapper(MutableComponent message) implements PatchedMutableComponent {
 
 	/**

@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.mojang.serialization.Codec;
@@ -31,6 +32,7 @@ import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
  * The Forge {@code PatchedPlatform} implementation.
  * @author EnderTurret
  */
+@Internal
 public final class ForgePlatform implements PatchedPlatform {
 
 	@Override
