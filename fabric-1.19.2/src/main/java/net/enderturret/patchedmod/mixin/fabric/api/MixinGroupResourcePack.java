@@ -13,6 +13,10 @@ import net.minecraft.server.packs.PackResources;
 
 import net.enderturret.patchedmod.fabric.GroupResourcePackAccess;
 
+/**
+ * Implements {@link GroupResourcePackAccess} on {@link GroupResourcePack}.
+ * @author EnderTurret
+ */
 @Mixin(value = GroupResourcePack.class, remap = false)
 public abstract class MixinGroupResourcePack implements GroupResourcePackAccess {
 

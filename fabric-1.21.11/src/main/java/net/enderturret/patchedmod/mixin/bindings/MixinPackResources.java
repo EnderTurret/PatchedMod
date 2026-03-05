@@ -27,6 +27,10 @@ import net.enderturret.patchedmod.fabric.IFabricModPackResources;
 import net.enderturret.patchedmod.mixin.command.FilePackResourcesAccess;
 import net.enderturret.patchedmod.mixin.command.SharedZipFileAccessAccess;
 
+/**
+ * Implements common bindings for {@code PackResources}.
+ * @author EnderTurret
+ */
 @Mixin(PackResources.class)
 public interface MixinPackResources extends PatchedPackResources {
 

@@ -25,6 +25,10 @@ import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResourc
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
+/**
+ * The Fabric {@code PatchedPlatform} implementation.
+ * @author EnderTurret
+ */
 public final class FabricPlatform implements PatchedPlatform {
 
 	@Override
@@ -56,6 +60,11 @@ public final class FabricPlatform implements PatchedPlatform {
 				.orElse(-1) >= 0;
 	}
 
+	/**
+	 * Retrieves the mod metadata from the specified pack, or returns {@code null} if the pack does not represent a mod.
+	 * @param pack The pack to retrieve the mod metadata from.
+	 * @return The mod metadata, or {@code null}.
+	 */
 	@Nullable
 	public static ModMetadata getModMetadataFromPack(PatchingPackResources pack) {
 		if (pack instanceof IFabricModPackResources mod)

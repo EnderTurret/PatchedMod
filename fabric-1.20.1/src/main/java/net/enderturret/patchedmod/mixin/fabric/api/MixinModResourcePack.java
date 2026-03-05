@@ -7,6 +7,10 @@ import net.fabricmc.loader.api.metadata.ModMetadata;
 
 import net.enderturret.patchedmod.fabric.IFabricModPackResources;
 
+/**
+ * Implements {@link IFabricModPackResources} on {@link ModResourcePack}.
+ * @author EnderTurret
+ */
 @Mixin(ModResourcePack.class)
 public interface MixinModResourcePack extends IFabricModPackResources {
 

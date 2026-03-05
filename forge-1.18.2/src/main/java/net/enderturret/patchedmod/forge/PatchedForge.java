@@ -13,10 +13,17 @@ import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.command.PatchedCommand;
 import net.enderturret.patchedmod.forge.env.ServerEnvironment;
 
+/**
+ * Patched's main mod class.
+ * @author EnderTurret
+ */
 @Internal
 @Mod(Patched.MOD_ID)
 public final class PatchedForge {
 
+	/**
+	 * The main mod constructor.
+	 */
 	public PatchedForge() {
 		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::handleIMC);

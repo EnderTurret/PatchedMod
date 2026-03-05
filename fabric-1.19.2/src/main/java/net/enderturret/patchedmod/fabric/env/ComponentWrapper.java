@@ -11,8 +11,20 @@ import net.minecraft.network.chat.Style;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
 
+/**
+ * Implements common bindings to {@code MutableComponent}.
+ * @author EnderTurret
+ * @param message The wrapped component.
+ */
 public record ComponentWrapper(MutableComponent message) implements PatchedMutableComponent {
 
+	/**
+	 * Returns a new {@link MutableComponent} based on a {@code TranslatableComponent}.
+	 * @param languageKey The translation key, for clients with the mod.
+	 * @param message The literal message (in English), for vanilla clients.
+	 * @param args Arguments to apply to the message.
+	 * @return The new {@code MutableComponent}.
+	 */
 	public static MutableComponent translate(String languageKey, String message, Object... args) {
 		return PatchedPlatform.get().isPhysicalClient() ? Component.translatable(languageKey, args) : Component.literal(message.formatted(args));
 	}

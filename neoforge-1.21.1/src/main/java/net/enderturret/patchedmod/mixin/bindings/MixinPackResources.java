@@ -27,6 +27,10 @@ import net.enderturret.patchedmod.mixin.command.FilePackResourcesAccess;
 import net.enderturret.patchedmod.mixin.command.SharedZipFileAccessAccess;
 import net.enderturret.patchedmod.neoforge.NeoForgePlatform;
 
+/**
+ * Implements common bindings for {@code PackResources}.
+ * @author EnderTurret
+ */
 @Mixin(PackResources.class)
 public interface MixinPackResources extends PatchedPackResources {
 

@@ -9,8 +9,20 @@ import net.minecraft.network.chat.Style;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
 import net.enderturret.patchedmod.neoforge.PatchedVersionHacks;
 
+/**
+ * Implements common bindings to {@code MutableComponent}.
+ * @author EnderTurret
+ * @param message The wrapped component.
+ */
 public record ComponentWrapper(MutableComponent message) implements PatchedMutableComponent {
 
+	/**
+	 * Returns a new {@link MutableComponent} based on a {@code TranslatableComponent}.
+	 * @param languageKey The translation key, for clients with the mod.
+	 * @param message The literal message (in English), for vanilla clients.
+	 * @param args Arguments to apply to the message.
+	 * @return The new {@code MutableComponent}.
+	 */
 	public static MutableComponent translate(String languageKey, String message, Object... args) {
 		return Component.translatableWithFallback(languageKey, message.formatted(args), args);
 	}

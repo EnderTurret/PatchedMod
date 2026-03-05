@@ -17,6 +17,11 @@ import net.enderturret.patchedmod.mixin.command.FilePackResourcesAccess;
 @Internal
 public final class PatchedVersionHacks {
 
+	/**
+	 * Provides access to the specified {@code FilePackResources}'s internal {@code ZipFile}.
+	 * @param pack The {@code FilePackResources} to retrieve the {@code ZipFile} from.
+	 * @return The {@code ZipFile}.
+	 */
 	public static ZipFile getOrCreateZipFile(FilePackResources pack) {
 		try {
 			return ((FilePackResourcesAccess) pack).patched$getOrCreateZipFile();

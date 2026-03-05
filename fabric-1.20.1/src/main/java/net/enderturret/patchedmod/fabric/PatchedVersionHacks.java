@@ -25,6 +25,12 @@ import net.enderturret.patchedmod.mixin.command.FilePackResourcesAccess;
 @Internal
 public final class PatchedVersionHacks {
 
+	/**
+	 * Provides access to the specified {@code FilePackResources}'s internal {@code ZipFile}.
+	 * This is a bridge between 1.20.1 and 1.20.2.
+	 * @param pack The {@code FilePackResources} to retrieve the {@code ZipFile} from.
+	 * @return The {@code ZipFile}.
+	 */
 	public static ZipFile getOrCreateZipFile(FilePackResources pack) {
 		if (zipFileAccess != null)
 			try {

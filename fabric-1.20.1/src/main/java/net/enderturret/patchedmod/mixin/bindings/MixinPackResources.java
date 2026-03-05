@@ -28,6 +28,10 @@ import net.enderturret.patchedmod.fabric.GroupResourcePackAccess;
 import net.enderturret.patchedmod.fabric.IFabricModPackResources;
 import net.enderturret.patchedmod.fabric.PatchedVersionHacks;
 
+/**
+ * Implements common bindings for {@code PackResources}.
+ * @author EnderTurret
+ */
 @Mixin(PackResources.class)
 public interface MixinPackResources extends PatchedPackResources {
 

@@ -26,6 +26,10 @@ import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResourc
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
+/**
+ * The NeoForge {@code PatchedPlatform} implementation.
+ * @author EnderTurret
+ */
 public final class NeoForgePlatform implements PatchedPlatform {
 
 	@Override
@@ -54,6 +58,11 @@ public final class NeoForgePlatform implements PatchedPlatform {
 				.orElse(-1) >= 0;
 	}
 
+	/**
+	 * Retrieves the mod container from the specified pack, or returns {@link Optional#empty} if the pack does not represent a mod.
+	 * @param pack The pack to retrieve the mod container from.
+	 * @return The mod metadata, or an empty {@code Optional}.
+	 */
 	public static Optional<? extends ModContainer> findModNameFromModFile(PatchedPackResources pack) {
 		if (pack.patched$packId().startsWith("mod/")) {
 			final String modId = pack.patched$packId().substring("mod/".length());

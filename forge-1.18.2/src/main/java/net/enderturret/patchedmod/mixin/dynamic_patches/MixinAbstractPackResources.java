@@ -7,6 +7,11 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 import net.minecraft.server.packs.AbstractPackResources;
 
+/**
+ * Removes {@link AbstractPackResources}'s check for slashes in calls to {@code getRootResource()},
+ * so that Patched can resolve patches in the {@code patches} directory.
+ * @author EnderTurret
+ */
 @Mixin(AbstractPackResources.class)
 public abstract class MixinAbstractPackResources {
 

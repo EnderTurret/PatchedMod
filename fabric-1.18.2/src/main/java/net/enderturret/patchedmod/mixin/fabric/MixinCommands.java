@@ -15,6 +15,10 @@ import net.minecraft.commands.Commands;
 import net.enderturret.patchedmod.common.internal.command.PatchedCommand;
 import net.enderturret.patchedmod.fabric.env.ServerEnvironment;
 
+/**
+ * Registers Patched's server-side commands without the need for Fabric API.
+ * @author EnderTurret
+ */
 @Mixin(Commands.class)
 public abstract class MixinCommands {
 

@@ -9,6 +9,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.enderturret.patchedmod.common.internal.env.PatchedEnvironment;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
 
+/**
+ * The base implementation of {@link PatchedEnvironment}.
+ * @author EnderTurret
+ * @param <T> The command source type.
+ */
 public abstract class AbstractEnvironment<T> implements PatchedEnvironment<T> {
 
 	@Override

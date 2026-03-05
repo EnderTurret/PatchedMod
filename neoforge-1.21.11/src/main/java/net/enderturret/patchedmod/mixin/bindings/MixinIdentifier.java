@@ -6,6 +6,10 @@ import net.minecraft.resources.Identifier;
 
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 
+/**
+ * Implements common bindings for {@code Identifier}.
+ * @author EnderTurret
+ */
 @Mixin(Identifier.class)
 public abstract class MixinIdentifier implements PatchedResourceLocation {
 

@@ -33,6 +33,10 @@ import net.enderturret.patchedmod.forge.ForgePlatform;
 import net.enderturret.patchedmod.forge.PatchedVersionHacks;
 import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
 
+/**
+ * Implements common bindings for {@code PackResources}.
+ * @author EnderTurret
+ */
 @Mixin(PackResources.class)
 public interface MixinPackResources extends PatchedPackResources {
 

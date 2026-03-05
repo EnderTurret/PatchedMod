@@ -6,6 +6,10 @@ import net.minecraft.resources.ResourceLocation;
 
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 
+/**
+ * Implements common bindings for {@code ResourceLocation}.
+ * @author EnderTurret
+ */
 @Mixin(ResourceLocation.class)
 public abstract class MixinResourceLocation implements PatchedResourceLocation {
 

@@ -18,6 +18,10 @@ import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResourc
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 import net.enderturret.patchedmod.forge.FallbackResourceManagerAccess;
 
+/**
+ * Implements Patched's patching pipeline for calls to {@code getResourceStack()}.
+ * @author EnderTurret
+ */
 @Mixin(targets = "net/minecraft/server/packs/resources/FallbackResourceManager$SinglePackResourceThunkSupplier")
 public abstract class MixinSinglePackResourceThunkSupplier {
 

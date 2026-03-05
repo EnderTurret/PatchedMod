@@ -23,6 +23,11 @@ import net.enderturret.patchedmod.mixin.forge.DelegatingPackResourcesAccess;
 @Internal
 public final class PatchedVersionHacks {
 
+	/**
+	 * Provides access to the specified {@code FilePackResources}'s internal {@code ZipFile}.
+	 * @param pack The {@code FilePackResources} to retrieve the {@code ZipFile} from.
+	 * @return The {@code ZipFile}.
+	 */
 	public static ZipFile getOrCreateZipFile(FilePackResources pack) {
 		try {
 			return ((FilePackResourcesAccess) pack).patched$getOrCreateZipFile();
@@ -32,6 +37,13 @@ public final class PatchedVersionHacks {
 		}
 	}
 
+	/**
+	 * Provides access to the specified {@code PackResources}'s list of packs for the specified pack type and namespace.
+	 * @param pack The pack.
+	 * @param type The type.
+	 * @param namespace The namespace.
+	 * @return The list of candidate packs.
+	 */
 	@SuppressWarnings("removal")
 	public static Collection<PackResources> getCandidatePacks(PackResources pack, PackType type, String namespace) {
 		if (pack instanceof DelegatingPackResourcesAccess access)

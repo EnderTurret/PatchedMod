@@ -21,6 +21,10 @@ import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.enderturret.patchedmod.common.env.PatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
+/**
+ * Handles placing packs with dynamic patches into the relevant {@code FallbackResourceManager}s.
+ * @author EnderTurret
+ */
 @Mixin(MultiPackResourceManager.class)
 public abstract class MixinMultiPackResourceManager {
 

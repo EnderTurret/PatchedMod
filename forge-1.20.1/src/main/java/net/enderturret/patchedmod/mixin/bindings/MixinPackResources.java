@@ -30,6 +30,10 @@ import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 import net.enderturret.patchedmod.forge.ForgePlatform;
 import net.enderturret.patchedmod.forge.PatchedVersionHacks;
 
+/**
+ * Implements common bindings for {@code PackResources}.
+ * @author EnderTurret
+ */
 @Mixin(PackResources.class)
 public interface MixinPackResources extends PatchedPackResources {
 

@@ -12,6 +12,10 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.SemanticVersion;
 import net.fabricmc.loader.api.Version;
 
+/**
+ * Patched's mixin config plugin.
+ * @author EnderTurret
+ */
 @Internal
 public final class PatchedMixinPlugin implements IMixinConfigPlugin {
 

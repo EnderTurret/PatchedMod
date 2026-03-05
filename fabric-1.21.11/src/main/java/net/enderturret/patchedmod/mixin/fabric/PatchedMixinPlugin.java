@@ -10,6 +10,10 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import net.fabricmc.loader.api.FabricLoader;
 
+/**
+ * Patched's mixin config plugin.
+ * @author EnderTurret
+ */
 @Internal
 public final class PatchedMixinPlugin implements IMixinConfigPlugin {
 

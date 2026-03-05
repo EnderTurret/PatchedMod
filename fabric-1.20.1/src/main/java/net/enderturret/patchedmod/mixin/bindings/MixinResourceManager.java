@@ -19,6 +19,10 @@ import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResourc
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
 
+/**
+ * Implements common bindings for {@code ResourceManager}.
+ * @author EnderTurret
+ */
 @Mixin(ResourceManager.class)
 public interface MixinResourceManager extends PatchedResourceManager {
 

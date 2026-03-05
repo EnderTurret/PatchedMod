@@ -9,6 +9,10 @@ import net.fabricmc.loader.api.FabricLoader;
 
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 
+/**
+ * Patched's main mod class.
+ * @author EnderTurret
+ */
 @Internal
 public final class PatchedFabric implements ModInitializer {
 
