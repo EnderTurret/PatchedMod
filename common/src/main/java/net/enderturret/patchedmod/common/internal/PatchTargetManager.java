@@ -91,13 +91,9 @@ public final class PatchTargetManager {
 
 		final List<BakedTarget> targets = new ArrayList<>();
 
-		parent:
 		for (BakedTarget target : this.targets)
-			for (IPattern pattern : target.target.namespace())
-				if (pattern.test(ns)) {
-					targets.add(target);
-					continue parent;
-				}
+			if (target.target.matchesNamespace(ns))
+				targets.add(target);
 
 		targetsByNamespace.put(ns, List.copyOf(targets));
 	}

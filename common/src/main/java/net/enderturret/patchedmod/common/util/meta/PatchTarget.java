@@ -33,5 +33,18 @@ public record PatchTarget(Optional<PatchedPackType> packType, String patch, List
 				IPattern.CODEC.listOf().fieldOf("namespace").forGetter(Target::namespace),
 				IPattern.CODEC.listOf().fieldOf("path").forGetter(Target::path))
 				.apply(builder, Target::new));
+
+		/**
+		 * Checks whether the specified namespace matches any of the namespace patterns.
+		 * @param namespace The namespace to test.
+		 * @return {@code true} if the namespace matches a pattern, or {@code false} otherwise.
+		 */
+		public boolean matchesNamespace(String namespace) {
+			for (IPattern pattern : this.namespace)
+				if (pattern.test(namespace))
+					return true;
+
+			return false;
+		}
 	}
 }
