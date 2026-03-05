@@ -33,7 +33,7 @@ public abstract class MixinMinecraftServer {
 	)
 	private MultiPackResourceManager patched$setupServerPatchTargetManager(
 			PackType type, List<PackResources> packs, Operation<MultiPackResourceManager> original) {
-		DynamicPatches.setupTargetManager(type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA, (List) packs);
+		DynamicPatches.setupTargetManager(PatchedPackType.fromVanilla(PackType.CLIENT_RESOURCES, type), (List) packs);
 		return original.call(type, packs);
 	}
 }

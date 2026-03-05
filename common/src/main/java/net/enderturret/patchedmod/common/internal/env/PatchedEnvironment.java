@@ -11,6 +11,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
+import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 /**
  * An abstraction over the client and server command APIs.
@@ -30,6 +31,14 @@ public interface PatchedEnvironment<T> {
 	 * @return {@code true} if this is a client context.
 	 */
 	public boolean client();
+
+	/**
+	 * Returns the {@link PatchedPackType} matching this {@code PatchedEnvironment}.
+	 * @return The {@code PatchedPackType}.
+	 */
+	public default PatchedPackType packType() {
+		return client() ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA;
+	}
 
 	/**
 	 * Returns the {@code ResourceManager} for the specified command source.

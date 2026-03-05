@@ -56,7 +56,7 @@ public abstract class MixinFallbackResourceManager {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
 		streamSupplier = patched$chain(streamSupplier,
 				(PatchedResourceManager) self,
-				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
+				PatchedPackType.fromVanilla(PackType.CLIENT_RESOURCES, type),
 				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, false);
 		return downstream.call(pack, location, streamSupplier, metadataSupplier);
 	}
@@ -75,7 +75,7 @@ public abstract class MixinFallbackResourceManager {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
 		streamSupplier = patched$chain(streamSupplier,
 				(PatchedResourceManager) self,
-				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
+				PatchedPackType.fromVanilla(PackType.CLIENT_RESOURCES, type),
 				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, true);
 		return downstream.call(pack, location, streamSupplier, metadataSupplier);
 	}
@@ -89,7 +89,7 @@ public abstract class MixinFallbackResourceManager {
 		final FallbackResourceManager self = (FallbackResourceManager) (Object) this;
 		streamSupplier = patched$chain(streamSupplier,
 				(PatchedResourceManager) self,
-				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA,
+				PatchedPackType.fromVanilla(PackType.CLIENT_RESOURCES, type),
 				(PatchedResourceLocation) (Object) location, (PatchedPackResources) pack, true);
 		return downstream.call(pack, streamSupplier, metadataSupplier);
 	}
@@ -104,7 +104,7 @@ public abstract class MixinFallbackResourceManager {
 			require = 1) // We'll crash and burn later if this fails, so may as well explode earlier.
 	private TreeMap<?, ?> patched$hideThisInTreeMap() {
 		return new FallbackResourceManagerHidingTreeMap<>((PatchedResourceManager) this,
-				type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA);
+				PatchedPackType.fromVanilla(PackType.CLIENT_RESOURCES, type));
 	}
 
 	@WrapOperation(

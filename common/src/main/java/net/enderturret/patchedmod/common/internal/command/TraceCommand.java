@@ -21,7 +21,7 @@ import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 final class TraceCommand {
 
 	static <T> LiteralArgumentBuilder<T> create(PatchedEnvironment<T> env) {
-		final PatchedPackType type = env.client() ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA;
+		final PatchedPackType type = env.packType();
 		return env.literal("trace")
 				.then(env.argument("file", env.getResourceLocationArgumentType())
 								.suggests((ctx, builder) -> DumpCommand.suggestResource(ctx, type, builder, env))

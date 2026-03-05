@@ -44,7 +44,7 @@ public final class PatchedTestHandler {
 		env.submit(src, () -> {
 			env.sendSuccess(src, false, env.literalText("\n".repeat(90)));
 
-			final PatchedPackType type = env.client() ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA;
+			final PatchedPackType type = env.packType();
 			final PatchedResourceManager resourceManager = env.getResourceManager(src);
 
 			boolean result = false;
@@ -83,6 +83,7 @@ public final class PatchedTestHandler {
 		});
 	}
 
+	// TODO: Test resource stacks
 	private static <T> boolean runTest(PatchedEnvironment<T> env, T src, PatchedResourceManager resourceManager, PatchedPackType type, String namespace) throws IOException {
 		env.sendSuccess(src, false, env.literalText("Running test suite for " + type + " " + namespace + "!"));
 

@@ -61,7 +61,7 @@ public abstract class MixinFallbackResourceManager implements FallbackResourceMa
 	@Override
 	public Resource.IoSupplier<InputStream> patched$chain(Resource.IoSupplier<InputStream> delegate, PatchedResourceLocation name, PatchedPackResources origin, boolean singlePack) {
 		if (!PatchUtil.isPatchable(name.patched$getPath())) return delegate;
-		final PatchedPackType type = this.type == PackType.CLIENT_RESOURCES ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA;
+		final PatchedPackType type = PatchedPackType.fromVanilla(PackType.CLIENT_RESOURCES, this.type);
 		final PatchedResourceManager manager = (PatchedResourceManager) this;
 		return () -> PatchingManager.newPatchingStream(delegate.get(), manager, origin, type, name, singlePack);
 	}

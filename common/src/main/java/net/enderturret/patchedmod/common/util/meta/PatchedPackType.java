@@ -59,6 +59,17 @@ public enum PatchedPackType {
 	}
 
 	/**
+	 * Converts the specified pack type into the corresponding {@code PatchedPackType}.
+	 * @param <T> The type of the vanilla pack type.
+	 * @param client The pack type instance for the client.
+	 * @param value The pack type to convert.
+	 * @return The converted {@code PatchedPackType}.
+	 */
+	public static <T> PatchedPackType fromVanilla(T client, T value) {
+		return value == client ? CLIENT_RESOURCES : SERVER_DATA;
+	}
+
+	/**
 	 * Converts this pack type into one of the specified vanilla pack types.
 	 * @param <T> The type of the vanilla pack type.
 	 * @param client The pack type instance for the client.

@@ -31,7 +31,7 @@ import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 final class DumpCommand {
 
 	static <T> LiteralArgumentBuilder<T> create(PatchedEnvironment<T> env) {
-		final PatchedPackType type = env.client() ? PatchedPackType.CLIENT_RESOURCES : PatchedPackType.SERVER_DATA;
+		final PatchedPackType type = env.packType();
 		return env.literal("dump")
 				.then(env.literal("patch")
 						.then(env.argument("pack", StringArgumentType.string())
