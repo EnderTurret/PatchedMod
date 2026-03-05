@@ -62,7 +62,7 @@ public final class PatchedInternal {
 	 * The {@link Gson} instance used for reading patches and {@linkplain #readPrettyJson(InputStream, String, boolean, boolean) prettying Json data}.
 	 */
 	public static final Gson GSON = Patches.patchGson(BASE_CONTEXT)
-			.setPrettyPrinting().create();
+			.setPrettyPrinting().disableHtmlEscaping().create();
 
 	/**
 	 * Attempts to read a string from the given stream as Json, converted to a "pretty" form.
