@@ -36,31 +36,13 @@ public final class PatchedForge {
 	private void handleIMC(InterModProcessEvent e) {
 		e.getIMCStream().forEachOrdered(message -> {
 			switch (message.method()) {
-				case "registerDataSource" -> handleDataSource(message.messageSupplier().get(), message.senderModId());
-				case "registerTestCondition" -> handleTestCondition(message.messageSupplier().get(), message.senderModId());
+				case "registerDataSource" -> PatchedInternal.handleDataSourceIMC(message.messageSupplier().get(), message.senderModId());
+				case "registerTestCondition" -> PatchedInternal.handleTestConditionIMC(message.messageSupplier().get(), message.senderModId());
 				default -> PatchedInternal.LOGGER.warn("Received unknown IMC method {} with content {} from {}!",
 						message.method(),
 						message.messageSupplier().get(),
 						message.senderModId());
 			}
 		});
-	}
-
-	private static void handleDataSource(Object obj, String sender) {
-		if (!(obj instanceof Pair<?, ?> pair) || !(pair.getLeft() instanceof ResourceLocation rl) || !(pair.getRight() instanceof BinaryOperator op)) {
-			PatchedInternal.LOGGER.warn("Expected Pair<ResourceLocation, BinaryOperator<JsonElement>> from IMC sent by {}, got {}!", sender, obj);
-			return;
-		}
-
-		Patched.registerDataSource(rl, SingleDataSource.wrap(op));
-	}
-
-	private static void handleTestCondition(Object obj, String sender) {
-		if (!(obj instanceof Pair<?, ?> pair) || !(pair.getLeft() instanceof ResourceLocation rl) || !(pair.getRight() instanceof Predicate con)) {
-			PatchedInternal.LOGGER.warn("Expected Pair<ResourceLocation, Predicate<JsonElement>> from IMC sent by {}, got {}!", sender, obj);
-			return;
-		}
-
-		Patched.registerSimpleTestCondition(rl, con::test);
 	}
 }

@@ -8,12 +8,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +28,8 @@ import com.google.gson.JsonParser;
 import net.enderturret.patched.Patches;
 import net.enderturret.patched.patch.context.ImmutablePatchContext;
 import net.enderturret.patched.patch.context.PatchContext;
+import net.enderturret.patchedmod.common.SingleDataSource;
+import net.enderturret.patchedmod.common.TestCondition;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
@@ -134,6 +139,43 @@ public final class PatchedInternal {
 
 			return sb.toString();
 		}
+	}
+
+	/**
+	 * Handles an IMC or {@code ObjectShare} message for registering a data source.
+	 * @param obj The object sent by the mod.
+	 * @param senderModId The sender's mod ID, if available.
+	 */
+	public static void handleDataSourceIMC(Object obj, @Nullable String senderModId) {
+		if (!(obj instanceof Pair<?, ?> pair) || (!(pair.getLeft() instanceof PatchedResourceLocation) && !(pair.getLeft() instanceof String))
+				|| !(pair.getRight() instanceof BinaryOperator op)) {
+			PatchedInternal.LOGGER.warn("Expected Pair<Identifier, BinaryOperator<JsonElement>>, got {}{}!",
+					senderModId != null ? " (from " + senderModId + ")" : "", obj);
+			return;
+		}
+
+		PatchedDataSource.register(pair.getLeft().toString(), SingleDataSource.wrap(op));
+	}
+
+	/**
+	 * Handles an IMC or {@code ObjectShare} message for registering a test condition.
+	 * @param obj The object sent by the mod.
+	 * @param senderModId The sender's mod ID, if available.
+	 */
+	public static void handleTestConditionIMC(Object obj, @Nullable String senderModId) {
+		if (!(obj instanceof Pair<?, ?> pair) || (!(pair.getLeft() instanceof PatchedResourceLocation) && !(pair.getLeft() instanceof String))) {
+			PatchedInternal.LOGGER.warn("Expected Pair<Identifier, BiPredicate<JsonElement, JsonElement>>, got {}{}!",
+					senderModId != null ? " (from " + senderModId + ")" : "", obj);
+			return;
+		}
+
+		if (pair.getRight() instanceof Predicate con)
+			PatchedTestEvaluator.register(pair.getLeft().toString(), (TestCondition.Simple) con::test);
+		else if (pair.getRight() instanceof BiPredicate con)
+			PatchedTestEvaluator.register(pair.getLeft().toString(), (TestCondition.wrap(con)));
+		else
+			PatchedInternal.LOGGER.warn("Expected Pair<Identifier, BiPredicate<JsonElement, JsonElement>>, got {}{}!",
+					senderModId != null ? " (from " + senderModId + ")" : "", obj);
 	}
 
 	// ================================================================================================

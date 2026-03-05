@@ -1,5 +1,7 @@
 package net.enderturret.patchedmod.common;
 
+import java.util.function.BiPredicate;
+
 import com.google.gson.JsonElement;
 
 import net.enderturret.patched.ITestEvaluator;
@@ -21,6 +23,16 @@ public interface TestCondition {
 	 * @return {@code true} if the test succeeds, {@code false} otherwise.
 	 */
 	public boolean test(JsonElement root, JsonElement target, JsonElement value, PatchContext context);
+
+	/**
+	 * Wraps the specified {@code BiPredicate} as a {@code TestCondition}.
+	 * It will receive the {@code target} and {@code value} parameters, in that order.
+	 * @param predicate The predicate to wrap.
+	 * @return The wrapped {@code TestCondition}.
+	 */
+	public static TestCondition wrap(BiPredicate<JsonElement, JsonElement> predicate) {
+		return (root, target, value, context) -> predicate.test(target, value);
+	}
 
 	/**
 	 * Simplified version of {@link TestCondition} that only uses the {@code value} argument.
