@@ -2,6 +2,7 @@ package net.enderturret.patchedmod.common.internal.env.binding;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -54,4 +55,5 @@ public interface PatchedResourceManager {
 	public Set<String> patched$getNamespaces();
 	public Stream<PatchedPackResources> patched$listPacks();
 	public Optional<InputStream> patched$getResource(PatchedResourceLocation location) throws IOException;
+	public Optional<List<InputStream>> patched$getResourceStack(PatchedResourceLocation location) throws IOException;
 }

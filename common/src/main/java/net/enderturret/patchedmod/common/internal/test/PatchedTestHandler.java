@@ -2,6 +2,9 @@ package net.enderturret.patchedmod.common.internal.test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
@@ -12,6 +15,7 @@ import com.google.gson.JsonObject;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.env.PatchedEnvironment;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
+import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
@@ -22,14 +26,29 @@ import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 @Internal
 public final class PatchedTestHandler {
 
-	private static JsonElement parseJson(PatchedResourceManager resourceManager, String location) throws IOException {
-		try (InputStream is = resourceManager.patched$getResource(PatchedPlatform.get().tryParse(location)).get()) {
+	private static JsonElement parseJson(PatchedResourceManager resourceManager, String location, boolean stack) throws IOException {
+		final PatchedResourceLocation rl = PatchedPlatform.get().tryParse(location);
+
+		final InputStream _is;
+		if (stack) {
+			final List<InputStream> list = resourceManager.patched$getResourceStack(rl).orElseThrow(() -> new NoSuchElementException(location));
+			if (list.size() != 1) {
+				for (InputStream is : list) is.close();
+				throw new IllegalArgumentException("Found too many streams for " + location + "; expected 1 got " + list.size());
+			}
+
+			_is = list.get(0);
+		}
+		else _is = resourceManager.patched$getResource(rl).orElseThrow(() -> new NoSuchElementException(location));
+
+		try (InputStream is = _is) {
 			return PatchedInternal.readJson(is, location, true);
 		}
 	}
 
 	private static String parseString(PatchedResourceManager resourceManager, String location) throws IOException {
-		try (InputStream is = resourceManager.patched$getResource(PatchedPlatform.get().tryParse(location)).get()) {
+		try (InputStream is = resourceManager.patched$getResource(PatchedPlatform.get().tryParse(location))
+				.orElseThrow(() -> new NoSuchElementException(location))) {
 			return PatchedInternal.readString(is);
 		}
 	}
@@ -83,17 +102,17 @@ public final class PatchedTestHandler {
 		});
 	}
 
-	// TODO: Test resource stacks
 	private static <T> boolean runTest(PatchedEnvironment<T> env, T src, PatchedResourceManager resourceManager, PatchedPackType type, String namespace) throws IOException {
 		env.sendSuccess(src, false, env.literalText("Running test suite for " + type + " " + namespace + "!"));
 
-		final JsonArray tests = parseJson(resourceManager, namespace + ":patched/tests.json").getAsJsonArray();
+		final JsonArray tests = parseJson(resourceManager, namespace + ":patched/tests.json", false).getAsJsonArray();
 		boolean overall = true;
 
 		for (JsonElement testElem : tests) {
 			final JsonObject test = testElem.getAsJsonObject();
 			final String name = test.get("name").getAsString();
 			final String resultFile = test.get("result").getAsString();
+			final boolean useStack = test.has("useStack") && test.get("useStack").getAsBoolean();
 			final boolean result;
 			String comparison = "";
 
@@ -105,8 +124,8 @@ public final class PatchedTestHandler {
 				if (!result) comparison = "Expected <<<" + expected + ">>>, got <<<" + actual + ">>>";
 			} else {
 				final String inputFile = test.get("input").getAsString();
-				final JsonElement expected = parseJson(resourceManager, resultFile);
-				final JsonElement actual = parseJson(resourceManager, inputFile);
+				final JsonElement expected = parseJson(resourceManager, resultFile, false);
+				final JsonElement actual = parseJson(resourceManager, inputFile, useStack);
 				result = expected.equals(actual);
 				if (!result) comparison = "Expected <<<" + PatchedInternal.GSON.toJson(expected) + ">>>, got <<<" + PatchedInternal.GSON.toJson(actual) + ">>>";
 			}

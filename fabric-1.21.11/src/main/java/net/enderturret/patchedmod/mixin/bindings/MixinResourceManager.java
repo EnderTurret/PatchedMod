@@ -2,6 +2,8 @@ package net.enderturret.patchedmod.mixin.bindings;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -66,5 +68,14 @@ public interface MixinResourceManager extends PatchedResourceManager {
 		final Optional<Resource> optional = ((ResourceManager) this).getResource((Identifier) (Object) location);
 		if (optional.isEmpty()) return Optional.empty();
 		return Optional.of(optional.get().open());
+	}
+
+	@Override
+	public default Optional<List<InputStream>> patched$getResourceStack(PatchedResourceLocation location) throws IOException {
+		final List<Resource> list = ((ResourceManager) this).getResourceStack((Identifier) (Object) location);
+		if (list.isEmpty()) return Optional.empty();
+		return Optional.of(list.stream().map(r -> {
+			try { return r.open(); } catch (IOException e) { throw new UncheckedIOException(e); }
+		}).toList());
 	}
 }
