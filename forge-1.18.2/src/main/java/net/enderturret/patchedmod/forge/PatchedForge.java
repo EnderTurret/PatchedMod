@@ -1,12 +1,6 @@
 package net.enderturret.patchedmod.forge;
 
-import java.util.function.BinaryOperator;
-import java.util.function.Predicate;
-
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus.Internal;
-
-import net.minecraft.resources.ResourceLocation;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -15,7 +9,6 @@ import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import net.enderturret.patchedmod.Patched;
-import net.enderturret.patchedmod.common.SingleDataSource;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.command.PatchedCommand;
 import net.enderturret.patchedmod.forge.env.ServerEnvironment;

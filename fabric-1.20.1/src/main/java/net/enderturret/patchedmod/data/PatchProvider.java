@@ -30,8 +30,8 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
 import net.enderturret.patched.ITestEvaluator;
@@ -41,7 +41,6 @@ import net.enderturret.patched.patch.JsonPatch;
 import net.enderturret.patched.patch.PatchUtil;
 import net.enderturret.patched.patch.TestPatch;
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
-import net.enderturret.patchedmod.fabric.PatchedVersionHacks;
 
 /**
  * A data provider for patches.

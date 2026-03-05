@@ -13,7 +13,6 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 
 import net.enderturret.patchedmod.common.env.PatchingPackResources;
-import net.enderturret.patchedmod.common.util.meta.PatchTarget;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;
 
 @Mixin(MultiPackResourceManager.class)

@@ -2,8 +2,8 @@ package net.enderturret.patchedmod.common.internal.flow;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.Nullable;
 
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
 

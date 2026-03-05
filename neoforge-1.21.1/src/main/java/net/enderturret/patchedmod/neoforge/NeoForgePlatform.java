@@ -22,7 +22,6 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
-import net.enderturret.patchedmod.common.internal.env.PatchedPlatform.JankyDataResult;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedPackResources;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceLocation;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;

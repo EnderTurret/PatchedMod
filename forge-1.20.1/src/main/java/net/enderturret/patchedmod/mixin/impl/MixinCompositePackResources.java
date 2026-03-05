@@ -6,8 +6,6 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 
-import net.minecraft.server.packs.AbstractPackResources;
-
 import net.enderturret.patchedmod.common.env.PatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 

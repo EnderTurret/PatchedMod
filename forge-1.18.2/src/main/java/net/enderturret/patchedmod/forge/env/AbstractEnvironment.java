@@ -3,7 +3,6 @@ package net.enderturret.patchedmod.forge.env;
 import com.mojang.brigadier.arguments.ArgumentType;
 
 import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 

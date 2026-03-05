@@ -9,8 +9,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.zip.ZipFile;
 
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.Nullable;
 
 import net.enderturret.patchedmod.common.env.PatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedPackType;

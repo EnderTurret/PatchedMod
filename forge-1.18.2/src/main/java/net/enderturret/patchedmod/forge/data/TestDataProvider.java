@@ -2,8 +2,6 @@ package net.enderturret.patchedmod.forge.data;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import net.minecraft.data.DataGenerator;
-
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 

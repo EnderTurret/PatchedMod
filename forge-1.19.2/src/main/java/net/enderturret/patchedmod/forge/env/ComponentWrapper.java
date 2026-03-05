@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Style;
 
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
-import net.enderturret.patchedmod.forge.PatchedVersionHacks;
 
 public record ComponentWrapper(MutableComponent message) implements PatchedMutableComponent {
 
