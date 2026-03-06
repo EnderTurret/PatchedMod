@@ -37,7 +37,7 @@ public final class PatchedVersionHacks {
 	 * @return The {@code ZipFile}.
 	 */
 	public static ZipFile getOrCreateZipFile(FilePackResources pack) {
-		if (zipFileAccess != null)
+		if (zipFileAccess != null && getOrCreateZipFile != null)
 			try {
 				final Object access = zipFileAccess.invoke(pack);
 				return (ZipFile) getOrCreateZipFile.invoke(access);

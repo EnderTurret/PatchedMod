@@ -32,7 +32,7 @@ public final class PatchedVersionHacks {
 	 * @return The {@code ZipFile}.
 	 */
 	public static ZipFile getOrCreateZipFile(FilePackResources pack) {
-		if (zipFileAccess != null)
+		if (zipFileAccess != null && getOrCreateZipFile != null)
 			try {
 				final Object access = zipFileAccess.invoke(pack);
 				return (ZipFile) getOrCreateZipFile.invoke(access);
@@ -54,7 +54,7 @@ public final class PatchedVersionHacks {
 		if (PatchedPlatform.get().isModLoaded("minecraft", "1.20.2")) {
 			final String filePackResourcesInt = "net.minecraft.class_3258";
 			final String zipFileAccessInt = "field_45038", zipFileAccessDescInt = "Lnet/minecraft/class_3258/class_8616;";
-			final String sharedZipFileAccessInt = "net.minecraft.class_3258.class_8616";
+			final String sharedZipFileAccessInt = "net.minecraft.class_3258$class_8616";
 			final String getOrCreateZipFileInt = "method_52426", getOrCreateZipFileDescInt = "()Ljava/util/zip/ZipFile;";
 			try {
 				final Field zipFileAccess = FilePackResources.class.getDeclaredField(mappings.mapFieldName("intermediary", filePackResourcesInt, zipFileAccessInt, zipFileAccessDescInt));
