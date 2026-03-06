@@ -11,6 +11,7 @@ import net.minecraft.server.TickTask;
 
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
+import net.enderturret.patchedmod.fabric.PatchedVersionHacks;
 
 /**
  * A loader-agnostic implementation of {@code IEnvironment} for the server.
@@ -26,7 +27,7 @@ public final class ServerEnvironment extends AbstractEnvironment<CommandSourceSt
 
 	@Override
 	public void submit(CommandSourceStack source, Runnable task) {
-		source.getServer().tell(new TickTask(source.getServer().getTickCount(), task));
+		PatchedVersionHacks.tell(source.getServer(), new TickTask(source.getServer().getTickCount(), task));
 	}
 
 	@Override

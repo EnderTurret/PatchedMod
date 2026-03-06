@@ -19,6 +19,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.thread.BlockableEventLoop;
 
 import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.env.PatchedPlatform;
@@ -83,14 +84,51 @@ public final class PatchedVersionHacks {
 		}
 	}
 
+	/**
+	 * Invokes {@link BlockableEventLoop#tell(Runnable)}.
+	 * This is a bridge between 1.21.1 and 1.21.2.
+	 * @param <T> The task type.
+	 * @param loop The {@code BlockableEventLoop}.
+	 * @param task The task to schedule.
+	 */
+	public static <T extends Runnable> void tell(BlockableEventLoop<T> loop, T task) {
+		if (blockableEventLoopSchedule == null)
+			loop.tell(task);
+		else
+			try {
+				blockableEventLoopSchedule.invoke(loop, task);
+			} catch (Throwable e) {
+				throw new RuntimeException(e);
+			}
+	}
+
 	private static Executor backgroundExecutor;
 	private static final @Nullable MethodHandle registryGet;
 	private static final @Nullable MethodHandle newSuggestCommandClickEvent;
 	private static final @Nullable MethodHandle newShowTextHoverEvent;
+	private static final @Nullable MethodHandle blockableEventLoopSchedule;
 
 	static {
 		final MappingResolver mappings = FabricLoader.getInstance().getMappingResolver();
 		MethodHandle temp = null;
+
+		if (PatchedPlatform.get().isModLoaded("minecraft", "1.21.2")) {
+			final String blockableEventLoopInt = "net.minecraft.class_1255";
+			final String blockableEventLoopScheduleInt = "method_63588", blockableEventLoopScheduleDescInt = "(Ljava/lang/Runnable;)V";
+			final String blockableEventLoopSchedule = mappings.mapMethodName("intermediary", blockableEventLoopInt, blockableEventLoopScheduleInt, blockableEventLoopScheduleDescInt);
+			try {
+				final Method schedule = BlockableEventLoop.class.getDeclaredMethod(blockableEventLoopSchedule, Runnable.class);
+				temp = MethodHandles.publicLookup().unreflect(schedule);
+				PatchedInternal.LOGGER.debug("Found BlockableEventLoop.schedule(): {}", schedule);
+			} catch (NoSuchMethodException e) {
+				PatchedInternal.LOGGER.warn("Could not find BlockableEventLoop.schedule()!", e);
+			} catch (Exception e) {
+				PatchedInternal.LOGGER.warn("Exception locating BlockableEventLoop.schedule():", e);
+			}
+		}
+
+		blockableEventLoopSchedule = temp;
+		temp = null;
 
 		if (PatchedPlatform.get().isModLoaded("minecraft", "1.21.4")) {
 			final String registryInt = "net.minecraft.class_2378";

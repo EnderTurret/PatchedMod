@@ -29,6 +29,7 @@ import net.enderturret.patchedmod.common.internal.PatchedInternal;
 import net.enderturret.patchedmod.common.internal.command.PatchedCommand;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedMutableComponent;
 import net.enderturret.patchedmod.common.internal.env.binding.PatchedResourceManager;
+import net.enderturret.patchedmod.fabric.PatchedVersionHacks;
 import net.enderturret.patchedmod.fabric.env.AbstractEnvironment;
 import net.enderturret.patchedmod.fabric.env.ComponentWrapper;
 
@@ -54,7 +55,7 @@ final class PatchedClientCommands {
 
 		@Override
 		public void submit(FabricClientCommandSource source, Runnable task) {
-			Minecraft.getInstance().tell(task);
+			PatchedVersionHacks.tell(Minecraft.getInstance(), task);
 		}
 
 		@Override
