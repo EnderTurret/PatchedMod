@@ -1,6 +1,6 @@
 plugins {
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom-remap/net.fabricmc.fabric-loom-remap.gradle.plugin/
-    id 'net.fabricmc.fabric-loom-remap' version '1.15.4'
+    id 'net.fabricmc.fabric-loom-remap' version '1.15.5'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)

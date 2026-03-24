@@ -1,0 +1,40 @@
+// https://projects.neoforged.net/
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.141'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+neoForge {
+    version = "${loader_version}"
+
+    mods {
+        patched {
+            sourceSet sourceSets.main
+            sourceSet project(':PatchedMod.Common').sourceSets.main
+        }
+    }
+
+    runs {
+        configureEach {
+            additionalRuntimeClasspathConfiguration.extendsFrom configurations.shadow
+        }
+
+        client {
+            client()
+            ideName = 'runPatchedModClientNeoForge26_1'
+            if (rootProject.findProperty('minecraft_username') != null) {
+                programArguments.addAll('--uuid', rootProject.findProperty('minecraft_uuid'), '--username', rootProject.findProperty('minecraft_username'))
+            }
+        }
+        server {
+            server()
+            ideName = 'runPatchedModServerNeoForge26_1'
+        }
+        clientData {
+            clientData()
+            ideName = 'runPatchedModClientDataNeoForge26_1'
+        }
+    }
+}
