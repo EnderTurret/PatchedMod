@@ -114,7 +114,7 @@ public abstract class MixinFallbackResourceManager {
 					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
 					+ "Lnet/minecraft/server/packs/resources/IoSupplier;"
 					+ ")Lnet/minecraft/server/packs/resources/Resource;"),
-			method = { "lambda$listResources$3", "m_244901_", "method_45293" },
+			method = { "lambda$listResources$1" },
 			require = 1,
 			remap = false)
 	private static Resource patched$intricateReplaceResource(
