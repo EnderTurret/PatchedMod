@@ -67,7 +67,7 @@ public interface PatchedPlatform {
 
 	/**
 	 * <p>
-	 * Returns whether or not the platform contains the deprecated (and soon-to-be-withdrawn) legacy {@code "patched:has_patches"} format.
+	 * Returns whether or not the platform contains the withdrawn legacy {@code "patched:has_patches"} format.
 	 * </p>
 	 * <p>
 	 * This is necessary because while a new syntax was introduced in 1.20.4, the old syntax was historically used throughout 1.20.1 and below.
@@ -90,6 +90,12 @@ public interface PatchedPlatform {
 	 * @return {@code true} if so.
 	 */
 	public default boolean hasUnprefixedPackIds() { return false; }
+
+	/**
+	 * Returns whether or not the platform has withdrawn the legacy {@code "patched:has_patches"} format.
+	 * @return {@code true} if so.
+	 */
+	public default boolean hasWithdrawnLegacyPatchedMetadata() { return false; }
 
 	/**
 	 * Returns whether or not Patched is running on the (physical) client.

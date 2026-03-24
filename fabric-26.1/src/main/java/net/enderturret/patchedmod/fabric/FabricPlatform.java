@@ -34,6 +34,11 @@ import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 public final class FabricPlatform implements PatchedPlatform {
 
 	@Override
+	public boolean hasWithdrawnLegacyPatchedMetadata() {
+		return true;
+	}
+
+	@Override
 	public boolean isPhysicalClient() {
 		return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
 	}

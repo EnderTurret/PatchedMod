@@ -35,6 +35,11 @@ import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 public final class NeoForgePlatform implements PatchedPlatform {
 
 	@Override
+	public boolean hasWithdrawnLegacyPatchedMetadata() {
+		return true;
+	}
+
+	@Override
 	public boolean isPhysicalClient() {
 		return FMLEnvironment.getDist() == Dist.CLIENT;
 	}

@@ -55,6 +55,7 @@ public final class PatchingManager {
 	// Whether to print the "patched:has_patches" deprecation warning.
 	// This is here so it can be disabled on older versions.
 	private static final boolean HASPATCHES_WARNING = !PatchedPlatform.get().hasLegacyPatchedMetadata();
+	private static final boolean HASPATCHES_WITHDRAWN = !PatchedPlatform.get().hasWithdrawnLegacyPatchedMetadata();
 
 	private static final AtomicBoolean LOG_EXCEPTIONS = new AtomicBoolean(true);
 
@@ -405,7 +406,9 @@ public final class PatchingManager {
 
 					if (patching.patchedMetadata().patchingEnabled()) {
 						if (patching.patchedMetadata().formatVersion() == 0) {
-							if (HASPATCHES_WARNING)
+							if (HASPATCHES_WITHDRAWN)
+								PatchedInternal.LOGGER.error("Somehow loaded legacy PatchedMetadata for {}. This should not be possible.", entry.name());
+							else if (HASPATCHES_WARNING)
 								PatchedInternal.LOGGER.warn("Loaded legacy PatchedMetadata from {}. This behavior is deprecated and will be removed in Minecraft 26.1.", entry.name());
 							else
 								loudDebug("Loaded legacy PatchedMetadata from {}.", entry.name());

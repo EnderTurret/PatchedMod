@@ -127,7 +127,10 @@ public record PatchedMetadata(byte formatVersion, List<PatchTarget> patchTargets
 			else if (root.get("pack") instanceof JsonObject pack
 					&& pack.get("patched:has_patches") instanceof JsonPrimitive hasPatches
 					&& hasPatches.isBoolean() && hasPatches.getAsBoolean())
-				return LEGACY_METADATA;
+				if (PatchedPlatform.get().hasWithdrawnLegacyPatchedMetadata())
+					throw new PatchingException("Support for legacy Patched metadata has been withdrawn and it is no longer recognized on this version.");
+				else
+					return LEGACY_METADATA;
 		}
 
 		return DISABLED_METADATA;
