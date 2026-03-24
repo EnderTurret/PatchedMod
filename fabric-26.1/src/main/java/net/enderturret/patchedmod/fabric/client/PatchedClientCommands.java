@@ -10,7 +10,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
@@ -41,7 +41,7 @@ import net.enderturret.patchedmod.fabric.env.ComponentWrapper;
 final class PatchedClientCommands {
 
 	static void init() {
-		ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> {
+		ClientCommandRegistrationCallback.EVENT.register((dispatcher, _) -> {
 			dispatcher.register(PatchedCommand.create(new ClientEnvironment()));
 		});
 	}
@@ -87,7 +87,7 @@ final class PatchedClientCommands {
 		public String executeCommand(FabricClientCommandSource source, String command) {
 			final StringBuilder msg = new StringBuilder();
 			try {
-				ClientCommandManager.getActiveDispatcher().execute(command, new FabricClientCommandSource() {
+				ClientCommands.getActiveDispatcher().execute(command, new FabricClientCommandSource() {
 					@Override public void sendFeedback(Component message) { msg.append(message.getString()).append("\n"); }
 					@Override public void sendError(Component message) { msg.append(message.getString()).append("\n"); }
 
@@ -102,7 +102,7 @@ final class PatchedClientCommands {
 					@Override public PermissionSet permissions() { return source.permissions(); }
 					@Override public Minecraft getClient() { return source.getClient(); }
 					@Override public LocalPlayer getPlayer() { return source.getPlayer(); }
-					@Override public ClientLevel getWorld() { return source.getWorld(); }
+					@Override public ClientLevel getLevel() { return source.getLevel(); }
 				});
 			} catch (CommandSyntaxException e) {
 				PatchedInternal.LOGGER.error("Exception executing command:", e);

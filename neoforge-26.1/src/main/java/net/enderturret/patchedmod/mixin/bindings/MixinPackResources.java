@@ -76,7 +76,7 @@ public interface MixinPackResources extends PatchedPackResources {
 	public default void patched$listResources(PatchedPackType type, String namespace, String path, Consumer<PatchedResourceLocation> consumer) {
 		((PackResources) this).listResources(type.toVanilla(PackType.CLIENT_RESOURCES, PackType.SERVER_DATA),
 				namespace, path,
-				(loc, io) -> consumer.accept((PatchedResourceLocation) (Object) loc));
+				(loc, _) -> consumer.accept((PatchedResourceLocation) (Object) loc));
 	}
 
 	@Override
