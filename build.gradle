@@ -19,6 +19,10 @@ subprojects {
 
     repositories {
         maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        maven {
             url = 'https://api.modrinth.com/maven'
             content {
                 includeGroup 'maven.modrinth'
