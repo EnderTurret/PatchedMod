@@ -65,3 +65,5 @@ legacyForge {
         }
     }
 }
+
+publishMods.file = reobfJar.archiveFile

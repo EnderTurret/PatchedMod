@@ -39,3 +39,5 @@ tasks.named('processResources', ProcessResources).configure {
         expand 'version': inputs.properties.version
     }
 }
+
+publishMods.file = remapJar.archiveFile

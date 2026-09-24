@@ -1,6 +1,32 @@
 plugins {
     id 'org.jetbrains.gradle.plugin.idea-ext' version '1.4.1'
     id 'com.diffplug.eclipse.apt' version '4.4.1' apply false
+    id 'me.modmuss50.mod-publish-plugin' version '2.2.0' apply false
+}
+
+tasks.register('publishMods') {
+    def tasks = [
+        project(':PatchedMod.Forge.1.18.2').tasks.publishMods,
+        project(':PatchedMod.Fabric.1.18.2').tasks.publishMods,
+        project(':PatchedMod.Forge.1.19.2').tasks.publishMods,
+        project(':PatchedMod.Fabric.1.19.2').tasks.publishMods,
+        project(':PatchedMod.Forge.1.20.1').tasks.publishMods,
+        project(':PatchedMod.Fabric.1.20.1').tasks.publishMods,
+        project(':PatchedMod.NeoForge.1.21.1').tasks.publishMods,
+        project(':PatchedMod.Fabric.1.21.1').tasks.publishMods,
+        project(':PatchedMod.NeoForge.1.21.11').tasks.publishMods,
+        project(':PatchedMod.Fabric.1.21.11').tasks.publishMods,
+        project(':PatchedMod.NeoForge.26.1').tasks.publishMods,
+        project(':PatchedMod.Fabric.26.1').tasks.publishMods,
+        project(':PatchedMod.NeoForge.26.3').tasks.publishMods,
+        project(':PatchedMod.Fabric.26.3').tasks.publishMods
+    ]
+
+    for (int i = 0; i < tasks.size() - 1; i++) {
+        tasks[i + 1].mustRunAfter(tasks[i])
+    }
+
+    dependsOn(tasks)
 }
 
 subprojects {
@@ -125,6 +151,52 @@ subprojects {
 
         tasks.named('processResources', ProcessResources).configure {
             from project(':PatchedMod.Common').sourceSets.main.resources
+        }
+
+        apply plugin: 'me.modmuss50.mod-publish-plugin'
+
+        publishMods {
+            changelog = providers.fileContents(rootProject.getLayout().projectDirectory.file("changelog.md")).asText
+            type = STABLE
+            modLoaders.add("${publishing_loader}")
+            displayName = "${project.version}"
+
+            dryRun = true
+
+            curseforge {
+                accessToken = providers.gradleProperty('CURSEFORGE_API_KEY')
+                projectId = '689918'
+                changelogType = 'markdown'
+
+                additionalFiles.from(sourcesJar.archiveFile)
+
+                minecraftVersionList("${publishing_minecraft_version_range}")
+                javaVersions.add(JavaVersion.valueOf("${publishing_java_version}"))
+
+                client = true
+                server = true
+
+                if (project.hasProperty("publishing_mixin_dep_cf")) {
+                    requires("${publishing_mixin_dep_cf}")
+                }
+            }
+
+            modrinth {
+                accessToken = providers.gradleProperty('MODRINTH_API_KEY')
+                projectId = 'IBlGrJtC'
+
+                additionalFile(sourcesJar) {
+                    type = SOURCES_JAR
+                }
+
+                minecraftVersionList("${publishing_minecraft_version_range}")
+
+                environment = CLIENT_OR_SERVER_PREFERS_BOTH
+
+                if (project.hasProperty("publishing_mixin_dep_mr")) {
+                    requires("${publishing_mixin_dep_mr}")
+                }
+            }
         }
     }
 }
