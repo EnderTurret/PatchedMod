@@ -1,0 +1,49 @@
+package net.enderturret.patchedmod.neoforge;
+
+import org.jetbrains.annotations.ApiStatus.Internal;
+
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+
+import net.enderturret.patchedmod.Patched;
+import net.enderturret.patchedmod.common.internal.PatchedInternal;
+import net.enderturret.patchedmod.common.internal.command.PatchedCommand;
+import net.enderturret.patchedmod.neoforge.env.ServerEnvironment;
+
+/**
+ * Patched's main mod class.
+ * @author EnderTurret
+ */
+@Internal
+@Mod(Patched.MOD_ID)
+public final class PatchedNeoForge {
+
+	/**
+	 * The main mod constructor.
+	 * @param modBus The mod event bus.
+	 */
+	public PatchedNeoForge(IEventBus modBus) {
+		NeoForge.EVENT_BUS.addListener(this::registerCommands);
+		modBus.addListener(this::handleIMC);
+	}
+
+	private void registerCommands(RegisterCommandsEvent e) {
+		e.getDispatcher().register(PatchedCommand.create(new ServerEnvironment()));
+	}
+
+	private void handleIMC(InterModProcessEvent e) {
+		e.getIMCStream().forEachOrdered(message -> {
+			switch (message.method()) {
+				case "registerDataSource" -> PatchedInternal.handleDataSourceIMC(message.messageSupplier().get(), message.senderModId());
+				case "registerTestCondition" -> PatchedInternal.handleTestConditionIMC(message.messageSupplier().get(), message.senderModId());
+				default -> PatchedInternal.LOGGER.warn("Received unknown IMC method {} with content {} from {}!",
+						message.method(),
+						message.messageSupplier().get(),
+						message.senderModId());
+			}
+		});
+	}
+}

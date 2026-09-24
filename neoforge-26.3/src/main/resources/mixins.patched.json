@@ -1,0 +1,20 @@
+{
+  "minVersion": "0.8",
+  "package": "net.enderturret.patchedmod.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "bindings.MixinIdentifier",
+    "bindings.MixinPackResources",
+    "bindings.MixinResourceManager",
+    "command.FilePackResourcesAccess",
+    "command.SharedZipFileAccessAccess",
+    "dynamic_patches.MixinMinecraftServer",
+    "dynamic_patches.MixinMultiPackResourceManager",
+    "dynamic_patches.MixinPackConfig",
+    "impl.MixinAbstractPackResources",
+    "impl.MixinFallbackResourceManager"
+  ],
+  "client": [
+    "client.dynamic_patches.MixinMinecraft"
+  ]
+}
