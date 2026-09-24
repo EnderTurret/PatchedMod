@@ -99,7 +99,7 @@ public abstract class MixinFallbackResourceManager {
 	 * is later captured by a static lambda, where we need access to {@code this} in.
 	 */
 	@Redirect(
-			at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Maps;newTreeMap()Ljava/util/TreeMap;", remap = false),
+			at = @At(value = "NEW", target = "java/util/TreeMap", remap = false),
 			method = "listResources",
 			require = 1) // We'll crash and burn later if this fails, so may as well explode earlier.
 	private TreeMap<?, ?> patched$hideThisInTreeMap() {
