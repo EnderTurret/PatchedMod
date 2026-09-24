@@ -15,6 +15,7 @@ issueTrackerURL="https://github.com/EnderTurret/PatchedMod/issues"
     authors="EnderTurret"
     displayURL="https://github.com/EnderTurret/PatchedMod"
     logoFile="icon.png"
+    iconFile="icon.png"
 
 [[mixins]]
     config="mixins.patched.json"
@@ -32,6 +33,6 @@ issueTrackerURL="https://github.com/EnderTurret/PatchedMod/issues"
 [[dependencies.patched]]
     modId="minecraft"
     type="required"
-    versionRange="[26.1,27)"
+    versionRange="[26.1,26.3)"
     ordering="NONE"
     side="BOTH"
