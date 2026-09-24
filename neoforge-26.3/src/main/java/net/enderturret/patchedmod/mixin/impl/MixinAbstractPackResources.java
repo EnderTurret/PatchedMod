@@ -5,17 +5,23 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
-import net.minecraft.server.packs.AbstractPackResources;
-import net.minecraft.server.packs.CompositePackResources;
+import net.minecraft.server.packs.AbstractPackMetadataResources;
+import net.minecraft.server.packs.FixedPathPackResources;
+import net.minecraft.server.packs.OverlayedPackResources;
+import net.minecraft.server.packs.PackResources;
 
 import net.enderturret.patchedmod.common.env.PatchingPackResources;
 import net.enderturret.patchedmod.common.util.meta.PatchedMetadata;
 
 /**
- * Provides an {@link PatchingPackResources} implementation for {@link AbstractPackResources}.
+ * Provides an {@link PatchingPackResources} implementation for {@link PackResources} implementations.
  * @author EnderTurret
  */
-@Mixin({ AbstractPackResources.class, CompositePackResources.class })
+@Mixin({
+	AbstractPackMetadataResources.class, // Covers FilePackResources, PathPackResources, EmptyPackResources (NeoForge), JarContentsPackResources (NeoForge)
+	FixedPathPackResources.class,
+	OverlayedPackResources.class
+})
 public abstract class MixinAbstractPackResources implements PatchingPackResources {
 
 	@Nullable

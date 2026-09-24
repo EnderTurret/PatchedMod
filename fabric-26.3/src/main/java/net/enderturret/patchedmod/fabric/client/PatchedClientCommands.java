@@ -3,6 +3,7 @@ package net.enderturret.patchedmod.fabric.client;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.mojang.brigadier.context.CommandContext;
@@ -91,14 +92,16 @@ final class PatchedClientCommands {
 					@Override public void sendFeedback(Component message) { msg.append(message.getString()).append("\n"); }
 					@Override public void sendError(Component message) { msg.append(message.getString()).append("\n"); }
 
+					@Override public boolean attended() { return source.attended(); }
 					@Override public CompletableFuture<Suggestions> customSuggestion(CommandContext<?> commandContext) { return source.customSuggestion(commandContext); }
 					@Override public FeatureFlagSet enabledFeatures() { return source.enabledFeatures(); }
 					@Override public Collection<String> getAllTeams() { return source.getAllTeams(); }
+					@Override public Stream<Identifier> getAvailablePostEffects() { return source.getAvailablePostEffects(); }
 					@Override public Stream<Identifier> getAvailableSounds() { return source.getAvailableSounds(); }
 					@Override public Collection<String> getOnlinePlayerNames() { return source.getOnlinePlayerNames(); }
 					@Override public Set<ResourceKey<Level>> levels() { return source.levels(); }
 					@Override public RegistryAccess registryAccess() { return source.registryAccess(); }
-					@Override public CompletableFuture<Suggestions> suggestRegistryElements(ResourceKey<? extends Registry<?>> resourceKey, ElementSuggestionType elementSuggestionType, SuggestionsBuilder suggestionsBuilder, CommandContext<?> commandContext) { return source.suggestRegistryElements(resourceKey, elementSuggestionType, suggestionsBuilder, commandContext); }
+					@Override public <E> CompletableFuture<Suggestions> suggestRegistryElements(ResourceKey<? extends Registry<E>> key, ElementSuggestionType elements, SuggestionsBuilder builder, CommandContext<?> context, Predicate<E> filter) { return source.suggestRegistryElements(key, elements, builder, context, filter); }
 					@Override public PermissionSet permissions() { return source.permissions(); }
 					@Override public Minecraft getClient() { return source.getClient(); }
 					@Override public LocalPlayer getPlayer() { return source.getPlayer(); }

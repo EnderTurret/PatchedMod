@@ -103,12 +103,22 @@ final class NightConfigOps implements DynamicOps<Object> {
 	}
 
 	@Override
+	public DataResult<Boolean> getBooleanValue(Object input) {
+		return input instanceof Boolean b ? DataResult.success(b) : DataResult.error(() -> "Not a boolean: " + input);
+	}
+
+	@Override
 	public Object createNumeric(Number i) {
 		return i;
 	}
 
 	@Override
 	public Object createString(String value) {
+		return value;
+	}
+
+	@Override
+	public Object createBoolean(boolean value) {
 		return value;
 	}
 }

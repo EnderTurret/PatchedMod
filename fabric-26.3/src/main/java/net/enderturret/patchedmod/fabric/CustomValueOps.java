@@ -97,6 +97,9 @@ final class CustomValueOps implements DynamicOps<CustomValue> {
 	public CustomValue createNumeric(Number i) { return new JankNumber(i); }
 
 	@Override
+	public CustomValue createBoolean(boolean value) { return new JankBoolean(value); }
+
+	@Override
 	public CustomValue createList(Stream<CustomValue> input) { return new JankList(input.toList()); }
 
 	@Override
@@ -130,6 +133,15 @@ final class CustomValueOps implements DynamicOps<CustomValue> {
 		public CvType getType() { return CvType.STRING; }
 		@Override
 		public String getAsString() { return value; }
+	}
+
+	private static record JankBoolean(boolean value) implements JankCustomValue {
+		@Override
+		public CvType getType() { return CvType.BOOLEAN; }
+		@Override
+		public boolean getAsBoolean() {
+			return value;
+		}
 	}
 
 	private static record JankNumber(Number value) implements JankCustomValue {
