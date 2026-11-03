@@ -12,7 +12,7 @@ dependencies {
 }
 
 loom {
-    accessWidenerPath = file("${rootDir}/fabric-${minecraft_version}/src/main/resources/patched.accesswidener")
+    accessWidenerPath = file("${rootDir}/fabric-26.1/src/main/resources/patched.accesswidener")
 
     // Due to an incredible oversight(?) in Loom, you cannot change the configuration name from the default, which is derived from the project name.
     runs {
